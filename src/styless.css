@@ -1,0 +1,420 @@
+/* General Styles */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* overflow: hidden; */
+  font-family: "Poppins", sans-serif !important;
+}
+
+body {
+    background-color: #14182C;
+    color: white;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+
+  /* Navbar */
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1B1F36;
+    padding: 16px 32px;
+  }
+  
+  .logo {
+    max-width: 150px;
+    height: auto;
+    cursor: pointer;
+  }
+  
+  .nav-links {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .nav-links span {
+    color: gray;
+    font-size: 16px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  .nav-links span:hover {
+    color: white;
+  }
+  
+  .nav-links .active {
+    color: white;
+    border-bottom: 2px solid white;
+    padding-bottom: 2px;
+  }
+  
+  /* Wallet Section */
+  .wallet-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #222748;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .wallet-section:hover {
+    background: #2E345C;
+  }
+  
+  .wallet-icon {
+    color: #FFD700; /* Gold color for wallet */
+    font-size: 20px;
+  }
+  
+  .balance-amount {
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 16px;
+  }
+  
+  
+  /* Game List */
+  .game-list {
+    padding: 20px;
+  }
+  
+  .section-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: gray;
+    margin-bottom: 16px;
+  }
+  
+  /* Game Card */
+  .game-card {
+    background: #1B1F36;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .league-title {
+    color: gray;
+    font-size: 14px;
+    text-align: center;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .match-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 16px 0;
+  }
+  
+  .team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .team-logo {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+  }
+  
+  .team-name {
+    margin-top: 4px;
+    font-size: 12px;
+  }
+  
+  .score {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .match-time {
+    text-align: center;
+    color: gray;
+    font-size: 12px;
+    margin-top: 8px;
+  }
+  
+  /* Bet Now Button */
+  .bet-button {
+    display: block;
+    width: 100%;
+    background: #E91E63;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .bet-button:hover {
+    background: #D81B60;
+  }
+  /* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  /* Modal Box */
+  .modal-content {
+    background: #1B1F36;
+    padding: 20px;
+    width: 320px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Modal Header */
+  .modal-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid gray;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .close-icon {
+    cursor: pointer;
+    color: white;
+    font-size: 18px;
+  }
+  
+  /* Wallet Balance */
+  .wallet-text {
+    color: #FFD700;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  
+  /* Bet Amount Input */
+  .bet-section {
+    text-align: left;
+    margin-bottom: 10px;
+  }
+  
+  .bet-label {
+    font-size: 14px;
+    color: gray;
+    /* text-align: center; */
+  }
+  
+  .bet-input {
+    width: 98%;
+    padding: 8px;
+    border-radius: 5px;
+    border: none;
+    background: #2C3154;
+    color: white;
+    font-size: 16px;
+    text-align: center;
+    margin-top: 5px;
+  }
+  
+  /* Multipliers */
+  .multiplier-section {
+    display: flex;
+    justify-content: space-around;
+    margin: 10px 0;
+  }
+  
+  .multiplier-btn {
+    background: #FFD700;
+    border: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #1B1F36;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .multiplier-btn:hover {
+    background: #FFC107;
+  }
+  
+  /* Bet Now Button */
+  .bet-now-btn {
+    width: 100%;
+    background: #E91E63;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    margin-top: 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  .close-btn {
+    width: 100%;
+    background: #E91E63;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    margin-top: 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .bet-now-btn:hover {
+    background: #D81B60;
+  }
+  @media (min-width: 750px) {
+    .logo {
+        width: 15% !important;
+        height: 5% !important;
+    }
+  }
+
+ /* Team Selection */
+.team-selection {
+    display: flex;
+    justify-content: space-around;
+    margin: 10px 0;
+  }
+  
+  .team-btn {
+    background: #2C3154;
+    color: white;
+    padding: 10px;
+    border: 2px solid transparent;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .team-btn.selected {
+    border-color: #FFD700;
+    background: #FFD700;
+    color: #1B1F36;
+  }
+  
+  /* Multipliers */
+  .multiplier-section {
+    display: flex;
+    justify-content: space-around;
+    margin: 10px 0;
+  }
+  
+  .multiplier-btn {
+    background: #FFD700;
+    border: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #1B1F36;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .multiplier-btn.selected {
+    background: #07ff5a;
+  }
+  
+  /* Bet Now Button */
+  .bet-now-btn {
+    width: 100%;
+    background: #E91E63;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .bet-now-btn:hover {
+    background: #D81B60;
+  }
+  /* src/styles.css */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 82vh;
+  background-color: #121212;
+}
+
+.auth-box {
+  background: #1f1f1f;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  width: 300px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.auth-box h2 {
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.auth-box input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 5px;
+  background: #333;
+  color: #fff;
+}
+
+.auth-box button {
+  width: 100%;
+  padding: 10px;
+  background: #ff9800;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.auth-box button:hover {
+  background: #e68900;
+}
+
+.auth-box p {
+  color: #ccc;
+}
+
+.auth-box .error {
+  color: red;
+  font-size: 14px;
+}
