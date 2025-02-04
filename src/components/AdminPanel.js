@@ -15,6 +15,7 @@ import {
 import axios from "axios";
 import "../../src/AdminPanel.css"; // Import the CSS file for styling
 import useGameWinnerListener from "./useGameWinnerListener"; // Import the real-time listener hook
+import ManageGames from "./Admin/ManageGames";
 
 const AdminPanel = () => {
   const [games, setGames] = useState([]);
@@ -60,7 +61,7 @@ const AdminPanel = () => {
     const gameRef = doc(db, "games", gameId);
     try {
       await updateDoc(gameRef, {
-        isBetEnabled: !isBetEnabled, // Toggle betting status
+        isBetEnabled: !isBetEnabled, 
       });
       console.log("Betting status updated");
     } catch (error) {
@@ -410,7 +411,7 @@ const AdminPanel = () => {
   return (
     <>
 
-
+<ManageGames/>
 <div>
   <table className="requests-table">
     <thead>
