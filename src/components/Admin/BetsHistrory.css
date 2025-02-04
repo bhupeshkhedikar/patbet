@@ -1,0 +1,120 @@
+/* General Styles */
+
+
+
+  h4 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: white !important;
+  }
+  
+  /* Container for Bets History and Statistics */
+  .container {
+    color: white;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    /* background-color: #fff; */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+  }
+  
+  th {
+    background-color: #4a90e2;
+    color: white;
+    font-size: 1rem;
+  }
+  
+  td {
+    /* background-color: #f9f9f9; */
+  }
+  
+  tr:hover {
+    /* background-color: #f1f1f1; */
+  }
+  
+  td, th {
+    border-radius: 8px;
+  }
+  
+  td {
+    font-size: 0.9rem;
+  }
+  
+  /* Game-wise Bet Statistics */
+  .game-summary {
+    margin-top: 30px;
+  }
+  
+  .game-summary h4 {
+    color: #333;
+    font-size: 1.2rem;
+  }
+  
+  .total-bet-row {
+    font-weight: bold;
+  }
+  
+  .most-betted-team {
+    font-weight: bold;
+    color: #e94e77;
+  }
+  
+  @media screen and (max-width: 768px) {
+    /* Responsive Design */
+    table {
+      font-size: 0.8rem;
+    }
+  
+    th, td {
+      padding: 8px;
+    }
+  
+    .game-summary {
+      margin-top: 20px;
+    }
+  
+    h2 {
+      font-size: 1.5rem;
+    }
+  
+    .container {
+      padding: 10px;
+    }
+  }
+  
+  @media screen and (max-width: 480px) {
+    /* For very small screens (mobile view) */
+    h2 {
+      font-size: 1.2rem;
+    }
+  
+    .table-container {
+      margin-bottom: 20px;
+    }
+  
+    table {
+      font-size: 0.75rem;
+    }
+  
+    th, td {
+      padding: 6px;
+    }
+  }
+  
