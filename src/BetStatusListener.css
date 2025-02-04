@@ -1,0 +1,61 @@
+.table-container {
+  overflow-x: auto; /* Enable horizontal scroll on small screens */
+}
+
+.requests-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  background-color: #1e1e2f;
+  color: #ffffff;
+  font-size: 14px; /* Default font size */
+}
+
+.requests-table th,
+.requests-table td {
+  padding: 10px;
+  border: 1px solid #444;
+  text-align: center;
+}
+
+.requests-table th {
+  background-color: #333;
+  color: #ffcc00;
+}
+
+.won {
+  background-color: #2e7d32;
+  color: #ffffff;
+}
+
+.lost {
+  background-color: #c62828;
+  color: #ffffff;
+}
+
+.no-bets {
+  color: #ffcc00;
+  font-weight: bold;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 600px) {
+  .requests-table {
+    font-size: 12px; /* Reduce font size on small screens */
+  }
+  
+  .requests-table th, 
+  .requests-table td {
+    padding: 8px; /* Reduce padding */
+  }
+  
+  .requests-table th:nth-child(1),
+  .requests-table td:nth-child(1) {
+    min-width: 100px; /* Ensure Match name column has enough width */
+  }
+  
+  .requests-table th, 
+  .requests-table td {
+    white-space: nowrap; /* Prevent text wrapping */
+  }
+}

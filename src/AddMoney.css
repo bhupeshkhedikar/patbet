@@ -1,0 +1,128 @@
+/* Dark Theme Container */
+.add-money-container {
+    width: 350px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #1e1e2f; /* Dark background */
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    color: #ffffff; /* White text */
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* Header Style */
+  .add-money-container h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #ffcc00; /* Highlighted text */
+  }
+  
+  /* QR Code Section */
+  .qr-section {
+    margin-bottom: 20px;
+  }
+  
+  .qr-code {
+    width: 150px;
+    height: 150px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    border: 2px solid #444;
+  }
+  
+  .qr-section p {
+    font-size: 14px;
+    color: #b0b0b0;
+  }
+  
+  /* Input Fields */
+  .input-field {
+    width: 100%;
+    padding: 12px;
+    margin: 12px 0;
+    border-radius: 8px;
+    border: none;
+    background-color: #2e2e42; /* Dark input background */
+    color: #ffffff;
+    font-size: 1rem;
+  }
+  
+  .input-field::placeholder {
+    color: #888;
+  }
+  
+  .input-field:focus {
+    outline: none;
+    background-color: #3e3e5e;
+    box-shadow: 0 0 5px rgba(255, 204, 0, 0.5); /* Glow effect */
+  }
+  
+  /* Button Styling */
+  .add-money-button {
+    width: 100%;
+    padding: 14px;
+    background-color: #ff3366; /* Bright, standout button */
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s;
+  }
+  
+  .add-money-button:hover {
+    background-color: #e62e5c; /* Slightly darker on hover */
+    transform: translateY(-2px); /* Button lift effect */
+  }
+  
+  .add-money-button:active {
+    transform: translateY(0);
+  }
+  
+  /* Disabled Button */
+  .add-money-button.disabled {
+    background-color: #555;
+    cursor: not-allowed;
+  }
+  .requests-section {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #1e1e2f;
+    border-radius: 10px;
+  }
+  
+  .requests-section h3 {
+    color: #fff;
+    margin-bottom: 15px;
+  }
+  
+  .requests-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #2b2b3c;
+    color: #fff;
+  }
+  
+  .requests-table th, .requests-table td {
+    padding: 10px 15px;
+    border: 1px solid #444;
+    text-align: center;
+  }
+  
+  .requests-table th {
+    background-color: #333;
+  }
+  
+  .requests-table .pending {
+    color: #ff9800;
+  }
+  
+  .requests-table .approved {
+    color: #4caf50;
+  }
+  
+  .requests-table .rejected {
+    color: #f44336;
+  }
+  
