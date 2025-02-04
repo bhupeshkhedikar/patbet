@@ -102,6 +102,7 @@ const WithdrawalRequest = () => {
     <div className="auth-container">
       <div className="auth-box">
         <h2>Request Withdrawal</h2>
+        <p style={{fontSize:'13px', color:'yellow'}}>Instant Withdrawal Within 5 to 30 min</p> <br/>
         <p className="wallet-text">Wallet Balance: ₹{walletBalance}</p>
 
         {/* Amount Input */}

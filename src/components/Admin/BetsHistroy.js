@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+
 import { collection, getDocs, doc } from "firebase/firestore";
 import { db } from "../../firebase";
 import "../Admin/BetsHistrory.css";
+
 const BetsHistory = () => {
   const [games, setGames] = useState([]);
   const [allBets, setAllBets] = useState([]);
