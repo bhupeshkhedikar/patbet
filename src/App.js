@@ -29,7 +29,6 @@ function App() {
   const [user, setUser] = useState(null);  // State to track user authentication status
   const navigate = useNavigate();
 
-  useGameWinnerListener();
 
   useEffect(() => {
     const auth = getAuth();

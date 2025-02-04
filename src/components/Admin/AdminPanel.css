@@ -4,7 +4,12 @@
     font-family: Arial, sans-serif;
     overflow: scroll !important;
   }
-  
+  .game-selection{
+   margin: 0 auto;
+  }
+  .add-game {
+    margin: 0 auto;
+   }
   .game-selection, .withdrawal-requests {
     margin-bottom: 40px;
   }

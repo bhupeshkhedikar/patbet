@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import { db, auth } from "../firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 import '../../src/BetStatusListener.css';
+import useGameWinnerListener from "./useGameWinnerListener";
 
 const BetStatusListener = () => {
   const [bets, setBets] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  // useGameWinnerListener();
   useEffect(() => {
     const user = auth.currentUser;
     const storedUID = localStorage.getItem("userUID");

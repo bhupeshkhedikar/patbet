@@ -37,7 +37,8 @@ const GameCard = ({ game }) => {
     });
 
     return () => unsubscribe(); // Cleanup the listener on unmount
-  }, [game.id]);
+}, [game.id]);
+
 
   return (
     <><div className="game-card">
