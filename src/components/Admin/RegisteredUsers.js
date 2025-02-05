@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { collection, onSnapshot, query, getDocs } from "firebase/firestore";
-// /import "../../src/RegisteredUsers.css";
+import { collection, onSnapshot, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
+
 const RegisteredUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -64,6 +64,7 @@ const RegisteredUsers = () => {
           <table className="users-table">
             <thead>
               <tr>
+                <th>#</th> {/* Added numbering column */}
                 <th>Name</th>
                 <th>User ID</th>
                 <th>Email</th>
@@ -73,8 +74,9 @@ const RegisteredUsers = () => {
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
+              {users.map((user, index) => (
                 <tr key={user.id}>
+                  <td>{index + 1}</td> {/* Displaying the index + 1 for numbering */}
                   <td>{user.name}</td>
                   <td>{user.id}</td>
                   <td>{user.email}</td>
