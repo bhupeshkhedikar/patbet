@@ -72,7 +72,10 @@ const PaymentComponent = () => {
 
       <div className="qr-section">
         <img src={qrCodeUrl} alt="UPI QR Code" className="qr-code" />
-        <p>Pay to UPI ID: <strong>{upiId}</strong></p>
+        <p>QR कोड स्कॅन करके पेमेंट का भुगतान करे
+          {/* <strong>{upiId}</strong> */}
+        </p>
+        {/* <p>Pay to UPI ID: <strong>{upiId}</strong></p> */}
       </div>
 
       <input
