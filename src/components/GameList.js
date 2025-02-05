@@ -32,14 +32,19 @@ const GameList = () => {
   if (loading) return <p style={{textAlign:'center',margin:'20px'}}>Loading games...</p>;
 
   return (
+    <>
+
     <div className="game-list">
+      
       <h2 className="section-title">Upcoming Games</h2>
+      <h3 style={{ textAlign: 'center',margin:'10px',color:'yellow'}}>पिंपळगाव शंकरपट - आजच्या शर्यती</h3>
       {games.length > 0 ? (
         games.map((game) => <GameCard key={game.id} game={game} />)
       ) : (
         <p>No upcoming games</p>
       )}
-    </div>
+      </div>
+      </>
   );
 };
 
