@@ -10,7 +10,7 @@ const PaymentComponent = () => {
   const [moneyRequests, setMoneyRequests] = useState([]);
 
   const upiId = "example@upi";  // Replace with your UPI ID
-  const qrCodeUrl = "https://i.ibb.co/jkbJYPB7/QrCode.jpg";  // Replace with your QR code image URL
+  const qrCodeUrl = "https://i.ibb.co/5h6hpXtQ/patbet.png";  // Replace with your QR code image URL
 
   const user = auth.currentUser;
 
