@@ -1,63 +1,59 @@
 import React, { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import GameList from "./components/GameList";
-import { BrowserRouter as Router, Routes, Route } from "react-router"; 
-import "./styless.css"; 
 import Login from "./components/Login";
 import Register from "./components/Register";
 import AdminPanel from "./components/AdminPanel";
-import useGameWinnerListener from "./components/useGameWinnerListener";
 import PaymentComponent from "./components/PaymentComponent";
 import WithdrawalRequest from "./components/WithdrawalRequest";
+import ProfileSection from "./components/ProfileSection";
+import BetStatusListener from "./components/BetStatusListener";
 import Box from "@mui/material/Box";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
-import PaymentsIcon from "@mui/icons-material/Payments";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import HomeIcon from "@mui/icons-material/Home";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import PaymentsIcon from "@mui/icons-material/Payments";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-import BetStatusListener from "./components/BetStatusListener";
-import { useNavigate } from "react-router-dom"; 
-import ProfileSection from "./components/ProfileSection";
-import LoginIcon from '@mui/icons-material/Login';
-import { getAuth, onAuthStateChanged } from "firebase/auth";  // Import Firebase Authentication
+import LoginIcon from "@mui/icons-material/Login";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import ProtectedRoute from "./components/ProtectedRoute";
-
+import "./styless.css";
+import { Navigate } from "react-router-dom";
 function App() {
-  const [value, setValue] = React.useState(0);
-  const [user, setUser] = useState(null);  // State to track user authentication status
+  const [value, setValue] = useState(0);
+  const [user, setUser] = useState(undefined);  // Initially undefined to track loading state
   const navigate = useNavigate();
-
 
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);  // If user is logged in, set user
-      } else {
-        setUser(null);  // If no user is logged in, set user to null
-      }
+      setUser(currentUser || null);  // Set user once the state is determined
     });
 
-    return () => unsubscribe();  // Clean up the listener on unmount
+    return () => unsubscribe();
   }, []);
+
+  if (user === undefined) {
+    // Show a loading indicator while determining authentication state
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="app-container">
       <Navbar />
-      
-      {/* Main content section */}
       <main style={{ height: "600px", overflow: "scroll" }}>
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
+          <Route path="/register" element={user ? <Navigate to="/" /> : <Register />} />
 
-          {/* Protected Routes - Only accessible when logged in */}
+          {/* Protected Routes */}
           <Route
             path="/"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute user={user}>
                 <GameList />
               </ProtectedRoute>
             }
@@ -65,22 +61,23 @@ function App() {
           <Route
             path="/admin"
             element={
-           
+              <ProtectedRoute user={user}>
                 <AdminPanel />
+              </ProtectedRoute>
             }
           />
           <Route
             path="/addmoney"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute user={user}>
                 <PaymentComponent />
-                </ProtectedRoute>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/withdrawal"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute user={user}>
                 <WithdrawalRequest />
               </ProtectedRoute>
             }
@@ -88,7 +85,7 @@ function App() {
           <Route
             path="/bets"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute user={user}>
                 <BetStatusListener />
               </ProtectedRoute>
             }
@@ -96,7 +93,7 @@ function App() {
           <Route
             path="/profile"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute user={user}>
                 <ProfileSection />
               </ProtectedRoute>
             }
