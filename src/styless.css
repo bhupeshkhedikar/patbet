@@ -305,6 +305,7 @@ body {
   }
   
   .team-btn {
+    margin: 5px;
     background: #2C3154;
     color: white;
     padding: 10px;

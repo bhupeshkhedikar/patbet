@@ -18,7 +18,7 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
   const [walletBalance, setWalletBalance] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const multipliers = [2, 3, 4, 5];
+  const multipliers = [2];
   const user = auth.currentUser;
 
   useEffect(() => {

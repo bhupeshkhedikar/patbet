@@ -29,7 +29,7 @@ const ManageGames = () => {
   const [isManualUpdate, setIsManualUpdate] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [newGame, setNewGame] = useState({
-    league: "",
+    league: "उत्तरदान----दक्षिणदान",
     team1: {
       name: "",
       logo: "https://i.ibb.co/gM8dM9Nt/Screenshot-2025-01-29-215509-removebg-preview.png",
