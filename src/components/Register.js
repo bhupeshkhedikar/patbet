@@ -31,7 +31,7 @@ const Register = () => {
       await setDoc(doc(db, "users", userId), {
         email: email,
         name,
-        walletBalance: 5000,  // Initial wallet balance
+        walletBalance: 30,  // Initial wallet balance
         isAdmin: false, // Default admin status
         bets: [], // Initialize empty array for user's bets
       });
