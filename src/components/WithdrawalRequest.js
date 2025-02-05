@@ -37,7 +37,7 @@ const WithdrawalRequest = () => {
   const handleRequestWithdrawal = async () => {
     try {
       // Validate input fields
-      if (amount <= 150) {
+      if (amount <= 149) {
         setErrorMessage('Amount must be greater than 150');
         return;
       }
