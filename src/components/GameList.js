@@ -38,7 +38,7 @@ const GameList = () => {
       
       <h2 className="section-title">Upcoming Games</h2>
         <h3 style={{ textAlign: 'center', margin: '10px', color: 'yellow' }}>पिंपळगाव शंकरपट - कल दौड सुबह ९ बजे से शुरू होगी,
-          और App पर होड लगाना सुबह ७.३० को शुरू होगा</h3>
+          और App पर होड लगाना शुरू हो चुका हे </h3>
       {games.length > 0 ? (
         games.map((game) => <GameCard key={game.id} game={game} />)
       ) : (
