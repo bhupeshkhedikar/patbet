@@ -76,41 +76,41 @@ const ManageGames = () => {
 
 
 //   useGameWinnerListener(isManualUpdate);
-  const handleAddGame = async () => {
-    try {
-      if (
-        !newGame.league ||
-        !newGame.team1.name ||
-        !newGame.team2.name ||
-        !newGame.time
-      ) {
-        setErrorMessage("All fields are required!");
-        return;
-      }
+  // const handleAddGame = async () => {
+  //   try {
+  //     if (
+  //       !newGame.league ||
+  //       !newGame.team1.name ||
+  //       !newGame.team2.name ||
+  //       !newGame.time
+  //     ) {
+  //       setErrorMessage("All fields are required!");
+  //       return;
+  //     }
 
-      const gamesRef = collection(db, "games");
-      await addDoc(gamesRef, newGame);
+  //     const gamesRef = collection(db, "games");
+  //     await addDoc(gamesRef, newGame);
 
-      setGames([...games, newGame]);
-      alert("Game added successfully!");
-      setNewGame({
-        league: "",
-        team1: {
-          name: "",
-          logo: "https://i.ibb.co/gM8dM9Nt/Screenshot-2025-01-29-215509-removebg-preview.png",
-        },
-        team2: {
-          name: "",
-          logo: "https://i.ibb.co/gM8dM9Nt/Screenshot-2025-01-29-215509-removebg-preview.png",
-        },
-        time: " को सुरू होगा",
-        winner: "",
-        isBetEnabled: false,
-      });
-    } catch (error) {
-      setErrorMessage("Error adding game: " + error.message);
-    }
-    };
+  //     setGames([...games, newGame]);
+  //     alert("Game added successfully!");
+  //     setNewGame({
+  //       league: "",
+  //       team1: {
+  //         name: "",
+  //         logo: "https://i.ibb.co/gM8dM9Nt/Screenshot-2025-01-29-215509-removebg-preview.png",
+  //       },
+  //       team2: {
+  //         name: "",
+  //         logo: "https://i.ibb.co/gM8dM9Nt/Screenshot-2025-01-29-215509-removebg-preview.png",
+  //       },
+  //       time: " को सुरू होगा",
+  //       winner: "",
+  //       isBetEnabled: false,
+  //     });
+  //   } catch (error) {
+  //     setErrorMessage("Error adding game: " + error.message);
+  //   }
+  //   };
     
     // // const updateBetsForTie = async (gameId) => {
     //     console.log(`Updating bets for game: ${gameId} | Result: Tie`);
@@ -298,7 +298,7 @@ const ManageGames = () => {
 
         {errorMessage && <p className="error-message">{errorMessage}</p>}
       </div>
-      <div className="add-game">
+      {/* <div className="add-game">
         <h2>Add New Game</h2>
         <input
           type="text"
@@ -348,7 +348,7 @@ const ManageGames = () => {
         <button className="add-game-btn" onClick={handleAddGame}>
           Add Game
         </button>
-          </div>
+          </div> */}
           </div>
           <div>
           <div>

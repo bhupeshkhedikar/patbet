@@ -22,6 +22,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./styless.css";
 import { Navigate } from "react-router-dom";
+import AddGame from "./components/Admin/AddGame";
 function App() {
   const [value, setValue] = useState(0);
   const [user, setUser] = useState(undefined);  // Initially undefined to track loading state
@@ -63,6 +64,14 @@ function App() {
             element={
               <ProtectedRoute user={user}>
                 <AdminPanel />
+              </ProtectedRoute>
+            }
+          />
+            <Route
+            path="/addgames"
+            element={
+              <ProtectedRoute user={user}>
+                <AddGame />
               </ProtectedRoute>
             }
           />
