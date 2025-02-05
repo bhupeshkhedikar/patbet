@@ -77,7 +77,7 @@ const Login = () => {
           <button type="submit">Login</button>
         </form>
         <p>
-          Don't have an account? <Link to="/register">Register</Link>
+          Don't have an account? <Link to="/register"><p style={{color:'yellow'}}>Register</p></Link>
         </p>
       </div>
     </div>
