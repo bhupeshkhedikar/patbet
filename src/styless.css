@@ -444,3 +444,60 @@ body {
     transform: rotate(360deg);
   }
 }
+/* Main Bottom Navigation Container */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000; /* Navigation को ऊपर लाने के लिए */
+  background-color: #1c1c1e; /* Dark Background */
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5); /* ऊपर की ओर Shadow */
+}
+
+/* Adjusting Bottom Navigation Actions */
+.MuiBottomNavigationAction-root {
+  color: #fff; /* Default Icon और Label का रंग */
+  min-width: 0; /* Minimum width हटाना ताकि छोटे स्क्रीन पर compact रहे */
+  padding: 6px 0;
+}
+
+/* Selected (Active) Tab Styling */
+.Mui-selected {
+  font-size: 0.65rem !important;
+  color: #E91E63 !important; /* Highlighted color for selected tab */
+}
+
+/* Icon Size Adjustments */
+.MuiBottomNavigationAction-root .MuiSvgIcon-root {
+  font-size: 1.3rem; /* Default icon size */
+  transition: font-size 0.3s ease;
+}
+
+/* Label Font Size Adjustments */
+.MuiBottomNavigationAction-label {
+  font-size: 0.75rem; /* Default font size */
+  transition: font-size 0.3s ease;
+}
+
+/* Responsive Styles for Smaller Screens */
+@media (max-width: 600px) {
+  .MuiBottomNavigationAction-root .MuiSvgIcon-root {
+    font-size: 1.5rem; /* छोटे स्क्रीन पर icon थोड़ा छोटा */
+  }
+
+  .MuiBottomNavigationAction-label {
+    font-size: 0.65rem; /* छोटे स्क्रीन पर label छोटा */
+  }
+}
+
+/* Responsive Styles for Larger Screens */
+@media (min-width: 960px) {
+  .MuiBottomNavigationAction-root .MuiSvgIcon-root {
+    font-size: 2rem; /* बड़े स्क्रीन पर icons बड़े */
+  }
+
+  .MuiBottomNavigationAction-label {
+    font-size: 0.85rem; /* बड़े स्क्रीन पर labels बड़े */
+  }
+}

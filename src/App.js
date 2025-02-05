@@ -103,48 +103,73 @@ function App() {
 
       {/* Bottom Navigation */}
       <Box sx={{ width: "100%" }} className="bottom-nav">
-        <BottomNavigation
-          showLabels
-          value={value}
-          onChange={(event, newValue) => {
-            setValue(newValue);
-          }}
-        >
-          <BottomNavigationAction
-            label="Withdrawal"
-            onClick={() => navigate("/withdrawal")}
-            icon={<AccountBalanceIcon />}
-          />
-          <BottomNavigationAction
-            label="Wallet"
-            onClick={() => navigate("/addmoney")}
-            icon={<AccountBalanceWalletIcon />}
-          />
-          <BottomNavigationAction
-            label="Home"
-            onClick={() => navigate("/")}
-            icon={<HomeIcon />}
-          />
-          <BottomNavigationAction
-            label="Bets"
-            onClick={() => navigate("/bets")}
-            icon={<PaymentsIcon />}
-          />
-          {user ? (
-            <BottomNavigationAction
-              label="Profile"
-              onClick={() => navigate("/profile")}
-              icon={<AccountCircleIcon />}
-            />
-          ) : (
-            <BottomNavigationAction
-              label="Login"
-              onClick={() => navigate("/login")}
-              icon={<LoginIcon />}
-            />
-          )}
-        </BottomNavigation>
-      </Box>
+  <BottomNavigation
+    showLabels
+    value={value}
+    onChange={(event, newValue) => {
+      setValue(newValue);
+    }}
+  >
+    <BottomNavigationAction
+      label="Withdrawal"
+      onClick={() => navigate("/withdrawal")}
+      icon={<AccountBalanceIcon />}
+      sx={{
+        "& .MuiSvgIcon-root": { fontSize: { xs: "1.5rem", sm: "1.8rem", md: "2rem" } },
+        "& .MuiBottomNavigationAction-label": { fontSize: { xs: "0.65rem", sm: "0.75rem", md: "0.85rem" } }
+      }}
+    />
+    <BottomNavigationAction
+      label="Wallet"
+      onClick={() => navigate("/addmoney")}
+      icon={<AccountBalanceWalletIcon />}
+      sx={{
+        "& .MuiSvgIcon-root": { fontSize: { xs: "1.5rem", sm: "1.8rem", md: "2rem" } },
+        "& .MuiBottomNavigationAction-label": { fontSize: { xs: "0.65rem", sm: "0.75rem", md: "0.85rem" } }
+      }}
+    />
+    <BottomNavigationAction
+      label="Home"
+      onClick={() => navigate("/")}
+      icon={<HomeIcon />}
+      sx={{
+        "& .MuiSvgIcon-root": { fontSize: { xs: "1.5rem", sm: "1.8rem", md: "2rem" } },
+        "& .MuiBottomNavigationAction-label": { fontSize: { xs: "0.65rem", sm: "0.75rem", md: "0.85rem" } }
+      }}
+    />
+    <BottomNavigationAction
+      label="Bets"
+      onClick={() => navigate("/bets")}
+      icon={<PaymentsIcon />}
+      sx={{
+        "& .MuiSvgIcon-root": { fontSize: { xs: "1.5rem", sm: "1.8rem", md: "2rem" } },
+        "& .MuiBottomNavigationAction-label": { fontSize: { xs: "0.65rem", sm: "0.75rem", md: "0.85rem" } }
+      }}
+    />
+    {user ? (
+      <BottomNavigationAction
+        label="Profile"
+        onClick={() => navigate("/profile")}
+        icon={<AccountCircleIcon />}
+        sx={{
+          "& .MuiSvgIcon-root": { fontSize: { xs: "1.5rem", sm: "1.8rem", md: "2rem" } },
+          "& .MuiBottomNavigationAction-label": { fontSize: { xs: "0.65rem", sm: "0.75rem", md: "0.85rem" } }
+        }}
+      />
+    ) : (
+      <BottomNavigationAction
+        label="Login"
+        onClick={() => navigate("/login")}
+        icon={<LoginIcon />}
+        sx={{
+          "& .MuiSvgIcon-root": { fontSize: { xs: "1.5rem", sm: "1.8rem", md: "2rem" } },
+          "& .MuiBottomNavigationAction-label": { fontSize: { xs: "0.65rem", sm: "0.75rem", md: "0.85rem" } }
+        }}
+      />
+    )}
+  </BottomNavigation>
+</Box>
+
     </div>
   );
 }

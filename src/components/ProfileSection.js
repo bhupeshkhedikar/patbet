@@ -76,36 +76,69 @@ const ProfileSection = () => {
 
 
   return (
-    <div className="profile-container">
-      <ToastContainer />
+    <><ToastContainer /><div className="profile-container">
       <div className="profile-header">
-        <img
-          src={userData?.avatar || "https://www.pngarts.com/files/3/Cool-Avatar-Transparent-Image.png"}
-          alt="Avatar"
-          className="avatar"
-        />
+        <img src={userData?.avatar || "https://www.pngarts.com/files/3/Cool-Avatar-Transparent-Image.png"} className="avatar" />
         <div className="user-info">
           <h2>{userData?.name || "Guest User"}</h2>
           <p>Email: {userData?.email || "No email available"}</p>
-          <p>
-            Balance: <span className="balance">₹{userData?.walletBalance || "0.00"}</span>
-          </p>
         </div>
-      </div>
-
-      <div className="profile-actions">
-        <button className="action-btn">My Profile</button>
-        <button className="action-btn">Wallet</button>
-        <button className="action-btn">Settings</button>
+        <br />
         {isLoggedIn && (
-          <button className="logout-btn" onClick={handleLogout}>
+          <button className="action-btn" onClick={handleLogout}>
             Logout
           </button>
         )}
       </div>
 
-      {/* Withdrawals Section */}
-      {withdrawals.length > 0 && (
+      <div className="stats-container">
+        <div className="stat-box">
+          <p className="highlight">{userData?.walletBalance || "0"}</p>
+          <p>Total Income</p>
+        </div>
+        <div className="stat-box">
+          <p className="highlight">{userData?.walletBalance || "0"}</p>
+          <p>Total Recharge</p>
+        </div>
+        <div className="stat-box">
+          <p className="highlight">{userData?.walletBalance || "0"}</p>
+          <p>Total Assets</p>
+        </div>
+        <div className="stat-box">
+          <p className="highlight">00</p>
+          <p>Total Withdraw</p>
+        </div>
+        <div className="stat-box">
+          <p className="highlight">00.00</p>
+          <p>Today's Income</p>
+        </div>
+        <div className="stat-box">
+          <p className="highlight">0</p>
+          <p>All Income</p>
+        </div>
+      </div>
+
+      <div className="balance-section">
+        <span>
+          <span className="balance">
+          ₹.{userData?.walletBalance || "0"} <br />Recharge
+          </span>
+        </span>
+        <span>
+          <p>
+            <span className="balance">₹.{userData?.walletBalance || "0.00"} <br />Balance</span>
+          </p>
+        </span>
+      </div>
+
+
+      <div className="action-buttons">
+        <button className="action-btn" onClick={() => navigate("/addmoney")}>Recharge</button>
+        <button className="action-btn withdrawal-btn" onClick={() => navigate("/withdrawal")}>Withdrawal</button>
+      </div>
+
+        {/* Withdrawals Section */}
+        {withdrawals.length > 0 && (
         <div className="withdrawals-section">
           <h3>Withdrawals History</h3>
           {withdrawals.map((withdrawal) => (
@@ -122,7 +155,34 @@ const ProfileSection = () => {
           ))}
         </div>
       )}
+
+
+      {/* <div className="menu-list">
+        <div className="menu-item">
+          <img src="https://cdn-icons-png.flaticon.com/512/709/709699.png" alt="Product" />
+          <span>My Activation Product</span>
+        </div>
+        <div className="menu-item">
+          <img src="https://cdn-icons-png.flaticon.com/512/709/709659.png" alt="Transactions" />
+          <span>Transactions</span>
+        </div>
+        <div className="menu-item">
+          <img src="https://cdn-icons-png.flaticon.com/512/709/709682.png" alt="Bonus" />
+          <span>Redemption Bonus</span>
+        </div>
+      </div> */}
+
+      {/* <div className="bottom-nav">
+        <div className="bottom-nav-item">Home</div>
+        <div className="bottom-nav-item">Products</div>
+        <div className="bottom-nav-item">Team</div>
+        <div className="bottom-nav-item active">Personal</div>
+    </div> */}
     </div>
+    
+    
+    </>
+
   );
 };
 
