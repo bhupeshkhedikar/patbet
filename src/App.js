@@ -39,7 +39,10 @@ function App() {
 
   if (user === undefined) {
     // Show a loading indicator while determining authentication state
-    return <div>Loading...</div>;
+    return  <div className="loader-container">
+    <div className="loader"></div>
+    <p>Loading Games...</p>
+  </div>
   }
 
   return (
