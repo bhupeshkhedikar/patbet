@@ -12,11 +12,12 @@ import {
 import { useNavigate } from "react-router-dom";
 
 const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
-  const [betAmount, setBetAmount] = useState(10);
+  const [betAmount, setBetAmount] = useState(20);
   const [selectedMultiplier, setSelectedMultiplier] = useState(2);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [walletBalance, setWalletBalance] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [betWarning, setBetWarning] = useState("");
   const navigate = useNavigate();
   const multipliers = [2];
   const user = auth.currentUser;
@@ -37,6 +38,11 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
   const handleBet = async () => {
     if (!selectedTeam) {
       alert("Please select a team to bet on!");
+      return;
+    }
+
+    if (betAmount < 20) {
+      alert("Minimum bet amount is ₹20!");
       return;
     }
 
@@ -84,6 +90,16 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
     }
   };
 
+  const handleBetAmountChange = (e) => {
+    const value = Number(e.target.value);
+    setBetAmount(value);
+    if (value < 20) {
+      setBetWarning("Minimum bet amount is ₹20");
+    } else {
+      setBetWarning("");
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -107,10 +123,11 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
               <input
                 type="number"
                 value={betAmount}
-                min="10"
-                onChange={(e) => setBetAmount(Number(e.target.value))}
+                min="20"
+                onChange={handleBetAmountChange}
                 className="bet-input"
               />
+              {betWarning && <p style={{color:"red",fontSize:'14', margin:'5px'}}>{betWarning}</p>}
             </div>
 
             <div className="team-selection">
@@ -144,10 +161,10 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
 
             <button className="bet-now-btn" onClick={handleBet}>
               Bet Now
-              </button>
-              <button className="close-btn" onClick={onClose}>
-               Close
-              </button>
+            </button>
+            <button className="close-btn" onClick={onClose}>
+              Close
+            </button>
           </>
         )}
       </div>
