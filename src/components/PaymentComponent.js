@@ -34,7 +34,10 @@ const PaymentComponent = () => {
   
 
   const handleAddMoney = async () => {
-    if (!urn || !amount) return;
+    if (!urn || !amount || parseFloat(amount) < 50) {
+      alert("Minimum amount to add is ₹50.");
+      return;
+    }
 
     setLoading(true);
 
@@ -73,14 +76,12 @@ const PaymentComponent = () => {
       <div className="qr-section">
         <img src={qrCodeUrl} alt="UPI QR Code" className="qr-code" />
         <p>QR कोड स्कॅन करके पेमेंट का भुगतान करे.और Transaction Id या फिर URN नंबर कॉपी करे.
-          {/* <strong>{upiId}</strong> */}
         </p>
-        {/* <p>Pay to UPI ID: <strong>{upiId}</strong></p> */}
       </div>
 
       <input
         type="number"
-        placeholder="Enter Amount"
+        placeholder="Enter Amount (Min ₹50)"
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
         className="input-field" />
@@ -93,13 +94,10 @@ const PaymentComponent = () => {
       <button
         onClick={handleAddMoney}
         disabled={!urn || !amount || loading}
-        className={`add-money-button ${(!urn || !amount) ? "disabled" : ""}`}
+        className={`add-money-button ${(!urn || !amount || parseFloat(amount) < 50) ? "disabled" : ""}`}
       >
         {loading ? "Processing..." : "Add Money"}
       </button>
-
-      {/* Display User's Add Money Requests */}
-
     </div><div className="requests-section">
         <h3>Your Add Money Requests</h3>
         {moneyRequests.length === 0 ? (
