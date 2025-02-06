@@ -37,7 +37,7 @@ const GameList = () => {
     <div className="game-list">
       
       <h2 className="section-title">Upcoming Games</h2>
-        <h3 style={{ textAlign: 'center', margin: '10px', color: 'yellow' }}>अभी Live बेटिंग शुरू हे..इसके रिझल्ट कल सुबह 6.00 बताये जायेंगे</h3>
+        <h3 style={{ textAlign: 'center', margin: '10px', color: 'yellow' }}>अभी Live Lucky Draw बेटिंग शुरू हे..इसके रिझल्ट आज रात 8 बजे घोषित होगा..फटाफट बेट लगाये</h3>
       {games.length > 0 ? (
         games.map((game) => <GameCard key={game.id} game={game} />)
       ) : (
