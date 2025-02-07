@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../firebase"; // Import Firebase Firestore instance
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs,doc,getDoc, } from "firebase/firestore";
 import GameCard from "./GameCard";
 
 const GameList = () => {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -29,15 +30,36 @@ const GameList = () => {
     fetchGames();
   }, []);
 
+   const announcementDocRef = doc(db, "announcements", "mainAnnouncement");
+  
+    useEffect(() => {
+      fetchAnnouncement();
+    }, []);
+  
+    const fetchAnnouncement = async () => {
+      const docSnap = await getDoc(announcementDocRef);
+      if (docSnap.exists()) {
+        setMessage(docSnap.data().message);
+      }
+    };
+
   if (loading) return <p style={{textAlign:'center',margin:'20px'}}>Loading games...</p>;
 
   return (
     <>
 
     <div className="game-list">
-      
+       
       <h2 className="section-title">Upcoming Games</h2>
-        <h3 style={{ textAlign: 'center', margin: '10px', color: 'yellow' }}>शंकरपट चान्ना/धानला- बेट लगाना शुरू हो चुका हे</h3>
+
+        {
+          message ? (
+          
+             <p style={{ textAlign: 'center', margin: '10px', color: 'yellow', fontSize:'14px' , fontWeight:'bold' }}>{message}</p>
+          ) : (
+            <p className="text-center text-white mt-4">No announcement available</p>
+          )
+      }
       {games.length > 0 ? (
         games.map((game) => <GameCard key={game.id} game={game} />)
       ) : (
