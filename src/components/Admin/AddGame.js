@@ -5,7 +5,7 @@ import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore'
 const AddGame = () => {
   const [games, setGames] = useState([]);
   const [newGame, setNewGame] = useState({
-    league: "उत्तरदान----दक्षिणदान",
+    league: "उत्तरदान <----> दक्षिणदान",
     team1: {
       name: "",
       logo: "https://i.ibb.co/gM8dM9Nt/Screenshot-2025-01-29-215509-removebg-preview.png",
@@ -14,7 +14,7 @@ const AddGame = () => {
       name: "",
       logo: "https://i.ibb.co/gM8dM9Nt/Screenshot-2025-01-29-215509-removebg-preview.png",
     },
-    time: " को सुरू होगा",
+    time: " ",
     winner: "",
     isBetEnabled: false,
   });
@@ -34,7 +34,7 @@ const AddGame = () => {
 
   const handleAddGame = async () => {
     try {
-      if (!newGame.league || !newGame.team1.name || !newGame.team2.name || !newGame.time) {
+      if (!newGame.league || !newGame.team1.name || !newGame.team2.name) {
         setErrorMessage("All fields are required!");
         return;
       }
@@ -45,7 +45,7 @@ const AddGame = () => {
       setGames([...games, newGame]);
       alert("Game added successfully!");
       setNewGame({
-        league: "उत्तरदान----दक्षिणदान",
+        league: "उत्तरदान <----> दक्षिणदान",
         team1: {
           name: "",
           logo: "https://i.ibb.co/gM8dM9Nt/Screenshot-2025-01-29-215509-removebg-preview.png",
@@ -54,7 +54,7 @@ const AddGame = () => {
           name: "",
           logo: "https://i.ibb.co/gM8dM9Nt/Screenshot-2025-01-29-215509-removebg-preview.png",
         },
-        time: " को सुरू होगा",
+        time: " ",
         winner: "",
         isBetEnabled: false,
       });
@@ -98,12 +98,12 @@ const AddGame = () => {
         value={newGame.team2.name}
         onChange={e => setNewGame({ ...newGame, team2: { ...newGame.team2, name: e.target.value } })}
       />
-      <input
+      {/* <input
         type="text"
         placeholder="Game Time"
         value={newGame.time}
         onChange={e => setNewGame({ ...newGame, time: e.target.value })}
-      />
+      /> */}
       <select
         style={{ marginBottom: "20px" }}
         value={newGame.isBetEnabled}
