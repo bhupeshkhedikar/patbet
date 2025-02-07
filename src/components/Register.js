@@ -5,6 +5,7 @@ import { doc, setDoc } from "firebase/firestore"; // Firestore functions
 import { Link, useNavigate } from "react-router-dom"; // Fixed incorrect import
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import Toast styles
+import { serverTimestamp } from "firebase/firestore";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -34,6 +35,7 @@ const Register = () => {
         walletBalance: 30,  // Initial wallet balance
         isAdmin: false, // Default admin status
         bets: [], // Initialize empty array for user's bets
+        createdAt: serverTimestamp()
       });
 
       // Show success toast

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { collection, onSnapshot, getDocs } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
 
 const RegisteredUsers = () => {
@@ -37,10 +37,21 @@ const RegisteredUsers = () => {
           walletBalance: userData.walletBalance || 0,
           totalBets,
           totalWinnings,
+          createdAt: userData.createdAt || null, // Add createdAt field (null if not present)
         });
       }
 
-      setUsers(fetchedUsers);
+      // Separate users with and without createdAt
+      const usersWithCreatedAt = fetchedUsers
+        .filter((user) => user.createdAt)
+        .sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate()); // Sort descending
+
+      const usersWithoutCreatedAt = fetchedUsers.filter((user) => !user.createdAt);
+
+      // Combine both lists
+      const sortedUsers = [...usersWithCreatedAt, ...usersWithoutCreatedAt];
+
+      setUsers(sortedUsers);
       setLoading(false);
     };
 
@@ -64,25 +75,31 @@ const RegisteredUsers = () => {
           <table className="users-table">
             <thead>
               <tr>
-                <th>#</th> {/* Added numbering column */}
+                <th>#</th> {/* Numbering column */}
                 <th>Name</th>
                 <th>User ID</th>
                 <th>Email</th>
                 <th>Wallet Balance</th>
                 <th>Total Winnings</th>
                 <th>Total Bets</th>
+                <th>Registered On</th> {/* Display registration date */}
               </tr>
             </thead>
             <tbody>
               {users.map((user, index) => (
                 <tr key={user.id}>
-                  <td>{index + 1}</td> {/* Displaying the index + 1 for numbering */}
+                  <td>{index + 1}</td> {/* Numbering starts from 1 */}
                   <td>{user.name}</td>
                   <td>{user.id}</td>
                   <td>{user.email}</td>
                   <td>₹{user.walletBalance}</td>
                   <td>₹{user.totalWinnings}</td>
                   <td>{user.totalBets}</td>
+                  <td>
+                    {user.createdAt
+                      ? user.createdAt.toDate().toLocaleDateString()
+                      : "N/A"} {/* Show registration date or N/A */}
+                  </td>
                 </tr>
               ))}
             </tbody>
