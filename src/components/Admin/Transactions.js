@@ -24,29 +24,32 @@ const Transactions = () => {
     const [deposits, setDeposits] = useState([]);
     const [addMoneyRequests, setAddMoneyRequests] = useState([]);
 
-      useEffect(() => {
-        const fetchAddMoneyRequests = async () => {
-          try {
-            const depositsRef = collection(db, "addMoneyRequests");
-            // Removed the 'where' clause, now fetching all documents
-            const depositsQuery = query(depositsRef, orderBy("createdAt", "desc"));
-            const depositSnapshot = await getDocs(depositsQuery);
+
     
-            const allDeposits = depositSnapshot.docs.map(doc => ({
-              id: doc.id,
-              ...doc.data(),
-              createdAt: doc.data().createdAt.toDate().toLocaleString(), // Format the timestamp
-            }));
+
+    useEffect(() => {
+      const fetchAddMoneyRequests = async () => {
+        try {
+          const depositsRef = collection(db, "addMoneyRequests");
+          
+          // Sorting by 'createdAt' in descending order to show newest on top
+          const depositsQuery = query(depositsRef, orderBy("createdAt", "desc"));
+          const depositSnapshot = await getDocs(depositsQuery);
+  
+          const allDeposits = depositSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+  
+          setAddMoneyRequests(allDeposits);
+        } catch (error) {
+          console.error("Error fetching add money requests:", error);
+        }
+      };
+  
+      fetchAddMoneyRequests();
+    }, []);
     
-            console.log("Fetched Add Money Requests: ", allDeposits); // Debugging
-            setAddMoneyRequests(allDeposits);
-          } catch (error) {
-            console.error("Error fetching add money requests:", error);
-          }
-        };
-    
-        fetchAddMoneyRequests();
-      }, []);
     
     
       
@@ -54,12 +57,16 @@ const Transactions = () => {
       useEffect(() => {
         const fetchWithdrawalRequests = async () => {
           try {
+            // Query withdrawalRequests ordered by requestDate descending
             const withdrawalsRef = collection(db, "withdrawalRequests");
-            const withdrawalSnapshot = await getDocs(withdrawalsRef);
+            const withdrawalsQuery = query(withdrawalsRef, orderBy("requestDate", "desc"));
+            const withdrawalSnapshot = await getDocs(withdrawalsQuery);
+    
             const withdrawalList = withdrawalSnapshot.docs.map(doc => ({
               id: doc.id,
               ...doc.data(),
             }));
+    
             setWithdrawalRequests(withdrawalList);
           } catch (error) {
             setErrorMessage("Error fetching withdrawal requests");
@@ -208,66 +215,64 @@ const Transactions = () => {
     
     return(
         <>
-          <div className="withdrawal-requests">
-          <h3>Withdrawal Requests</h3>
-          {errorMessage && <p className="error-message">{errorMessage}</p>}
+         <div className="withdrawal-requests">
+      <h3>Withdrawal Requests</h3>
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
 
-          <table className="requests-table">
-            <thead>
-              <tr>
-                <th>Username</th>
-                <th>User ID</th>
-                <th>Amount</th>
-                <th>Payment Method</th>
-                <th>UPI ID</th>
-                <th>Request Date</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
+      <table className="requests-table">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>User ID</th>
+            <th>Amount</th>
+            <th>Payment Method</th>
+            <th>UPI ID</th>
+            <th>Request Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
 
-            <tbody>
-              {withdrawalRequests.map(request => (
-                <tr key={request.id}>
-                  <td>{request.username || "N/A"}</td>
-                  <td>{request.userId}</td>
-                  <td>₹{request.amount}</td>
-                  <td>{request.paymentMethod || "N/A"}</td>
-                  <td>{request.upiId || "N/A"}</td>
-                  <td>
-                    {new Date(request.requestDate?.toDate()).toLocaleString()}
-                  </td>
-                  <td>{request.status}</td>
-                  <td>
-                    <button
-                      className="approve-btn"
-                      onClick={() =>
-                        handleApprove(
-                          request.id,
-                          request.userId,
-                          request.amount
-                        )
-                      }
-                      disabled={request.status === "approved"}
-                    >
-                      Approve
-                    </button>
-                    <button
-                      className="reject-btn"
-                      onClick={() =>
-                        handleReject(request.id, request.userId, request.amount)
-                      }
-                      disabled={request.status === "rejected"}
-                    >
-                      Reject
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <h2>Deposit History</h2>
+        <tbody>
+          {withdrawalRequests.map(request => (
+            <tr key={request.id}>
+              <td>{request.username || "N/A"}</td>
+              <td>{request.userId}</td>
+              <td>₹{request.amount}</td>
+              <td>{request.paymentMethod || "N/A"}</td>
+              <td>{request.upiId || "N/A"}</td>
+              <td>
+                {request.requestDate
+                  ? new Date(request.requestDate.toDate()).toLocaleString()
+                  : "N/A"}
+              </td>
+              <td>{request.status}</td>
+              <td>
+                <button
+                  className="approve-btn"
+                  onClick={() =>
+                    handleApprove(request.id, request.userId, request.amount)
+                  }
+                  disabled={request.status === "approved"}
+                >
+                  Approve
+                </button>
+                <button
+                  className="reject-btn"
+                  onClick={() =>
+                    handleReject(request.id, request.userId, request.amount)
+                  }
+                  disabled={request.status === "rejected"}
+                >
+                  Reject
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+        {/* <h2>Deposit History</h2>
         <table border="1" className="requests-table">
           <thead>
             <tr>
@@ -285,57 +290,61 @@ const Transactions = () => {
               </tr>
             ))}
           </tbody>
-            </table>
-            <div className="deposit-requests">
-        <h3>Deposit Requests</h3>
-        <table className="requests-table">
-          <thead>
-            <tr>
-              <th>User ID</th>
-              <th>URN</th>
-              <th>Amount</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {addMoneyRequests.length > 0 ? (
-              addMoneyRequests.map(deposit => (
-                <tr key={deposit.id}>
-                  <td>{deposit.userId}</td>
-                  <td>{deposit.urn}</td>
-                  <td>₹{deposit.amount}</td>
-                  <td>{deposit.status}</td>
-                  <td>
-                    <button
-                      className="approve-btn"
-                      onClick={() =>
-                        handleApproveDeposit(
-                          deposit.id,
-                          deposit.userId,
-                          deposit.amount
-                        )
-                      }
-                    >
-                      Approve
-                    </button>
-                    <button
-                      className="reject-btn"
-                      onClick={() => handleRejectDeposit(deposit.id)}
-                    >
-                      Reject
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5">No pending deposit requests.</td>
+            </table> */}
+     <div className="deposit-requests">
+      <h3>Deposit Requests</h3>
+      <table className="requests-table">
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>URN</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Request Date</th> {/* Added Request Date Column */}
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {addMoneyRequests.length > 0 ? (
+            addMoneyRequests.map(deposit => (
+              <tr key={deposit.id}>
+                <td>{deposit.userId}</td>
+                <td>{deposit.urn}</td>
+                <td>₹{deposit.amount}</td>
+                <td>{deposit.status}</td>
+                <td>
+                  {deposit.createdAt
+                    ? new Date(deposit.createdAt.toDate()).toLocaleString()
+                    : "N/A"}
+                </td> {/* Display formatted date */}
+                <td>
+                  <button
+                    className="approve-btn"
+                    onClick={() =>
+                      handleApproveDeposit(deposit.id, deposit.userId, deposit.amount)
+                    }
+                    disabled={deposit.status === "approved"}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    className="reject-btn"
+                    onClick={() => handleRejectDeposit(deposit.id)}
+                    disabled={deposit.status === "rejected"}
+                  >
+                    Reject
+                  </button>
+                </td>
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="6">No pending deposit requests.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
         </>
         
     )
