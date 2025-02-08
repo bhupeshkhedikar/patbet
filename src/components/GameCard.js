@@ -14,8 +14,8 @@ const GameCard = ({ game }) => {
     const interval = setInterval(() => {
       const now = new Date();
       setCurrentTime(now);
-      calculateTimeDifference(now);
-    }, 1000); // Update every second for real-time countdown
+      updateBettingStatus(now);
+    }, 1000); // Update every second
 
     return () => clearInterval(interval);
   }, []);
@@ -37,36 +37,41 @@ const GameCard = ({ game }) => {
     return () => unsubscribe();
   }, [game.id]);
 
-  // Function to calculate time difference from 5 PM
-  const calculateTimeDifference = (now) => {
-    const fivePM = new Date();
-    fivePM.setHours(17, 0, 0, 0); // Set to 5:00 PM today
+  const updateBettingStatus = (now) => {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
 
-    const diff = fivePM - now; // Difference in milliseconds
-    const isPastFivePM = diff < 0;
+    // Betting start time (7:30 PM today)
+    const betStartTime = new Date(today.setHours(19, 30, 0, 0));
 
-    const absoluteDiff = Math.abs(diff);
-    const hours = Math.floor(absoluteDiff / (1000 * 60 * 60));
-    const minutes = Math.floor((absoluteDiff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((absoluteDiff % (1000 * 60)) / 1000);
+    // Betting end time (7:00 AM tomorrow)
+    const betEndTime = new Date(tomorrow.setHours(7, 0, 0, 0));
 
-    const timeString = `${hours}h ${minutes}m ${seconds}s`;
-    setTimeDifference(isPastFivePM ? `-${timeString}` : timeString);
+    if (now < betStartTime) {
+      setTimeDifference(`Betting starts at 7:30 PM`);
+    } else if (now >= betStartTime && now <= betEndTime) {
+      const diff = betEndTime - now;
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      setTimeDifference(`Time left: ${hours}h ${minutes}m ${seconds}s`);
+    } else {
+      setTimeDifference(`Betting Closed`);
+    }
   };
 
-  const isPastFivePM = currentTime.getHours() >= 17;
+  const today = new Date();
+  const betStartTime = new Date(today.setHours(19, 30, 0, 0));
+  const betEndTime = new Date(today.setHours(7, 0, 0, 0));
+  const isBeforeStart = currentTime < betStartTime;
+  const isAfterEnd = currentTime > betEndTime && currentTime < betStartTime;
 
   return (
     <div className="game-card">
-      <p className="league-title">
-        {game.league}
-      </p>
-      
-      <p className="timer" >
-        {isPastFivePM
-          ? `Bet closed ${timeDifference} ago`
-          : `Time left: ${timeDifference}`}  {isPastFivePM ? "(Live Bet Ends)" : "(Bet till 5 PM)"}
-      </p>
+      <p className="league-title">{game.league}</p>
+      <p className="timer">{timeDifference}</p>
+
       <div className="match-container">
         <div className="team">
           <img src={game.team1.logo} alt={game.team1.name} className="team-logo" />
@@ -79,13 +84,15 @@ const GameCard = ({ game }) => {
         </div>
       </div>
       <p className="match-time">{game.time}</p>
+
       <button
         className="bet-button"
         onClick={() => setModalOpen(true)}
-        disabled={!betEnabled || isPastFivePM}
+        disabled={!betEnabled || isBeforeStart || isAfterEnd}
       >
-        {betEnabled && !isPastFivePM ? "Bet Now" : "Betting Over"}
+        {isBeforeStart ? "Betting Not Started" : isAfterEnd ? "Betting Over" : "Bet Now"}
       </button>
+
       <BetNowModal
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
