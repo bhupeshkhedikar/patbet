@@ -59,12 +59,13 @@ const GameCard = ({ game }) => {
   return (
     <div className="game-card">
       <p className="league-title">
-        {game.league} {isPastFivePM ? "(Live Bet Ends)" : "(Bet till 5 PM)"}
+        {game.league}
       </p>
+      
       <p className="timer" >
         {isPastFivePM
           ? `Bet closed ${timeDifference} ago`
-          : `Time left: ${timeDifference}`}
+          : `Time left: ${timeDifference}`}  {isPastFivePM ? "(Live Bet Ends)" : "(Bet till 5 PM)"}
       </p>
       <div className="match-container">
         <div className="team">
