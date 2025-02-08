@@ -1,48 +1,71 @@
 import React, { useEffect, useState } from "react";
 import BetNowModal from "./BetNowModal";
 import { db } from "../firebase";
-import BetStatusListener from "./BetStatusListener";
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  doc,
-  updateDoc,
-  getDoc,
-  addDoc,
-  orderBy,
-  getFirestore, setDoc,onSnapshot
-} from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 
 const GameCard = ({ game }) => {
   const [isModalOpen, setModalOpen] = useState(false);
-  const [walletBalance, setWalletBalance] = useState(5000); // Initial balance
+  const [walletBalance, setWalletBalance] = useState(5000);
   const [betEnabled, setBetEnabled] = useState(game.isBetEnabled);
-  // useEffect(() => {
-  // console.log(game,'gmaes')
-  // }, [])
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [timeDifference, setTimeDifference] = useState("");
+
   useEffect(() => {
-    const gamesRef = collection(db, "games"); // Reference to Firestore games collection
+    const interval = setInterval(() => {
+      const now = new Date();
+      setCurrentTime(now);
+      calculateTimeDifference(now);
+    }, 1000); // Update every second for real-time countdown
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const gamesRef = collection(db, "games");
 
     const unsubscribe = onSnapshot(gamesRef, (querySnapshot) => {
       const gameList = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-      const updatedGame = gameList.find((g) => g.id === game.id); // Find the updated game
+      const updatedGame = gameList.find((g) => g.id === game.id);
       if (updatedGame) {
-        setBetEnabled(updatedGame.isBetEnabled); // Update the local state based on the fetched data
+        setBetEnabled(updatedGame.isBetEnabled);
       }
     });
 
-    return () => unsubscribe(); // Cleanup the listener on unmount
-}, [game.id]);
+    return () => unsubscribe();
+  }, [game.id]);
 
+  // Function to calculate time difference from 5 PM
+  const calculateTimeDifference = (now) => {
+    const fivePM = new Date();
+    fivePM.setHours(17, 0, 0, 0); // Set to 5:00 PM today
+
+    const diff = fivePM - now; // Difference in milliseconds
+    const isPastFivePM = diff < 0;
+
+    const absoluteDiff = Math.abs(diff);
+    const hours = Math.floor(absoluteDiff / (1000 * 60 * 60));
+    const minutes = Math.floor((absoluteDiff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((absoluteDiff % (1000 * 60)) / 1000);
+
+    const timeString = `${hours}h ${minutes}m ${seconds}s`;
+    setTimeDifference(isPastFivePM ? `-${timeString}` : timeString);
+  };
+
+  const isPastFivePM = currentTime.getHours() >= 17;
 
   return (
-    <><div className="game-card">
-      <p className="league-title">{game.league}</p>
+    <div className="game-card">
+      <p className="league-title">
+        {game.league} {isPastFivePM ? "(Live Bet Ends)" : "(Bet till 5 PM)"}
+      </p>
+      <p className="timer" >
+        {isPastFivePM
+          ? `Bet closed ${timeDifference} ago`
+          : `Time left: ${timeDifference}`}
+      </p>
       <div className="match-container">
         <div className="team">
           <img src={game.team1.logo} alt={game.team1.name} className="team-logo" />
@@ -55,12 +78,12 @@ const GameCard = ({ game }) => {
         </div>
       </div>
       <p className="match-time">{game.time}</p>
-    <button
+      <button
         className="bet-button"
         onClick={() => setModalOpen(true)}
-        disabled={!betEnabled} // Disable button if betting is not enabled
+        disabled={!betEnabled || isPastFivePM}
       >
-        {betEnabled ? "Bet Now" : "Betting Over"}
+        {betEnabled && !isPastFivePM ? "Bet Now" : "Betting Over"}
       </button>
       <BetNowModal
         isOpen={isModalOpen}
@@ -69,8 +92,9 @@ const GameCard = ({ game }) => {
         setWalletBalance={setWalletBalance}
         gameId={game.id}
         team1={game.team1.name}
-        team2={game.team2.name} />
-    </div></>
+        team2={game.team2.name}
+      />
+    </div>
   );
 };
 

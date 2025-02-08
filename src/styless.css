@@ -501,3 +501,10 @@ body {
     font-size: 0.85rem; /* बड़े स्क्रीन पर labels बड़े */
   }
 }
+.timer {
+  text-align: center;      /* Center the text horizontally */
+  color: yellow;           /* Set the text color to yellow */
+  font-size: 0.9rem;       /* Adjust the font size as needed */
+  margin: 10px 0;          /* Add some spacing around the timer */
+  font-weight: bold;       /* Make the text bold */
+}
