@@ -35,7 +35,7 @@ const ManageTimes = () => {
   }
 
   return (
-    <div className="manage-times p-4">
+    <div className="manage-times p-4" style={{marginBottom:'200px'}}>
       <h2 className="text-xl font-bold mb-4">Manage Betting Times</h2>
       <div className="mb-4">
         <label className="block mb-2">Start Time:</label>
