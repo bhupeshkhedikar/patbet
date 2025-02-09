@@ -80,12 +80,12 @@ const GameCard = ({ game }) => {
       <div className="match-container">
         <div className="team">
           <img src={game.team1.logo} alt={game.team1.name} className="team-logo" />
-          <p className="team-name">{game.team1.name}</p>
+          <p className="team-name"><b>{game.team1.name}</b></p>
         </div>
         <div className="score">Vs</div>
         <div className="team">
           <img src={game.team2.logo} alt={game.team2.name} className="team-logo" />
-          <p className="team-name">{game.team2.name}</p>
+          <p className="team-name"><b>{game.team2.name}</b></p>
         </div>
       </div>
       <p className="match-time">{game.time}</p>
