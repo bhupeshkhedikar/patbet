@@ -49,7 +49,7 @@ const GameList = () => {
     <>
 
     <div className="game-list">
-       <img src='https://i.ibb.co/BVQB6HKL/1739012886631.jpg' height='100%' width='100%'/>
+       <img src='https://i.ibb.co/BHMqpK5x/1739107614640.jpg' height='100%' width='100%'/>
       <h2 className="section-title">Upcoming Games</h2>
 
         {
