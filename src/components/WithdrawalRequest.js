@@ -128,7 +128,7 @@ const WithdrawalRequest = () => {
           className="payment-method-select"
         >
           <option value="">Select Payment Method</option>
-          <option value="UPI">UPI</option>
+          {/* <option value="UPI">UPI</option> */}
           <option value="Bank">Bank Transfer</option>
         </select>
 
