@@ -1,48 +1,82 @@
+// src/components/GameCard.js
 import React, { useEffect, useState } from "react";
 import BetNowModal from "./BetNowModal";
 import { db } from "../firebase";
-import BetStatusListener from "./BetStatusListener";
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  doc,
-  updateDoc,
-  getDoc,
-  addDoc,
-  orderBy,
-  getFirestore, setDoc,onSnapshot
-} from "firebase/firestore";
+import { collection, onSnapshot, doc, getDoc } from "firebase/firestore";
 
 const GameCard = ({ game }) => {
   const [isModalOpen, setModalOpen] = useState(false);
-  const [walletBalance, setWalletBalance] = useState(5000); // Initial balance
+  const [walletBalance, setWalletBalance] = useState(5000);
   const [betEnabled, setBetEnabled] = useState(game.isBetEnabled);
-  // useEffect(() => {
-  // console.log(game,'gmaes')
-  // }, [])
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [timeDifference, setTimeDifference] = useState("");
+  const [betStartTime, setBetStartTime] = useState(null);
+  const [betEndTime, setBetEndTime] = useState(null);
+
   useEffect(() => {
-    const gamesRef = collection(db, "games"); // Reference to Firestore games collection
+    const fetchBetTimes = async () => {
+      const betTimesDoc = await getDoc(doc(db, "betTimes", "times"));
+      if (betTimesDoc.exists()) {
+        const data = betTimesDoc.data();
+        setBetStartTime(new Date(data.starttime));
+        setBetEndTime(new Date(data.endtime));
+      }
+    };
+
+    fetchBetTimes();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      setCurrentTime(now);
+      if (betStartTime && betEndTime) {
+        updateBettingStatus(now);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [betStartTime, betEndTime]);
+
+  useEffect(() => {
+    const gamesRef = collection(db, "games");
 
     const unsubscribe = onSnapshot(gamesRef, (querySnapshot) => {
       const gameList = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-      const updatedGame = gameList.find((g) => g.id === game.id); // Find the updated game
+      const updatedGame = gameList.find((g) => g.id === game.id);
       if (updatedGame) {
-        setBetEnabled(updatedGame.isBetEnabled); // Update the local state based on the fetched data
+        setBetEnabled(updatedGame.isBetEnabled);
       }
     });
 
-    return () => unsubscribe(); // Cleanup the listener on unmount
-}, [game.id]);
+    return () => unsubscribe();
+  }, [game.id]);
 
+  const updateBettingStatus = (now) => {
+    if (now < betStartTime) {
+      setTimeDifference(`Betting starts at ${betStartTime.toLocaleTimeString()}`);
+    } else if (now >= betStartTime && now <= betEndTime) {
+      const diff = betEndTime - now;
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      setTimeDifference(`Time left: ${hours}h ${minutes}m ${seconds}s`);
+    } else {
+      setTimeDifference(`Betting Closed`);
+    }
+  };
+
+  const isBeforeStart = betStartTime && currentTime < betStartTime;
+  const isAfterEnd = betEndTime && currentTime > betEndTime;
 
   return (
-    <><div className="game-card">
+    <div className="game-card">
       <p className="league-title">{game.league}</p>
+      <p className="timer">{timeDifference}</p>
+
       <div className="match-container">
         <div className="team">
           <img src={game.team1.logo} alt={game.team1.name} className="team-logo" />
@@ -55,13 +89,15 @@ const GameCard = ({ game }) => {
         </div>
       </div>
       <p className="match-time">{game.time}</p>
-    <button
+
+      <button
         className="bet-button"
         onClick={() => setModalOpen(true)}
-        disabled={!betEnabled} // Disable button if betting is not enabled
+        disabled={!betEnabled || isBeforeStart || isAfterEnd}
       >
-        {betEnabled ? "Bet Now" : "Betting Over"}
+        {isBeforeStart ? "Betting Not Started" : isAfterEnd || !betEnabled ? "Betting Over" : "Bet Now"}
       </button>
+
       <BetNowModal
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
@@ -69,8 +105,9 @@ const GameCard = ({ game }) => {
         setWalletBalance={setWalletBalance}
         gameId={game.id}
         team1={game.team1.name}
-        team2={game.team2.name} />
-    </div></>
+        team2={game.team2.name}
+      />
+    </div>
   );
 };
 
