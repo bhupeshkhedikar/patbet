@@ -58,7 +58,7 @@ const PaymentComponent = () => {
         createdAt: new Date(),
       });
 
-      alert("Request sent to admin for approval.");
+      alert("धन्यवाद,वेरीफाय करने के बाद पेमेंट आपके वालेट मे जमा किया जायेगा");
       setUrn("");
       setAmount("");
     } catch (error) {
