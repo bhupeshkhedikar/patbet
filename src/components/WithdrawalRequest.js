@@ -91,6 +91,7 @@ const WithdrawalRequest = () => {
       });
 
       setSuccessMessage('Withdrawal request successfully created');
+      alert('Withdrawal request successfully created');
       setErrorMessage('');
     } catch (error) {
       setErrorMessage('Error creating withdrawal request');
