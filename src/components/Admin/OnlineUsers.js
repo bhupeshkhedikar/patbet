@@ -15,19 +15,18 @@ const OnlineUsers = () => {
         ...doc.data(),
       }));
         setOnlineUsers(users);
-        console.log(users,'users')
     });
 
     return () => unsubscribe();
   }, []);
 
   return (
-    <div className="text-white p-4 bg-gray-800 rounded-lg shadow-md">
-      <h5 className="text-xl font-bold mb-2">🟢 Online Users ({onlineUsers.length})</h5>
+      <div style={{ height: '150px'}}>
+      <h5 className="">🟢 Online Users ({onlineUsers.length})</h5>
       <ul>
         {onlineUsers.map((user) => (
           <li key={user.id} className="text-lg">
-            {user.email}
+            {user.username}
           </li>
         ))}
       </ul>
