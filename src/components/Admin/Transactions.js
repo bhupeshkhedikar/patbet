@@ -226,7 +226,9 @@ const Transactions = () => {
             <th>User ID</th>
             <th>Amount</th>
             <th>Payment Method</th>
-            <th>UPI ID</th>
+                <th>UPI ID</th>
+                <td>bankAccount</td>
+                <td>ifscCode </td>
             <th>Request Date</th>
             <th>Status</th>
             <th>Actions</th>
@@ -241,6 +243,8 @@ const Transactions = () => {
               <td>₹{request.amount}</td>
               <td>{request.paymentMethod || "N/A"}</td>
               <td>{request.upiId || "N/A"}</td>
+              <td>{request.bankAccount || "N/A"}</td>
+              <td>{request.ifscCode || "N/A"}</td>
               <td>
                 {request.requestDate
                   ? new Date(request.requestDate.toDate()).toLocaleString()
