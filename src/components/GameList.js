@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { db } from "../firebase"; // Import Firebase Firestore instance
 import { collection, getDocs,doc,getDoc, } from "firebase/firestore";
 import GameCard from "./GameCard";
+import AutoSlider from "./AutoSlider";
 
 const GameList = () => {
   const [games, setGames] = useState([]);
@@ -49,9 +50,9 @@ const GameList = () => {
     <>
 
     <div className="game-list">
-       <img src='https://i.ibb.co/BHMqpK5x/1739107614640.jpg' height='100%' width='100%'/>
-      <h2 className="section-title">Upcoming Games</h2>
 
+      <h2 className="section-title">Upcoming Games</h2>
+<AutoSlider/>
         {
           message ? (
           
