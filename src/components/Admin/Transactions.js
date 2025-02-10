@@ -236,7 +236,7 @@ const Transactions = () => {
         <tbody>
           {withdrawalRequests.map(request => (
             <tr key={request.id}>
-              <td>{request.username || "N/A"}</td>
+              <td>{request.name || "N/A"}</td>
               <td>{request.userId}</td>
               <td>₹{request.amount}</td>
               <td>{request.paymentMethod || "N/A"}</td>
