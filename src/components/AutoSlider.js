@@ -4,7 +4,6 @@ import "./AutoSlider.css";
 const images = [
   'https://i.ibb.co/QFSRQTN6/1739202411400.jpg',
   "https://i.ibb.co/BHMqpK5x/1739107614640.jpg",
-  "https://i.ibb.co/BVQB6HKL/1739012886631.jpg",
 ];
 
 const AutoSlider = () => {
