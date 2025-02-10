@@ -4,6 +4,7 @@ import { getAuth } from "firebase/auth";
 import { getDatabase } from "firebase/database";  // Correct import for Realtime Database
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getAnalytics } from 'firebase/analytics';
 // Firebase config (use your own config here)
 
 const firebaseConfig = {
@@ -22,6 +23,7 @@ const app = initializeApp(firebaseConfig);
 // Get Auth and Database instances
 const auth = getAuth(app);
 const db = getFirestore(app); // Use getDatabase instead of directly using .ref
+const analytics = getAnalytics(app);
 
-export { auth, db };  // Export db and auth
+export { auth, db,analytics };  // Export db and auth
 export { signInWithEmailAndPassword, createUserWithEmailAndPassword };

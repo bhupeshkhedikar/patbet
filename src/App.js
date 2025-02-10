@@ -23,17 +23,48 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import "./styless.css";
 import { Navigate } from "react-router-dom";
 import AddGame from "./components/Admin/AddGame";
+import { logEvent } from 'firebase/analytics';
+import { analytics } from "./firebase";
+import { getFirestore, doc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 function App() {
   const [value, setValue] = useState(0);
   const [user, setUser] = useState(undefined);  // Initially undefined to track loading state
   const navigate = useNavigate();
 
   useEffect(() => {
+    logEvent(analytics, 'app_open');
+  
     const auth = getAuth();
+    const db = getFirestore();
+  
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser || null);  // Set user once the state is determined
+      setUser(currentUser || null);
+  
+      if (currentUser) {
+        const userRef = doc(db, 'online_users', currentUser.uid);
+  
+        // Mark user as online in Firestore
+        setDoc(userRef, {
+          uid: currentUser.uid,
+          username: currentUser.displayName || currentUser.email || 'Anonymous',
+          online: true,
+          last_active: serverTimestamp(),
+        });
+  
+        // Remove user from online_users when they close the app
+        const handleBeforeUnload = () => {
+          deleteDoc(userRef);
+        };
+  
+        window.addEventListener('beforeunload', handleBeforeUnload);
+  
+        return () => {
+          window.removeEventListener('beforeunload', handleBeforeUnload);
+          deleteDoc(userRef);
+        };
+      }
     });
-
+  
     return () => unsubscribe();
   }, []);
 
