@@ -75,7 +75,7 @@ const PaymentComponent = () => {
 
       <div className="qr-section">
         <img src={qrCodeUrl} alt="UPI QR Code" className="qr-code" />
-        <p>QR कोड स्कॅन करके पेमेंट का भुगतान करे.और Transaction Id या फिर RRN नंबर कॉपी करे.
+        <p>QR कोड स्कॅन करके पेमेंट का भुगतान करे.और Transaction Id या फिर UTR नंबर कॉपी करे.
         </p>
       </div>
 
@@ -87,7 +87,7 @@ const PaymentComponent = () => {
         className="input-field" />
       <input
         type="text"
-        placeholder="Enter Transaction Id Or RRN Number"
+        placeholder="Enter Transaction Id Or UTR Number"
         value={urn}
         onChange={(e) => setUrn(e.target.value)}
         className="input-field" />
