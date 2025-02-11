@@ -23,51 +23,79 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import "./styless.css";
 import { Navigate } from "react-router-dom";
 import AddGame from "./components/Admin/AddGame";
-import { logEvent } from 'firebase/analytics';
 import { analytics } from "./firebase";
-import { getFirestore, doc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, deleteDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { logEvent, getAnalytics } from 'firebase/analytics';
+
 function App() {
   const [value, setValue] = useState(0);
   const [user, setUser] = useState(undefined);  // Initially undefined to track loading state
   const navigate = useNavigate();
 
   useEffect(() => {
-    logEvent(analytics, 'app_open');
-  
+    logEvent(analytics, 'app_open');  // Log app open event
+    
     const auth = getAuth();
     const db = getFirestore();
   
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser || null);
+      setUser(currentUser || null);  // Set user state
   
       if (currentUser) {
         const userRef = doc(db, 'online_users', currentUser.uid);
   
-        // Mark user as online in Firestore
-        setDoc(userRef, {
-          uid: currentUser.uid,
-          username: currentUser.displayName || currentUser.email || 'Anonymous',
-          online: true,
-          last_active: serverTimestamp(),
-        });
+        // Function to mark user online
+        const markOnline = () => {
+          setDoc(userRef, {
+            uid: currentUser.uid,
+            username: currentUser.displayName || currentUser.email || 'Anonymous',
+            online: true,
+            last_active: serverTimestamp(),
+          });
+        };
   
-        // Remove user from online_users when they close the app
+        // Function to mark user offline
+        const markOffline = () => {
+          updateDoc(userRef, {
+            online: false,
+            last_active: serverTimestamp(),
+          });
+        };
+  
+        // Mark user online if the page is visible
+        if (document.visibilityState === 'visible') {
+          markOnline();
+        }
+  
+        // Listen for visibility changes (tab switches, minimize, etc.)
+        const handleVisibilityChange = () => {
+          if (document.visibilityState === 'visible') {
+            markOnline();
+          } else {
+            markOffline();
+          }
+        };
+  
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+  
+        // Remove user from Firestore when the app is closed completely
         const handleBeforeUnload = () => {
           deleteDoc(userRef);
         };
-  
         window.addEventListener('beforeunload', handleBeforeUnload);
   
+        // Cleanup when component unmounts
         return () => {
+          document.removeEventListener('visibilitychange', handleVisibilityChange);
           window.removeEventListener('beforeunload', handleBeforeUnload);
-          deleteDoc(userRef);
+          deleteDoc(userRef);  // Ensure user is removed from Firestore
         };
       }
     });
   
+    // Cleanup Firebase auth listener when component unmounts
     return () => unsubscribe();
   }, []);
-
   if (user === undefined) {
     // Show a loading indicator while determining authentication state
     return  <div className="loader-container">

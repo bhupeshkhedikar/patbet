@@ -1,33 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
+import { getFirestore, collection, query, where, onSnapshot } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 
 const OnlineUsers = () => {
-  const db = getFirestore();
   const [onlineUsers, setOnlineUsers] = useState([]);
+  const db = getFirestore();
 
   useEffect(() => {
-    const onlineUsersRef = collection(db, 'online_users');
+    const onlineQuery = query(collection(db, 'online_users'), where('online', '==', true));
 
-    // Listen to changes in the online_users collection
-    const unsubscribe = onSnapshot(onlineUsersRef, (snapshot) => {
-      const users = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-        setOnlineUsers(users);
+    const unsubscribe = onSnapshot(onlineQuery, (snapshot) => {
+      const users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setOnlineUsers(users);
     });
 
     return () => unsubscribe();
   }, []);
 
   return (
-      <div style={{ height: '150px',overflow:'scroll'}}>
-      <h5 className="">🟢 Online Users ({onlineUsers.length})</h5>
+    <div style={{ height: '150px',overflow:'scroll'}}>
+      <h2>🟢 Online Users ({onlineUsers.length})</h2>
       <ul>
-        {onlineUsers.map((user) => (
-          <li key={user.id} className="text-lg">
-            {user.username}
-          </li>
+        {onlineUsers.map(user => (
+          <li key={user.id}>{user.username}</li>
         ))}
       </ul>
     </div>
