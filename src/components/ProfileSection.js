@@ -21,6 +21,7 @@ const ProfileSection = () => {
   const [withdrawals, setWithdrawals] = useState([]); // New State for Withdrawals
   const [totalWinnings, setTotalWinnings] = useState(0);
   const [totalBets, setTotalBets] = useState(0);
+  const [totalDeposits, setTotalDeposits] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -75,7 +76,7 @@ const ProfileSection = () => {
   }, []);
 
   useEffect(() => {
-    const fetchUserBetDetails = async () => {
+    const fetchUserDetails = async () => {
       const user = auth.currentUser;
       const storedUID = localStorage.getItem("userUID");
       const userId = user?.uid || storedUID;
@@ -90,20 +91,37 @@ const ProfileSection = () => {
         let winnings = 0;
         let betsCount = 0;
 
-        betsSnapshot.forEach(betDoc => {
+        betsSnapshot.forEach((betDoc) => {
           const betData = betDoc.data();
           winnings += Number(betData.winnings) || 0;
-          betsCount += 1; // Increment total bets count
+          betsCount += 1;
         });
 
         setTotalWinnings(winnings);
         setTotalBets(betsCount);
+
+        // Fetch user's deposits
+        const depositsRef = query(
+          collection(db, "addMoneyRequests"),
+          where("userId", "==", userId),
+          where("status", "==", "approved")
+        );
+        const depositsSnapshot = await getDocs(depositsRef);
+
+        let depositsAmount = 0;
+
+        depositsSnapshot.forEach((depositDoc) => {
+          const depositData = depositDoc.data();
+          depositsAmount += Number(depositData.amount) || 0;
+        });
+
+        setTotalDeposits(depositsAmount);
       } catch (error) {
-        console.error("Error fetching user bet details:", error);
+        console.error("Error fetching user details:", error);
       }
     };
 
-    fetchUserBetDetails();
+    fetchUserDetails();
   }, []);
 
   const handleLogout = async () => {
@@ -148,11 +166,11 @@ const ProfileSection = () => {
 
         <div className="stats-container">
           <div className="stat-box">
-            <p className="highlight">{userData?.walletBalance || "0"}</p>
+            <p className="highlight"> ₹{totalWinnings.toLocaleString("en-IN")}</p>
             <p>Total Income</p>
           </div>
           <div className="stat-box">
-            <p className="highlight">{userData?.walletBalance || "0"}</p>
+          <p className="highlight">₹{totalDeposits.toLocaleString("en-IN")}</p>
             <p>Total Recharge</p>
           </div>
           <div className="stat-box">
