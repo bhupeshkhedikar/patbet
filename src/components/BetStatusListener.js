@@ -63,7 +63,7 @@ const BetStatusListener = () => {
             <tbody>
               {bets.map((bet) => (
                 <tr key={bet.id} className={bet.status === "won" ? "won" : "lost"}>
-                     <td><b>{bet.status}</b></td>
+                     <td><b>{bet.status} {bet.status==='returned'?' (One Sided Game)':''}</b></td>
                   {/* <td>{bet.matchName || 'N/A'}</td> */}
                   <td>{bet.selectedTeam}</td>
                   <td>₹{bet.betAmount || 0}</td> {/* Bet Amount Added */}
