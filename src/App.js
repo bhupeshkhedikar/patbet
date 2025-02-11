@@ -122,7 +122,7 @@ function App() {
             }
           />
           <Route
-            path="/admin"
+            path="/apna"
             element={
               <ProtectedRoute user={user}>
                 <AdminPanel />
