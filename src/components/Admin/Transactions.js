@@ -19,7 +19,8 @@ import "../Admin/AdminPanel.css";
 
 const Transactions = () => {
     const [errorMessage, setErrorMessage] = useState("");
-    const [withdrawalRequests, setWithdrawalRequests] = useState([]);
+  const [withdrawalRequests, setWithdrawalRequests] = useState([]);
+  const [reason,setReason]=useState('')
     const [isManualUpdate, setIsManualUpdate] = useState(false); // Flag for manual updates
     const [deposits, setDeposits] = useState([]);
     const [addMoneyRequests, setAddMoneyRequests] = useState([]);
@@ -173,13 +174,14 @@ const Transactions = () => {
         }
       };
     
-      const handleReject = async (id, userId, amount) => {
+      const handleReject = async (id, userId, amount,reason) => {
         try {
           const requestRef = doc(db, "withdrawalRequests", id);
     
           // 1. Withdrawal request का status 'rejected' में अपडेट करो
           await updateDoc(requestRef, {
             status: "rejected",
+            reason
           });
     
           // 2. User का current wallet balance fetch करो
@@ -229,8 +231,9 @@ const Transactions = () => {
                 <th>UPI ID</th>
                 <td>bankAccount</td>
                 <td>ifscCode </td>
-            <th>Request Date</th>
-            <th>Status</th>
+                <th>Request Date</th>
+                <th>Reason</th>
+                <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -250,6 +253,12 @@ const Transactions = () => {
                   ? new Date(request.requestDate.toDate()).toLocaleString()
                   : "N/A"}
               </td>
+              <td><input 
+  type="text" 
+  value={request.reason} 
+  onChange={(e) => setReason(e.target.value)} 
+/>
+</td>
               <td>{request.status}</td>
               <td>
                 <button
@@ -264,7 +273,7 @@ const Transactions = () => {
                 <button
                   className="reject-btn"
                   onClick={() =>
-                    handleReject(request.id, request.userId, request.amount)
+                    handleReject(request.id, request.userId, request.amount,reason)
                   }
                   disabled={request.status === "rejected"}
                 >

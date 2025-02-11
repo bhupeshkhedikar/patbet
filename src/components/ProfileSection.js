@@ -240,6 +240,16 @@ const ProfileSection = () => {
                   </span>
                 </p>
                 <p>
+                {
+  withdrawal.status === 'rejected' ? (
+    <span className="rejection-reason">
+      Reason: {withdrawal.reason || "No reason provided"}
+    </span>
+  ) : null
+}
+ 
+                </p>
+                <p>
                   Date:{" "}
                   {withdrawal.requestDate
                     ? new Date(

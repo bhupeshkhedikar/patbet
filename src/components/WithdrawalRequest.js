@@ -88,6 +88,7 @@ const WithdrawalRequest = () => {
         ifscCode: paymentMethod === 'Bank' ? ifscCode : null,
         status: 'pending',
         requestDate: new Date(),
+        reason:null
       });
 
       setSuccessMessage('Withdrawal request successfully created');
