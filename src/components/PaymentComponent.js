@@ -72,10 +72,16 @@ const PaymentComponent = () => {
   return (
     <><div className="add-money-container">
       <h2>Add Money</h2>
+      <iframe width="315" height="200" 
+    src="https://www.youtube.com/embed/X5qD0MRwjT4" 
+    frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+    allowfullscreen>
+</iframe>
 
       <div className="qr-section">
         <img src={qrCodeUrl} alt="UPI QR Code" className="qr-code" />
-        <p>QR कोड स्कॅन करके पेमेंट का भुगतान करे.और Transaction Id या फिर UTR नंबर कॉपी करे.
+        <p>QR कोड स्कॅन या फिर स्क्रीनशॉट ले करके पेमेंट का भुगतान करे.और Transaction Id या फिर UTR नंबर कॉपी करे.
         </p>
       </div>
 
