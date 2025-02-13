@@ -70,7 +70,7 @@ const BetStatusListener = () => {
                 </div>
                 <div className="bet-info">
                   <span className="label">Winnings:</span>
-                  <span className="value" style={{ color: bet.status === "lost" ? "#f44336" : bet.status === "pending" ? "#ffa500" : "#4caf50" }}>₹{bet.winnings}</span>
+                  <span className="value" style={{ color: bet.status === "lost" ? "#f44336" : bet.status === "pending" ? "#ffa500" : "#4caf50", fontSize:'15px' }}>₹{bet.winnings}</span>
                 </div>
               </div>
             </div>
