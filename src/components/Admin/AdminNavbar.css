@@ -1,0 +1,118 @@
+.admin-navbar {
+    background: linear-gradient(90deg, #d91e18, #ff5733);
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border-bottom: 3px solid #ffcc00;
+    position: relative;
+  }
+  
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+  }
+  
+  .hamburger div {
+    width: 30px;
+    height: 3px;
+    background-color: white;
+    margin: 5px 0;
+    transition: all 0.3s ease;
+  }
+  
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 250px;
+    height: 100vh;
+    background: #d91e18;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    transition: left 0.3s ease;
+    z-index: 1000;
+  }
+  
+  .sidebar.active {
+    left: 0;
+  }
+  
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+  }
+  
+  .sidebar ul li {
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 12px;
+    width: 100%;
+    transition: background 0.3s ease;
+  }
+  
+  .sidebar ul li:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffcc00;
+  }
+  
+  .admin-navbar ul {
+    list-style: none;
+    display: flex;
+    gap: 25px;
+    padding: 0;
+    margin: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .admin-navbar ul li {
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: all 0.3s ease-in-out;
+    padding: 8px 12px;
+    border-radius: 5px;
+  }
+  
+  .admin-navbar ul li:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffcc00;
+  }
+
+  .admin-navbar ul li.active,
+.sidebar ul li.active {
+  background: #ffcc00;
+  color: #d91e18;
+  font-weight: bold;
+  border-radius: 5px;
+}
+
+  
+  /* Responsive Design */
+  @media screen and (max-width: 768px) {
+    .hamburger {
+      display: flex;
+    }
+  
+    .admin-navbar ul {
+      display: none;
+    }
+  }
+  
+  @media screen and (max-width: 480px) {
+    .admin-navbar {
+      padding: 8px;
+    }
+  }
+  

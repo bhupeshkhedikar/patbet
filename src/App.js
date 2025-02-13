@@ -26,6 +26,14 @@ import AddGame from "./components/Admin/AddGame";
 import { analytics } from "./firebase";
 import { getFirestore, doc, setDoc, deleteDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { logEvent, getAnalytics } from 'firebase/analytics';
+import ManageGames from "./components/Admin/ManageGames";
+import Transactions from "./components/Admin/Transactions";
+import OnlineUsers from "./components/Admin/OnlineUsers";
+import RegisteredUsers from "./components/Admin/RegisteredUsers";
+import BetsHistory from "./components/Admin/BetsHistroy";
+import ManageTimes from "./components/Admin/ManageTimes";
+import AnnouncementManager from "./components/Admin/AnnouncementManager";
+import AdminNavbar from "./components/Admin/AdminNavbar";
 
 function App() {
   const [value, setValue] = useState(0);
@@ -111,64 +119,21 @@ function App() {
         <Routes>
           <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
           <Route path="/register" element={user ? <Navigate to="/" /> : <Register />} />
-
-          {/* Protected Routes */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute user={user}>
-                <GameList />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/apna"
-            element={
-              <ProtectedRoute user={user}>
-                <AdminPanel />
-              </ProtectedRoute>
-            }
-          />
-            <Route
-            path="/addgames"
-            element={
-              <ProtectedRoute user={user}>
-                <AddGame />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/addmoney"
-            element={
-              <ProtectedRoute user={user}>
-                <PaymentComponent />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/withdrawal"
-            element={
-              <ProtectedRoute user={user}>
-                <WithdrawalRequest />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/bets"
-            element={
-              <ProtectedRoute user={user}>
-                <BetStatusListener />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute user={user}>
-                <ProfileSection />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/" element={<ProtectedRoute user={user}><GameList /></ProtectedRoute>} />
+          <Route path="/addmoney" element={<ProtectedRoute user={user}><PaymentComponent /></ProtectedRoute>} />
+          <Route path="/withdrawal" element={<ProtectedRoute user={user}><WithdrawalRequest /></ProtectedRoute>} />
+          <Route path="/bets" element={<ProtectedRoute user={user}><BetStatusListener /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute user={user}><ProfileSection /></ProtectedRoute>} />
+          
+          {/* Admin Routes */}
+          <Route path="/apna/*" element={<ProtectedRoute user={user}><AdminNavbar /><AdminPanel /></ProtectedRoute>} />
+          <Route path="/manage-games" element={<ProtectedRoute user={user}><AdminNavbar /><ManageGames /></ProtectedRoute>} />
+          <Route path="/transactions" element={<ProtectedRoute user={user}><AdminNavbar /><Transactions /></ProtectedRoute>} />
+          <Route path="/online-users" element={<ProtectedRoute user={user}><AdminNavbar /><OnlineUsers /></ProtectedRoute>} />
+          <Route path="/registered-users" element={<ProtectedRoute user={user}><AdminNavbar /><RegisteredUsers /></ProtectedRoute>} />
+          <Route path="/bets-history" element={<ProtectedRoute user={user}><AdminNavbar /><BetsHistory /></ProtectedRoute>} />
+          <Route path="/manage-times" element={<ProtectedRoute user={user}><AdminNavbar /><ManageTimes /></ProtectedRoute>} />
+          <Route path="/announcements" element={<ProtectedRoute user={user}><AdminNavbar /><AnnouncementManager /></ProtectedRoute>} />
         </Routes>
       </main>
 
