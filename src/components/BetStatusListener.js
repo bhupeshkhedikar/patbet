@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { db, auth } from "../firebase";
 import { collection, onSnapshot } from "firebase/firestore";
-import '../../src/BetStatusListener.css';
+import "../../src/BetStatusListener.css";
 import useGameWinnerListener from "./useGameWinnerListener";
 
 const BetStatusListener = () => {
   const [bets, setBets] = useState([]);
   const [loading, setLoading] = useState(true);
-  // useGameWinnerListener();
+
   useEffect(() => {
     const user = auth.currentUser;
     const storedUID = localStorage.getItem("userUID");
@@ -40,40 +40,41 @@ const BetStatusListener = () => {
   }, []);
 
   return (
-    <div className="bet-status-listener">
-      <h3 style={{ textAlign: 'center',margin:'10px'}}>Your Bets</h3>
+    <div className="bet-status-container">
+      <h3 className="bet-title">Your Bets</h3>
       {loading ? (
-        <p>Loading bets...</p>
+        <p className="loading">Loading bets...</p>
       ) : bets.length === 0 ? (
-        <p className="no-bets" style={{ textAlign: 'center'}}>No bets placed yet.</p>
+        <p className="no-bets">No bets placed yet.</p>
       ) : (
-        <div className="table-container">
-          <table className="requests-table">
-            <thead>
-              <tr>
-                    {/* <th>Match</th> */}
-                    <th>Status</th>
-                <th>Selected Team</th>
-                <th>Bet Amount</th>
-                <th>Multiplier</th>
-                <th>Winnings</th>
-               
-              </tr>
-            </thead>
-            <tbody>
-              {bets.map((bet) => (
-                <tr key={bet.id} className={bet.status === "won" ? "won" : "lost"}>
-                     <td><b>{bet.status} {bet.status==='returned'?' (One Sided Game)':''}</b></td>
-                  {/* <td>{bet.matchName || 'N/A'}</td> */}
-                  <td>{bet.selectedTeam}</td>
-                  <td>₹{bet.betAmount || 0}</td> {/* Bet Amount Added */}
-                  <td>{bet.selectedMultiplier}x</td>
-                  <td>₹{bet.winnings}</td>
-               
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="bets-list">
+          {bets.map((bet) => (
+            <div key={bet.id} className={`bet-card ${bet.status}`}>
+              <div className="bet-header">
+                <span className={`bet-status ${bet.status}`}>
+                  {bet.status} {bet.status === "returned" ? "(One Sided Game)" : ""}
+                </span>
+              </div>
+              <div className="bet-body">
+                <div className="bet-info">
+                  <span className="label">Selected Team:</span>
+                  <span className="value"  style={{ color: "#1e90ff" }}>{bet.selectedTeam}</span>
+                </div>
+                <div className="bet-info">
+                  <span className="label">Bet Amount:</span>
+                  <span className="value" style={{ color: "#ffcc00" }}>₹{bet.betAmount || 0}</span>
+                </div>
+                <div className="bet-info">
+                  <span className="label">Multiplier:</span>
+                  <span className="value" style={{ color: "#00bcd4" }}>{bet.selectedMultiplier}x</span>
+                </div>
+                <div className="bet-info">
+                  <span className="label">Winnings:</span>
+                  <span className="value" style={{ color: bet.status === "lost" ? "#f44336" : bet.status === "pending" ? "#ffa500" : "#4caf50" }}>₹{bet.winnings}</span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

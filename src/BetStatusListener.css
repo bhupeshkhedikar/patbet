@@ -1,61 +1,141 @@
-.table-container {
-  overflow-x: auto; /* Enable horizontal scroll on small screens */
-}
-
-.requests-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 20px 0;
-  background-color: #1e1e2f;
+/* General Styling */
+.bet-status-container {
+  background: #121212;
   color: #ffffff;
-  font-size: 14px; /* Default font size */
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 800px;
+  margin: auto;
+  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+  font-family: "Arial", sans-serif;
+  margin-bottom: 30px;
 }
 
-.requests-table th,
-.requests-table td {
-  padding: 10px;
-  border: 1px solid #444;
+.bet-title {
   text-align: center;
+  font-size: 22px;
+  margin-bottom: 15px;
+  color: #f2a900;
 }
 
-.requests-table th {
-  background-color: #333;
-  color: #ffcc00;
+.loading, .no-bets {
+  text-align: center;
+  font-size: 16px;
+  color: #ccc;
 }
 
-.won {
-  background-color: #2e7d32;
-  color: #ffffff;
+/* Bets List */
+.bets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.lost {
-  background-color: #c62828;
-  color: #ffffff;
+/* Card Style */
+.bet-card {
+  background: #1e1e1e;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.05);
+  transition: transform 0.2s ease-in-out;
 }
 
-.no-bets {
-  color: #ffcc00;
+.bet-card:hover {
+  transform: scale(1.02);
+}
+
+/* Header */
+.bet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #333;
+}
+
+/* Status Colors */
+.bet-status {
   font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
 }
 
-/* Responsive adjustments for smaller screens */
-@media (max-width: 600px) {
-  .requests-table {
-    font-size: 12px; /* Reduce font size on small screens */
+.bet-status.won {
+  color: #4caf50;
+  background: rgba(76, 175, 80, 0.2);
+}
+
+.bet-status.lost {
+  color: #f44336;
+  background: rgba(244, 67, 54, 0.2);
+}
+
+.bet-status.returned {
+  color: #ff9800;
+  background: rgba(255, 152, 0, 0.2);
+}
+
+.bet-status.pending {
+  color: #9575cd; /* Light purple */
+  background: rgba(149, 117, 205, 0.2); /* Soft violet tint */
+}
+
+
+
+
+
+
+/* Bet Information */
+.bet-body {
+  padding-top: 10px;
+}
+
+.bet-info {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 16px;
+}
+
+.label {
+  font-weight: 600;
+  color: #ccc;
+}
+
+.value {
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .bet-status-container {
+    padding: 15px;
   }
-  
-  .requests-table th, 
-  .requests-table td {
-    padding: 8px; /* Reduce padding */
+
+  .bet-card {
+    padding: 12px;
   }
-  
-  .requests-table th:nth-child(1),
-  .requests-table td:nth-child(1) {
-    min-width: 100px; /* Ensure Match name column has enough width */
+
+  .bet-info {
+    font-size: 14px;
   }
-  
-  .requests-table th, 
-  .requests-table td {
-    white-space: nowrap; /* Prevent text wrapping */
+}
+
+@media (max-width: 480px) {
+  .bet-status-container {
+    padding: 10px;
+  }
+
+  .bet-title {
+    font-size: 18px;
+  }
+
+  .bet-card {
+    padding: 10px;
+  }
+
+  .bet-info {
+    font-size: 13px;
   }
 }
