@@ -546,3 +546,34 @@ body {
     border-radius: 6px;
   }
 }
+.bets-container {
+  max-height: 100px; /* यह height adjust कर सकते हैं */
+  overflow-y: auto;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.total-bets {
+  font-weight: bold;
+  color: #ff9800; /* यह color आप अपनी theme के हिसाब से बदल सकते हैं */
+  margin-bottom: 5px;
+}
+.status-won {
+  color: #ffffff;
+  background-color: #4CAF50;
+}
+
+.status-lost {
+  color: #ffffff;
+  background-color: #F44336;
+}
+
+.status-pending {
+  color: #ffffff;
+  background-color: #FF9800;
+}
+.status-returned {
+  color: #ffffff;
+  background-color: #2196F3;
+}
