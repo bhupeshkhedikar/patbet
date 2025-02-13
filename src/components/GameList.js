@@ -63,7 +63,7 @@ const GameList = () => {
         }
          <div className="help-button-container">
       <a href="https://forms.gle/dAv67wv4J7RfpjdK8" target="_blank" rel="noopener noreferrer" className="help-button">
-      समस्या रिपोर्ट करें
+      समस्या समाधान
       </a>
     </div>
       {games.length > 0 ? (
