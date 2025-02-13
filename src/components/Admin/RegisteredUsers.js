@@ -120,14 +120,15 @@ const RegisteredUsers = () => {
                       <>
                         <input
                           type="number"
+                           className="input-field"
                           value={newWalletBalance}
                           onChange={(e) => setNewWalletBalance(e.target.value)}
                         />
-                        <button onClick={() => handleUpdateWallet(user.id)}>Save</button>
-                        <button onClick={() => setEditingUserId(null)}>Cancel</button>
+                        <button onClick={() => handleUpdateWallet(user.id)} className="approve-btn">Save</button>
+                        <button onClick={() => setEditingUserId(null)} className="reject-btn">Cancel</button>
                       </>
                     ) : (
-                      <button onClick={() => setEditingUserId(user.id)}>Edit</button>
+                      <button onClick={() => setEditingUserId(user.id)} className="approve-btn">Edit Money</button>
                     )}
                   </td>
                   <td>₹{user.totalWinnings}</td>
