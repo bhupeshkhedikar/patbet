@@ -61,11 +61,11 @@ const GameList = () => {
             <p className="text-center text-white mt-4">No announcement available</p>
           )
         }
-         <div className="help-button-container">
+         {/* <div className="help-button-container">
       <a href="https://forms.gle/dAv67wv4J7RfpjdK8" target="_blank" rel="noopener noreferrer" className="help-button">
       समस्या समाधान
       </a>
-    </div>
+    </div> */}
       {games.length > 0 ? (
         games.map((game) => <GameCard key={game.id} game={game} />)
       ) : (
