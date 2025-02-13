@@ -1,100 +1,87 @@
 import React, { useState, useEffect } from "react";
-
-import { collection, getDocs, doc } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
 import "../Admin/BetsHistrory.css";
 
 const BetsHistory = () => {
   const [games, setGames] = useState([]);
   const [allBets, setAllBets] = useState([]);
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState({});
 
-  // Fetch games and bets data
   useEffect(() => {
     const fetchGames = async () => {
       try {
         const gamesSnapshot = await getDocs(collection(db, "games"));
-        const gameList = gamesSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setGames(gameList);
+        setGames(gamesSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
       } catch (error) {
         console.error("Error fetching games:", error);
       }
     };
 
-    const fetchAllBets = async () => {
+    const fetchUsersAndBets = async () => {
       try {
         const usersSnapshot = await getDocs(collection(db, "users"));
-        const betsData = [];
+        const usersData = {};
+        const betsPromises = [];
 
-        // Fetch all users and their bets
-        for (const userDoc of usersSnapshot.docs) {
-          const userId = userDoc.id;
-          const betsSnapshot = await getDocs(collection(db, "users", userId, "bets"));
+        usersSnapshot.forEach((userDoc) => {
+          usersData[userDoc.id] = userDoc.data().name; // Users को object में store करें
+          betsPromises.push(getDocs(collection(db, "users", userDoc.id, "bets")));
+        });
 
+        const betsSnapshots = await Promise.all(betsPromises);
+        const allBetsData = [];
+
+        betsSnapshots.forEach((betsSnapshot, index) => {
+          const userId = usersSnapshot.docs[index].id;
           betsSnapshot.forEach((betDoc) => {
-            betsData.push({
+            allBetsData.push({
               userId,
               ...betDoc.data(),
             });
           });
-        }
+        });
 
-        setAllBets(betsData);
-      } catch (error) {
-        console.error("Error fetching bets history:", error);
-      }
-    };
-
-    const fetchUsers = async () => {
-      try {
-        const usersSnapshot = await getDocs(collection(db, "users"));
-        const usersData = usersSnapshot.docs.map(doc => ({
-          id: doc.id,
-          name: doc.data().name,
-        }));
         setUsers(usersData);
+        setAllBets(allBetsData);
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error("Error fetching users and bets:", error);
       }
     };
 
     fetchGames();
-    fetchAllBets();
-    fetchUsers();
+    fetchUsersAndBets();
   }, []);
 
-  // Get team statistics for each game (Total Bet Amount and Users Count)
+  // टीम के बेट्स का डेटा निकालना (कितने users ने कितनी amount लगाई)
   const getTeamStatistics = (gameId, teamName) => {
     const teamBets = allBets.filter((bet) => bet.gameId === gameId && bet.selectedTeam === teamName);
-    const totalBetAmount = teamBets.reduce((sum, bet) => sum + bet.betAmount, 0);
-    return { count: teamBets.length, totalBetAmount };
+    return {
+      count: teamBets.length,
+      totalBetAmount: teamBets.reduce((sum, bet) => sum + bet.betAmount, 0),
+    };
   };
 
-  // Get the user name based on userId
-  const getUserName = (userId) => {
-    const user = users.find((user) => user.id === userId);
-    return user ? user.name : "Unknown";
-  };
-
-  // Get the total bet amount for the game
+  // किसी गेम पर कुल कितनी बेटिंग हुई
   const getTotalBetAmount = (gameId) => {
-    const team1Stats = getTeamStatistics(gameId, games.find(g => g.id === gameId).team1.name);
-    const team2Stats = getTeamStatistics(gameId, games.find(g => g.id === gameId).team2.name);
+    const game = games.find((g) => g.id === gameId);
+    if (!game) return 0;
+    const team1Stats = getTeamStatistics(gameId, game.team1.name);
+    const team2Stats = getTeamStatistics(gameId, game.team2.name);
     return team1Stats.totalBetAmount + team2Stats.totalBetAmount;
   };
 
-  // Determine the most betted team for the game
+  // सबसे ज़्यादा बेट्स किस टीम पर लगी?
   const getMostBettedTeam = (gameId) => {
-    const team1Stats = getTeamStatistics(gameId, games.find(g => g.id === gameId).team1.name);
-    const team2Stats = getTeamStatistics(gameId, games.find(g => g.id === gameId).team2.name);
+    const game = games.find((g) => g.id === gameId);
+    if (!game) return { team: "N/A", total: 0 };
+    const team1Stats = getTeamStatistics(gameId, game.team1.name);
+    const team2Stats = getTeamStatistics(gameId, game.team2.name);
 
     if (team1Stats.totalBetAmount > team2Stats.totalBetAmount) {
-      return { team: games.find(g => g.id === gameId).team1.name, total: team1Stats.totalBetAmount };
+      return { team: game.team1.name, total: team1Stats.totalBetAmount };
     } else if (team1Stats.totalBetAmount < team2Stats.totalBetAmount) {
-      return { team: games.find(g => g.id === gameId).team2.name, total: team2Stats.totalBetAmount };
+      return { team: game.team2.name, total: team2Stats.totalBetAmount };
     } else {
       return { team: "Tie", total: team1Stats.totalBetAmount };
     }
@@ -104,36 +91,45 @@ const BetsHistory = () => {
     <div className="container">
       <h2>Bets History and Statistics</h2>
 
-      {/* Bets History Table */}
+      {/* 🔹 Bets History Table */}
       <div className="table-container">
         <table>
-          <thead>
-            <tr>
-              <th>League</th>
-              <th>Game</th>
-              <th>User Name</th>
-              <th>Bet Amount (₹)</th>
-              <th>Selected Team</th>
-            </tr>
-          </thead>
-          <tbody>
-            {allBets.map((bet, index) => {
-              const game = games.find((g) => g.id === bet.gameId);
-              return (
-                <tr key={index}>
-                  <td>{game ? game.league : "N/A"}</td>
-                  <td>{game ? `${game.team1.name} vs ${game.team2.name}` : "N/A"}</td>
-                  <td>{getUserName(bet.userId)}</td>
-                  <td>₹{bet.betAmount}</td>
-                  <td>{bet.selectedTeam}</td>
-                </tr>
-              );
-            })}
-          </tbody>
+        <thead>
+  <tr>
+    <th>S.No</th>
+    <th>League</th>
+    <th>Game</th>
+    <th>User Name</th>
+    <th>Bet Amount (₹)</th>
+    <th>Selected Team</th>
+  </tr>
+</thead>
+<tbody>
+  {allBets
+    .filter((bet) => {
+      const game = games.find((g) => g.id === bet.gameId);
+      return game && game.league !== "N/A" && game.team1 && game.team2; // 🔹 League और Game सही होने चाहिए
+    })
+    .map((bet, index) => {
+      const game = games.find((g) => g.id === bet.gameId);
+      return (
+        <tr key={index}>
+          <td>{index + 1}</td> {/* 🔹 Serial Number जोड़ा */}
+          <td>{game.league}</td>
+          <td>{`${game.team1.name} vs ${game.team2.name}`}</td>
+          <td>{users[bet.userId] || "Unknown"}</td>
+          <td>₹{bet.betAmount}</td>
+          <td>{bet.selectedTeam}</td>
+        </tr>
+      );
+    })}
+</tbody>
+
+
         </table>
       </div>
 
-      {/* Game-wise Statistics Table */}
+      {/* 🔹 Game-wise Statistics Table */}
       <div className="game-summary">
         {games.map((game) => (
           <div key={game.id}>
