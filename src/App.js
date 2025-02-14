@@ -34,6 +34,8 @@ import BetsHistory from "./components/Admin/BetsHistroy";
 import ManageTimes from "./components/Admin/ManageTimes";
 import AnnouncementManager from "./components/Admin/AnnouncementManager";
 import AdminNavbar from "./components/Admin/AdminNavbar";
+import MoneyRequestsList from "./components/MoneyRequestsList";
+import WithdrawalHistory from "./components/WithdrawalHistory";
 
 function App() {
   const [value, setValue] = useState(0);
@@ -124,6 +126,8 @@ function App() {
           <Route path="/withdrawal" element={<ProtectedRoute user={user}><WithdrawalRequest /></ProtectedRoute>} />
           <Route path="/bets" element={<ProtectedRoute user={user}><BetStatusListener /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute user={user}><ProfileSection /></ProtectedRoute>} />
+          <Route path="/mydeposits" element={<ProtectedRoute user={user}><MoneyRequestsList /></ProtectedRoute>} />
+          <Route path="/mywithdrawals" element={<ProtectedRoute user={user}><WithdrawalHistory /></ProtectedRoute>} />
           
           {/* Admin Routes */}
           <Route path="/apna/*" element={<ProtectedRoute user={user}><AdminNavbar /><AdminPanel /></ProtectedRoute>} />

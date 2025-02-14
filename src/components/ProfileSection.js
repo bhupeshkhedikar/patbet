@@ -167,16 +167,16 @@ const ProfileSection = () => {
 
         <div className="stats-container">
           <div className="stat-box">
-            <p className="highlight"> ₹{totalWinnings.toLocaleString("en-IN")}</p>
+            <p className="highlight" style={{fontSize:'1.2em'}}>₹{userData?.walletBalance || "0"} </p>
+            <p>Total Balance</p>
+          </div>
+          <div className="stat-box">
+            <p className="highlight">₹{totalWinnings.toLocaleString("en-IN")}</p>
             <p>Total Income</p>
           </div>
           <div className="stat-box">
           <p className="highlight">₹{totalDeposits.toLocaleString("en-IN")}</p>
             <p>Total Recharge</p>
-          </div>
-          <div className="stat-box">
-            <p className="highlight">{userData?.walletBalance || "0"}</p>
-            <p>Total Assets</p>
           </div>
           <div className="stat-box">
             <p className="highlight">
@@ -196,7 +196,7 @@ const ProfileSection = () => {
           </div>
         </div>
 
-        <div className="balance-section">
+        {/* <div className="balance-section">
           <span>
             <span className="balance">
               ₹.{userData?.walletBalance || "0"} <br />
@@ -211,12 +211,12 @@ const ProfileSection = () => {
               </span>
             </p>
           </span>
-        </div>
+        </div> */}
         <GoogleAd 
     client="ca-pub-9925801540177456" 
     slot="4077906455" 
       />
-        <div className="action-buttons">
+        <div className="action-buttons" style={{marginTop:'15px'}}>
           <button className="action-btn" onClick={() => navigate("/addmoney")}>
             Recharge
           </button>
@@ -228,58 +228,20 @@ const ProfileSection = () => {
           </button>
         </div>
 
-        {/* Withdrawals Section */}
-        {withdrawals.length > 0 && (
-          <div className="withdrawals-section">
-            <h3>Withdrawals History</h3>
-            {withdrawals.map(withdrawal => (
-              <div key={withdrawal.id} className="withdrawal-item">
-                <p>
-                  Amount: <strong>₹{withdrawal.amount}</strong>
-                </p>
-                <p>
-                  Status:{" "}
-                  <span className={`status ${withdrawal.status.toLowerCase()}`}>
-                    {withdrawal.status}
-                  </span>
-                </p>
-                <p>
-                {
-  withdrawal.status === 'rejected' ? (
-    <span className="rejection-reason">
-      Reason: {withdrawal.reason || "No reason provided"}
-    </span>
-  ) : null
-}
- 
-                </p>
-                <p>
-                  Date:{" "}
-                  {withdrawal.requestDate
-                    ? new Date(
-                        withdrawal.requestDate.seconds * 1000
-                      ).toLocaleDateString()
-                    : "N/A"}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* <div className="menu-list">
-        <div className="menu-item">
-          <img src="https://cdn-icons-png.flaticon.com/512/709/709699.png" alt="Product" />
-          <span>My Activation Product</span>
+       <div className="menu-list">
+        <div className="menu-item" onClick={() => navigate("/mydeposits")}>
+          <img src="https://cdn-icons-png.flaticon.com/512/5776/5776487.png" alt="Product" />
+          <span>My Deposites</span>
         </div>
-        <div className="menu-item">
-          <img src="https://cdn-icons-png.flaticon.com/512/709/709659.png" alt="Transactions" />
-          <span>Transactions</span>
+        <div className="menu-item" onClick={() => navigate("/mywithdrawals")}>
+          <img src="https://cdn-icons-png.flaticon.com/512/8813/8813844.png" alt="Transactions" />
+          <span>My Withdrawals</span>
         </div>
-        <div className="menu-item">
+        {/* <div className="menu-item">
           <img src="https://cdn-icons-png.flaticon.com/512/709/709682.png" alt="Bonus" />
           <span>Redemption Bonus</span>
-        </div>
-      </div> */}
+        </div> */}
+      </div> 
 
         {/* <div className="bottom-nav">
         <div className="bottom-nav-item">Home</div>

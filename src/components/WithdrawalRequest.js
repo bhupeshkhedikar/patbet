@@ -3,6 +3,7 @@ import '../../src/WithdrawalRequest.css';
 import { db, auth } from "../firebase"; // Import Firestore and auth
 import { doc, updateDoc, getDoc, addDoc, collection, onSnapshot } from "firebase/firestore";
 import GoogleAd from './GoogleAd';
+import { useNavigate } from 'react-router-dom';
 
 const WithdrawalRequest = () => {
   const [amount, setAmount] = useState(0);
@@ -17,7 +18,7 @@ const WithdrawalRequest = () => {
   const [userId, setUserId] = useState('');
   const [walletBalance, setWalletBalance] = useState(0);
   const user = auth.currentUser;
-
+  const navigate=useNavigate();
   useEffect(() => {
     if (user) {
       setUserId(user.uid);
@@ -95,6 +96,7 @@ const WithdrawalRequest = () => {
       setSuccessMessage('Withdrawal request successfully created');
       alert('Withdrawal request successfully created');
       setErrorMessage('');
+      navigate('/mywithdrawals')
     } catch (error) {
       setErrorMessage('Error creating withdrawal request');
       console.error('Error creating withdrawal request:', error);
