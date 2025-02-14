@@ -29,8 +29,8 @@ const MoneyRequestsList = () => {
   }, []);
 
   return (
-    <div className="requests-section">
-      <h3>Your Add Money Requests</h3>
+    <div  className="withdrawals-section">
+      <h3 style={{textAlign:'cente'}}>Deposite History</h3>
       {moneyRequests.length === 0 ? (
         <p>No requests found.</p>
       ) : (
