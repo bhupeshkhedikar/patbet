@@ -46,10 +46,10 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
       return;
     }
   
-    if (betAmount > 50) {
-      alert("Maximum bet amount is ₹50!");
-      return;
-    }
+    // if (betAmount > 50) {
+    //   alert("Maximum bet amount is ₹50!");
+    //   return;
+    // }
 
     if (betAmount > walletBalance) {
       alert("Insufficient balance!");
@@ -99,9 +99,13 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
     const value = Number(e.target.value);
     if (value < 20) {
       setBetWarning("Minimum bet amount is ₹20");
-    } else if (value > 50) {
-      setBetWarning("Maximum bet amount is ₹50");
-    } else {
+    }
+
+    // else if (value > 50) {
+    //   setBetWarning("Maximum bet amount is ₹50");
+    // }
+      
+    else {
       setBetWarning("");
     }
     setBetAmount(value);
