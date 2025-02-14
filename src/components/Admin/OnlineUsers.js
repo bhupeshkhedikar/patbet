@@ -17,7 +17,7 @@ const OnlineUsers = () => {
   }, []);
 
   return (
-    <div style={{ height: 'auto',overflow:'scroll'}}>
+    <div style={{ height: 'auto',overflow:'scroll',marginBottom:'200px'}}>
       <h2>🟢 Online Users ({onlineUsers.length})</h2>
       <ul>
         {onlineUsers.map(user => (

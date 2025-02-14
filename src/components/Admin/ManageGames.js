@@ -247,7 +247,7 @@ const ManageGames = () => {
     }
   };
   return (
-    <>
+    < >
           <div style={{ margin:'0 auto'}}>
       <div className="game-selection">
         <h2>Select Game and Winner</h2>
@@ -352,7 +352,7 @@ const ManageGames = () => {
           </div>
           <div>
           <div>
-  <table className="requests-table">
+  <table className="requests-table" style={{marginBottom:'200px'}}>
     <thead>
       <tr>
         <th>League</th>
