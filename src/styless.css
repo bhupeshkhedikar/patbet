@@ -577,3 +577,8 @@ body {
   color: #ffffff;
   background-color: #2196F3;
 }
+.total-winnings {
+  font-weight: bold;
+  color: yellow; /* Green color to indicate winnings */
+  margin-top: 5px;
+}

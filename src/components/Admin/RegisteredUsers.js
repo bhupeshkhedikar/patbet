@@ -25,6 +25,7 @@ const RegisteredUsers = () => {
           walletBalance: userData.walletBalance || 0,
           createdAt: userData.createdAt || null,
           bets: [],
+          totalWinnings: 0,
         });
       });
 
@@ -33,11 +34,16 @@ const RegisteredUsers = () => {
         const betsRef = collection(db, "users", user.id, "bets");
         onSnapshot(betsRef, (betsSnapshot) => {
           const userBets = [];
+          let totalWinnings = 0;
           betsSnapshot.forEach((betDoc) => {
-            userBets.push(betDoc.data());
+            const betData = betDoc.data();
+            userBets.push(betData);
+            if (betData.status.toLowerCase() === "won") {
+              totalWinnings += betData.betAmount;
+            }
           });
           setUsers((prevUsers) =>
-            prevUsers.map((u) => (u.id === user.id ? { ...u, bets: userBets } : u))
+            prevUsers.map((u) => (u.id === user.id ? { ...u, bets: userBets, totalWinnings } : u))
           );
         });
       });
@@ -69,7 +75,7 @@ const RegisteredUsers = () => {
   };
 
   return (
-    <div className="registered-users" style={{marginBottom:'100px'}}>
+    <div className="registered-users" style={{ marginBottom: "100px" }}>
       <h3 style={{ textAlign: "center", margin: "10px" }}>Registered Users</h3>
       {loading ? (
         <p>Loading users...</p>
@@ -109,41 +115,47 @@ const RegisteredUsers = () => {
                           value={newWalletBalance}
                           onChange={(e) => setNewWalletBalance(e.target.value)}
                         />
-                        <button onClick={() => handleUpdateWallet(user.id)} className="approve-btn">Save</button>
-                        <button onClick={() => setEditingUserId(null)} className="reject-btn">Cancel</button>
+                        <button onClick={() => handleUpdateWallet(user.id)} className="approve-btn">
+                          Save
+                        </button>
+                        <button onClick={() => setEditingUserId(null)} className="reject-btn">
+                          Cancel
+                        </button>
                       </>
                     ) : (
-                      <button onClick={() => setEditingUserId(user.id)} className="approve-btn">Edit Money</button>
+                      <button onClick={() => setEditingUserId(user.id)} className="approve-btn">
+                        Edit Money
+                      </button>
                     )}
                   </td>
                   <td>
-  <p className="total-bets">Total Bets: {user.bets.length}</p>
-  <div className="bets-container">
-    {user.bets.length > 0 ? (
-      user.bets.map((bet, idx) => {
-        let statusClass = "status-pending"; // Default class
+                    <p className="total-bets">Total Bets: {user.bets.length}</p>
+                    <p className="total-winnings">Winnings: ₹{user.totalWinnings}</p>
+                    <div className="bets-container">
+                      {user.bets.length > 0 ? (
+                        user.bets.map((bet, idx) => {
+                          let statusClass = "status-pending";
 
-        if (bet.status.toLowerCase() === "won") {
-          statusClass = "status-won";
-        } else if (bet.status.toLowerCase() === "lost") {
-          statusClass = "status-lost";
-        } else if (bet.status.toLowerCase() === "returned") {
-          statusClass = "status-returned";
-        }
+                          if (bet.status.toLowerCase() === "won") {
+                            statusClass = "status-won";
+                          } else if (bet.status.toLowerCase() === "lost") {
+                            statusClass = "status-lost";
+                          } else if (bet.status.toLowerCase() === "returned") {
+                            statusClass = "status-returned";
+                          }
 
-        return (
-          <p key={idx}>
-            Bet {idx + 1}: ₹{bet.betAmount} | 
-            <span className={`status ${statusClass}`}>{bet.status}</span>
-          </p>
-        );
-      })
-    ) : (
-      <p>No Bets</p>
-    )}
-  </div>
-</td>
-
+                          return (
+                            <p key={idx}>
+                              Bet {idx + 1}: ₹{bet.betAmount} | 
+                              <span className={`status ${statusClass}`}>{bet.status}</span>
+                            </p>
+                          );
+                        })
+                      ) : (
+                        <p>No Bets</p>
+                      )}
+                    </div>
+                  </td>
                   <td>{user.createdAt ? user.createdAt.toDate().toLocaleDateString() : "N/A"}</td>
                 </tr>
               ))}
