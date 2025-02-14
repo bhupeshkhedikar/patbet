@@ -582,3 +582,36 @@ body {
   color: yellow; /* Green color to indicate winnings */
   margin-top: 5px;
 }
+.bonus-container {
+  position: relative;
+  width: 80%;
+  overflow: hidden;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  margin-bottom: 20px;
+}
+
+.bonus-image {
+  width: 100%;
+  height: 100%;
+  /* object-fit: cover; */
+  animation: fade 1s ease-in-out;
+}
+
+/* Smooth fade effect between images */
+@keyframes fade {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (min-width: 960px) {
+  .bonus-image {
+      width: 100%;
+      height: 200px;
+      object-fit: contain;
+      animation: fade 1s ease-in-out;
+    }
+}

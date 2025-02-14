@@ -54,8 +54,11 @@ const Login = () => {
   };
 
   return (
-    <div className="auth-container">
+    <div className="auth-container" style={{display:'flex', flexDirection:'column'}}>
       <ToastContainer />
+      <div className="bonus-container">
+        <img src='https://i.ibb.co/p6qMF6fY/1739549616894.png' className="bonus-image" />
+    </div>
       <div className="auth-box">
         <h2>Login</h2>
         {error && <p className="error">{error}</p>}

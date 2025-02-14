@@ -53,9 +53,16 @@ const Register = () => {
   };
 
   return (
-    <div className="auth-container">
-      <ToastContainer /> {/* Toast container for notifications */}
-      <div className="auth-box">
+    <>
+   
+    <div className="auth-container" style={{display:'flex', flexDirection:'column'}}>
+        <ToastContainer /> {/* Toast container for notifications */}
+        <div className="bonus-container">
+        <img src='https://i.ibb.co/p6qMF6fY/1739549616894.png' className="bonus-image" />
+    </div>
+        {/* <img src='https://i.ibb.co/p6qMF6fY/1739549616894.png' height='30%' width='80%'/> */}
+        <div className="auth-box">
+       
         <h2>Register</h2>
         {error && <p className="error">{error}</p>}
         <form onSubmit={handleRegister}>
@@ -87,6 +94,7 @@ const Register = () => {
         </p>
       </div>
     </div>
+    </>
   );
 };
 
