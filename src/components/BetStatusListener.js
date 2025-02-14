@@ -12,14 +12,14 @@ const BetStatusListener = () => {
     const user = auth.currentUser;
     const storedUID = localStorage.getItem("userUID");
     const userId = user ? user.uid : storedUID;
-
+  
     if (!userId) {
       setLoading(false);
       return;
     }
-
+  
     const betsRef = collection(db, "users", userId, "bets");
-
+  
     const unsubscribe = onSnapshot(
       betsRef,
       (snapshot) => {
@@ -27,6 +27,10 @@ const BetStatusListener = () => {
           id: doc.id,
           ...doc.data(),
         }));
+  
+        // 🔹 createdAt के आधार पर बेट्स को सॉर्ट करें (नए बेट सबसे ऊपर)
+        updatedBets.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+  
         setBets(updatedBets);
         setLoading(false);
       },
@@ -35,9 +39,10 @@ const BetStatusListener = () => {
         setLoading(false);
       }
     );
-
+  
     return () => unsubscribe();
   }, []);
+  
 
   return (
     <div className="bet-status-container">
@@ -58,7 +63,7 @@ const BetStatusListener = () => {
               <div className="bet-body">
                 <div className="bet-info">
                   <span className="label">Selected Team:</span>
-                  <span className="value"  style={{ color: "#1e90ff" }}>{bet.selectedTeam}</span>
+                  <span className="value"  style={{ color: "#1e90ff",fontSize:'14px' }}>{bet.selectedTeam}</span>
                 </div>
                 <div className="bet-info">
                   <span className="label">Bet Amount:</span>

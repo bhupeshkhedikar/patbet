@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaTimes } from "react-icons/fa";
 import { db, auth } from "../firebase";
+import { serverTimestamp } from "firebase/firestore";
 import {
   doc,
   updateDoc,
@@ -81,6 +82,7 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
         status: "pending",
         winnings: 0,
         selectedMultiplier: Number(selectedMultiplier),
+        createdAt: serverTimestamp(),
       });
 
       await updateDoc(userRef, { walletBalance: newWalletBalance });
