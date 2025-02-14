@@ -304,7 +304,7 @@ const Transactions = () => {
             ))}
           </tbody>
             </table> */}
-     <div className="deposit-requests">
+     <div className="deposit-requests"  style={{marginBottom:'100px'}}>
       <h3>Deposit Requests</h3>
       <table className="requests-table">
         <thead>

@@ -69,7 +69,7 @@ const RegisteredUsers = () => {
   };
 
   return (
-    <div className="registered-users">
+    <div className="registered-users" style={{marginBottom:'100px'}}>
       <h3 style={{ textAlign: "center", margin: "10px" }}>Registered Users</h3>
       {loading ? (
         <p>Loading users...</p>
