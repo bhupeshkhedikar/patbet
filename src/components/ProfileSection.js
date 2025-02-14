@@ -13,6 +13,7 @@ import {
 import { useNavigate } from "react-router";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import GoogleAd from "./GoogleAd";
 
 const ProfileSection = () => {
   const [userData, setUserData] = useState(null);
@@ -211,7 +212,10 @@ const ProfileSection = () => {
             </p>
           </span>
         </div>
-
+        <GoogleAd 
+    client="ca-pub-9925801540177456" 
+    slot="4077906455" 
+      />
         <div className="action-buttons">
           <button className="action-btn" onClick={() => navigate("/addmoney")}>
             Recharge

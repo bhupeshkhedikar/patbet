@@ -3,6 +3,7 @@ import { db } from "../firebase"; // Import Firebase Firestore instance
 import { collection, getDocs,doc,getDoc, } from "firebase/firestore";
 import GameCard from "./GameCard";
 import AutoSlider from "./AutoSlider";
+import GoogleAd from "./GoogleAd";
 
 const GameList = () => {
   const [games, setGames] = useState([]);
@@ -72,6 +73,10 @@ const GameList = () => {
         <p>No upcoming games</p>
       )}
       </div>
+      <GoogleAd 
+        client="ca-pub-9925801540177456" 
+        slot="4077906455" 
+      />
       </>
   );
 };

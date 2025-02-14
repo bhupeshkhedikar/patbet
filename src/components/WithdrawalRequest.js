@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../../src/WithdrawalRequest.css';
 import { db, auth } from "../firebase"; // Import Firestore and auth
 import { doc, updateDoc, getDoc, addDoc, collection, onSnapshot } from "firebase/firestore";
+import GoogleAd from './GoogleAd';
 
 const WithdrawalRequest = () => {
   const [amount, setAmount] = useState(0);
@@ -101,6 +102,7 @@ const WithdrawalRequest = () => {
   };
 
   return (
+    <>
     <div className="auth-container">
       <div className="auth-box">
         <h2>Request Withdrawal</h2>
@@ -179,6 +181,11 @@ const WithdrawalRequest = () => {
         {successMessage && <p className="success">{successMessage}</p>}
       </div>
     </div>
+     <GoogleAd 
+     client="ca-pub-9925801540177456" 
+     slot="4077906455" 
+       />
+       </>
   );
 };
 

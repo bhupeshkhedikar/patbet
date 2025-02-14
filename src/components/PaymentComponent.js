@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { db, auth } from "../firebase";
 import { collection, addDoc, query, where, onSnapshot } from "firebase/firestore";
 import '../../src/AddMoney.css';
+import GoogleAd from "./GoogleAd";
 
 const PaymentComponent = () => {
   const [urn, setUrn] = useState("");
@@ -128,7 +129,12 @@ const PaymentComponent = () => {
             </tbody>
           </table>
         )}
-      </div></>
+      </div>
+      <GoogleAd 
+     client="ca-pub-9925801540177456" 
+     slot="4077906455" 
+       />
+    </>
   );
 };
 

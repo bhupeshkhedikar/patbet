@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
 import "../Admin/BetsHistrory.css";
+import GoogleAd from "../GoogleAd";
 
 const BetsHistory = () => {
   const [games, setGames] = useState([]);
@@ -88,6 +89,7 @@ const BetsHistory = () => {
   };
 
   return (
+    <>
     <div className="container">
       <h2>Bets History and Statistics</h2>
 
@@ -169,6 +171,11 @@ const BetsHistory = () => {
         ))}
       </div>
     </div>
+    <GoogleAd 
+    client="ca-pub-9925801540177456" 
+    slot="4077906455" 
+      />
+      </>
   );
 };
 
