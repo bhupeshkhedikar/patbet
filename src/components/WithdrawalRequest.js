@@ -175,8 +175,8 @@ const WithdrawalRequest = () => {
         {/* Submit Button */}
         <button onClick={handleRequestWithdrawal}>Request Withdrawal</button>
 
-        <p style={{ fontSize: '10px', color: 'grey',marginTop:'20px' }}>12% transaction fee will be deducted from the withdrawal amount,
-          and the funds will be credited to your account within 5 to 30 minutes. note:you need to win Min ₹300 from bets to withdraw amount</p>
+        <p style={{ fontSize: '10px', color: 'grey',marginTop:'20px' }}> 12% transaction fee will be deducted from the withdrawal amount.
+        You need to win at least ₹300 from bets to withdraw.</p>
 
         {/* Error and Success Messages */}
         {errorMessage && <p className="error">{errorMessage}</p>}
