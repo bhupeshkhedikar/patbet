@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { db, auth } from "../firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 import "../../src/BetStatusListener.css";
-import useGameWinnerListener from "./useGameWinnerListener";
 
 const BetStatusListener = () => {
   const [bets, setBets] = useState([]);
@@ -12,14 +11,14 @@ const BetStatusListener = () => {
     const user = auth.currentUser;
     const storedUID = localStorage.getItem("userUID");
     const userId = user ? user.uid : storedUID;
-  
+
     if (!userId) {
       setLoading(false);
       return;
     }
-  
+
     const betsRef = collection(db, "users", userId, "bets");
-  
+
     const unsubscribe = onSnapshot(
       betsRef,
       (snapshot) => {
@@ -27,10 +26,10 @@ const BetStatusListener = () => {
           id: doc.id,
           ...doc.data(),
         }));
-  
-        // 🔹 createdAt के आधार पर बेट्स को सॉर्ट करें (नए बेट सबसे ऊपर)
+
+        // Sort bets by createdAt (latest first)
         updatedBets.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-  
+
         setBets(updatedBets);
         setLoading(false);
       },
@@ -39,10 +38,16 @@ const BetStatusListener = () => {
         setLoading(false);
       }
     );
-  
+
     return () => unsubscribe();
   }, []);
-  
+
+  // Function to format timestamp to DD-MM-YYYY HH:mm
+  const formatDate = (timestamp) => {
+    if (!timestamp?.seconds) return "N/A";
+    const date = new Date(timestamp.seconds * 1000);
+    return date.toLocaleDateString("en-GB") + " " + date.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+  };
 
   return (
     <div className="bet-status-container">
@@ -57,13 +62,16 @@ const BetStatusListener = () => {
             <div key={bet.id} className={`bet-card ${bet.status}`}>
               <div className="bet-header">
                 <span className={`bet-status ${bet.status}`}>
-                  {bet.status} {bet.status === "returned" ? "(One Sided Game)" : ""}
+                  {bet.status === "won" && "विजयी"}
+                  {bet.status === "lost" && "पराजित"}
+                  {bet.status === "pending" && "बेट लगी हे-फ़ैसला आना बाकी है"}
+                  {bet.status === "returned" && "एकतरफा खेल-पैसे वापसी"}
                 </span>
               </div>
               <div className="bet-body">
                 <div className="bet-info">
                   <span className="label">Selected Team:</span>
-                  <span className="value"  style={{ color: "#1e90ff",fontSize:'14px' }}>{bet.selectedTeam}</span>
+                  <span className="value" style={{ color: "#1e90ff", fontSize: "14px" }}>{bet.selectedTeam}</span>
                 </div>
                 <div className="bet-info">
                   <span className="label">Bet Amount:</span>
@@ -75,7 +83,11 @@ const BetStatusListener = () => {
                 </div>
                 <div className="bet-info">
                   <span className="label">Winnings:</span>
-                  <span className="value" style={{ color: bet.status === "lost" ? "#f44336" : bet.status === "pending" ? "#ffa500" : "#4caf50", fontSize:'15px' }}>₹{bet.winnings}</span>
+                  <span className="value" style={{ color: bet.status === "lost" ? "#f44336" : bet.status === "pending" ? "#ffa500" : "#4caf50", fontSize: "15px" }}>₹{bet.winnings}</span>
+                </div>
+                <div className="bet-info">
+                  <span className="label">Bet Date:</span>
+                  <span className="value" style={{ color: "#9c27b0", fontSize: "14px" }}>{formatDate(bet.createdAt)}</span>
                 </div>
               </div>
             </div>

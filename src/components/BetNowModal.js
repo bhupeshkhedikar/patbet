@@ -173,7 +173,7 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
             </div>
 
             <button className="bet-now-btn" onClick={handleBet}>
-              Bet Now
+              Bet Now (होड लगाये)
             </button>
             <button className="close-btn" onClick={onClose}>
               Close
