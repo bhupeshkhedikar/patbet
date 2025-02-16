@@ -38,12 +38,12 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
 
   const handleBet = async () => {
     if (!selectedTeam) {
-      alert("Please select a team to bet on!");
+      alert("कृपया दांव लगाने के लिए एक टीम चुनें!");
       return;
     }
 
     if (betAmount < 20) {
-      alert("Minimum bet amount is ₹20!");
+      alert("न्यूनतम शर्त राशि ₹20 है!");
       return;
     }
   
@@ -53,7 +53,7 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
     // }
 
     if (betAmount > walletBalance) {
-      alert("Insufficient balance!");
+      alert("आपके वॉलेट में पर्याप्त बैलेंस नहीं है!");
       return;
     }
 
