@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, doc, onSnapshot } from 'firebase/firestore';
+import { collection, addDoc, doc, onSnapshot, getDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, auth, storage } from '../firebase';
 import './MessageInput.css';
@@ -8,10 +8,33 @@ const MessageInput = () => {
   const [text, setText] = useState('');
   const [file, setFile] = useState(null);
   const [username, setUsername] = useState('');
-  const [isChatEnabled, setIsChatEnabled] = useState(false); // Real-time chat control
+  const [isChatEnabled, setIsChatEnabled] = useState(false);
 
   useEffect(() => {
-    // Fetch real-time chat status
+    const user = auth.currentUser;
+
+    // Fetch User Data
+    const fetchUserData = async () => {
+      if (user) {
+        try {
+          const userRef = doc(db, 'users', user.uid);
+          const userSnap = await getDoc(userRef);
+          if (userSnap.exists()) {
+            setUsername(userSnap.data().name || user.email);
+          } else {
+            console.error('User document not found');
+            setUsername(user.email);
+          }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+          setUsername(user.email);
+        }
+      }
+    };
+
+    fetchUserData();
+
+    // Fetch Real-time Chat Status
     const chatRef = doc(db, 'adminSettings', 'chatControl');
     const unsubscribeChat = onSnapshot(chatRef, (snapshot) => {
       if (snapshot.exists()) {
@@ -19,21 +42,11 @@ const MessageInput = () => {
       }
     });
 
-    // Fetch user data
-    const fetchUserData = async () => {
-      const user = auth.currentUser;
-      if (user) {
-        setUsername(user.email);
-      }
-    };
-
-    fetchUserData();
-
     return () => unsubscribeChat(); // Cleanup listener on unmount
   }, []);
 
   const sendMessage = async () => {
-    if (!isChatEnabled) return; // Prevent sending messages if chat is disabled
+    if (!isChatEnabled) return;
 
     if (text.trim() || file) {
       let fileUrl = '';
@@ -66,7 +79,7 @@ const MessageInput = () => {
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder={isChatEnabled ? 'Type a message' : 'Chat is disabled by Admin'}
-        disabled={!isChatEnabled} // Disable input when chat is off
+        disabled={!isChatEnabled}
       />
       <button onClick={sendMessage} disabled={!isChatEnabled}>
         Send
