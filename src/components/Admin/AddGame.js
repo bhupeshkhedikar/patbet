@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../../firebase';
 import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { serverTimestamp } from "firebase/firestore";
 
 const AddGame = () => {
   const [games, setGames] = useState([]);
@@ -17,6 +18,7 @@ const AddGame = () => {
     time: " ",
     winner: "",
     isBetEnabled: false,
+    createdAt: serverTimestamp(),
   });
   const [errorMessage, setErrorMessage] = useState("");
 

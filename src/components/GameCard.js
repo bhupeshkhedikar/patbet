@@ -40,20 +40,24 @@ const GameCard = ({ game }) => {
 
   useEffect(() => {
     const gamesRef = collection(db, "games");
-
+  
     const unsubscribe = onSnapshot(gamesRef, (querySnapshot) => {
-      const gameList = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const gameList = querySnapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+        .sort((a, b) => b.createdAt - a.createdAt); // Sorting in descending order
+  
       const updatedGame = gameList.find((g) => g.id === game.id);
       if (updatedGame) {
         setBetEnabled(updatedGame.isBetEnabled);
       }
     });
-
+  
     return () => unsubscribe();
   }, [game.id]);
+  
 
   const updateBettingStatus = (now) => {
     if (now < betStartTime) {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../firebase"; // Import Firebase Firestore instance
-import { collection, getDocs,doc,getDoc, } from "firebase/firestore";
+import { collection, getDocs,doc,getDoc,onSnapshot } from "firebase/firestore";
 import GameCard from "./GameCard";
 import AutoSlider from "./AutoSlider";
 import GoogleAd from "./GoogleAd";
@@ -11,25 +11,22 @@ const GameList = () => {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    const fetchGames = async () => {
-      try {
-        const gamesCollection = collection(db, "games"); // Firestore collection name
-        const gamesSnapshot = await getDocs(gamesCollection);
-        const gamesList = gamesSnapshot.docs.map((doc) => ({
+    const gamesCollection = collection(db, "games"); // Firestore collection name
+
+    // **Use onSnapshot for real-time updates**
+    const unsubscribe = onSnapshot(gamesCollection, (snapshot) => {
+      const gamesList = snapshot.docs
+        .map((doc) => ({
           id: doc.id,
           ...doc.data(),
-          
-        }));
-        console.log(gamesList)
-        setGames(gamesList);
-      } catch (error) {
-        console.error("Error fetching games:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+        }))
+        .sort((a, b) => b.createdAt - a.createdAt); // Sorting by latest games first
 
-    fetchGames();
+      setGames(gamesList);
+      setLoading(false);
+    });
+
+    return () => unsubscribe(); // Cleanup listener on component unmount
   }, []);
 
    const announcementDocRef = doc(db, "announcements", "mainAnnouncement");
