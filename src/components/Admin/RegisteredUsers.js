@@ -146,7 +146,8 @@ const RegisteredUsers = () => {
 
                           return (
                             <p key={idx}>
-                              Bet {idx + 1}: ₹{bet.betAmount} | 
+                              Bet {idx + 1}: ₹{bet.betAmount}: 
+                              {bet.selectedTeam} | 
                               <span className={`status ${statusClass}`}>{bet.status}</span>
                             </p>
                           );
