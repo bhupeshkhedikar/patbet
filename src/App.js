@@ -152,7 +152,16 @@ function App() {
     onChange={(event, newValue) => {
       setValue(newValue);
     }}
-  >
+        >
+            <BottomNavigationAction
+      label="Home"
+      onClick={() => navigate("/")}
+      icon={<HomeIcon />}
+      sx={{
+        "& .MuiSvgIcon-root": { fontSize: { xs: "1.5rem", sm: "1.8rem", md: "2rem" } },
+        "& .MuiBottomNavigationAction-label": { fontSize: { xs: "0.65rem", sm: "0.75rem", md: "0.85rem" } }
+      }}
+    />
     <BottomNavigationAction
       label="Withdrawal"
       onClick={() => navigate("/withdrawal")}
@@ -167,15 +176,6 @@ function App() {
       label="Wallet"
       onClick={() => navigate("/addmoney")}
       icon={<AccountBalanceWalletIcon />}
-      sx={{
-        "& .MuiSvgIcon-root": { fontSize: { xs: "1.5rem", sm: "1.8rem", md: "2rem" } },
-        "& .MuiBottomNavigationAction-label": { fontSize: { xs: "0.65rem", sm: "0.75rem", md: "0.85rem" } }
-      }}
-    />
-    <BottomNavigationAction
-      label="Home"
-      onClick={() => navigate("/")}
-      icon={<HomeIcon />}
       sx={{
         "& .MuiSvgIcon-root": { fontSize: { xs: "1.5rem", sm: "1.8rem", md: "2rem" } },
         "& .MuiBottomNavigationAction-label": { fontSize: { xs: "0.65rem", sm: "0.75rem", md: "0.85rem" } }
