@@ -18,6 +18,7 @@
   }
   
   .chat-logo {
+    background-color: black;
     width: 70px; /* Increased size */
     height: 70px; /* Increased size */
     border-radius: 50%; /* Makes it circular */
