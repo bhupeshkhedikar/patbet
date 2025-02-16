@@ -1,0 +1,82 @@
+.message-input {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    padding: 10px;
+    width: 100%;
+    background-color: white;
+    border-top: 1px solid #ddd;
+  }
+  
+  .message-input input[type='text'] {
+    flex: 1;
+    width: 200px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .message-input input[type='file'] {
+    margin-left: 10px;
+  }
+  
+  .message-input button {
+    background-color: #128c7e;
+    color: white;
+    border: none;
+    width: 10%;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-left: 10px;
+    cursor: pointer;
+  }
+  
+  .message-input button:hover {
+    background-color: #0d6f63;
+  }
+  
+  /* Responsive Design */
+  @media screen and (max-width: 768px) {
+    .message {
+      max-width: 80%;
+    }
+    .chat-header {
+      font-size: 18px;
+      padding: 8px;
+    }
+    .message-input {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .message-input input[type='text'] {
+      margin-bottom: 5px;
+    }
+    .message-input button {
+      width: 100%;
+    }
+  }
+  
+  @media screen and (max-width: 480px) {
+    .message-input {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: row;
+    }
+    .chat-header {
+      font-size: 16px;
+      padding: 6px;
+    }
+    .message {
+      max-width: 50%;
+    }
+    .message-username {
+      font-size: 10px;
+    }
+    .message-time {
+      font-size: 8px;
+    }
+    .message-input button {
+        width: 50%;
+      }
+  }
+  

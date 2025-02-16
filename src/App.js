@@ -36,7 +36,9 @@ import AnnouncementManager from "./components/Admin/AnnouncementManager";
 import AdminNavbar from "./components/Admin/AdminNavbar";
 import MoneyRequestsList from "./components/MoneyRequestsList";
 import WithdrawalHistory from "./components/WithdrawalHistory";
-
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
+import ChatRoom from "./components/ChatRoom";
+import AdminChatControl from "./components/Admin/AdminChatControl";
 function App() {
   const [value, setValue] = useState(0);
   const [user, setUser] = useState(undefined);  // Initially undefined to track loading state
@@ -128,7 +130,7 @@ function App() {
           <Route path="/profile" element={<ProtectedRoute user={user}><ProfileSection /></ProtectedRoute>} />
           <Route path="/mydeposits" element={<ProtectedRoute user={user}><MoneyRequestsList /></ProtectedRoute>} />
           <Route path="/mywithdrawals" element={<ProtectedRoute user={user}><WithdrawalHistory /></ProtectedRoute>} />
-          
+          <Route path="/chat" element={<ProtectedRoute user={user}><ChatRoom /></ProtectedRoute>} />
           {/* Admin Routes */}
           <Route path="/apna/*" element={<ProtectedRoute user={user}><AdminNavbar /><AdminPanel /></ProtectedRoute>} />
           <Route path="/manage-games" element={<ProtectedRoute user={user}><AdminNavbar /><ManageGames /></ProtectedRoute>} />
@@ -138,6 +140,7 @@ function App() {
           <Route path="/bets-history" element={<ProtectedRoute user={user}><AdminNavbar /><BetsHistory /></ProtectedRoute>} />
           <Route path="/manage-times" element={<ProtectedRoute user={user}><AdminNavbar /><ManageTimes /></ProtectedRoute>} />
           <Route path="/announcements" element={<ProtectedRoute user={user}><AdminNavbar /><AnnouncementManager /></ProtectedRoute>} />
+          <Route path="/chatcontrol" element={<ProtectedRoute user={user}><AdminNavbar /><AdminChatControl /></ProtectedRoute>} />
         </Routes>
       </main>
 
@@ -160,6 +163,7 @@ function App() {
       }}
     />
     <BottomNavigationAction
+    
       label="Wallet"
       onClick={() => navigate("/addmoney")}
       icon={<AccountBalanceWalletIcon />}
@@ -185,6 +189,14 @@ function App() {
         "& .MuiSvgIcon-root": { fontSize: { xs: "1.5rem", sm: "1.8rem", md: "2rem" } },
         "& .MuiBottomNavigationAction-label": { fontSize: { xs: "0.65rem", sm: "0.75rem", md: "0.85rem" } }
       }}
+          />
+           <BottomNavigationAction sx={{
+        "& .MuiSvgIcon-root": { fontSize: { xs: "1.5rem", sm: "1.8rem", md: "2rem" } },
+        "& .MuiBottomNavigationAction-label": { fontSize: { xs: "0.65rem", sm: "0.75rem", md: "0.85rem" } }
+      }}
+      label="Chat"
+      onClick={() => navigate("/chat")}
+      icon={<ChatBubbleIcon />}
     />
     {user ? (
       <BottomNavigationAction
