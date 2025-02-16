@@ -65,7 +65,7 @@ const BetStatusListener = () => {
                   {bet.status === "won" && "विजयी"}
                   {bet.status === "lost" && "पराजित"}
                   {bet.status === "pending" && "बेट लगी हे-फ़ैसला आना बाकी है"}
-                  {bet.status === "returned" && "एकतरफा खेल or टाई - पैसे वापसी"}
+                  {bet.status === "returned" && "एकतरफा खेल/टाई/चान्स  - पैसे वापसी"}
                 </span>
               </div>
               <div className="bet-body">
