@@ -1,7 +1,7 @@
 .chat-container {
     display: flex;
     flex-direction: column;
-    height: 71.9vh;
+    height: 65.59vh;
     width: 100%;
     background-color: #f0f2f5;
   }
@@ -14,13 +14,14 @@
     color: white;
     padding: 10px;
     font-size: 20px;
+    height: 50px;
     font-weight: bold;
   }
   
   .chat-logo {
     background-color: black;
-    width: 70px; /* Increased size */
-    height: 70px; /* Increased size */
+    width: 35px; /* Increased size */
+    height: 35px; /* Increased size */
     border-radius: 50%; /* Makes it circular */
     object-fit: contain; /* Ensures it doesn't distort */
     margin-right: 10px;
