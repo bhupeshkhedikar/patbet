@@ -92,7 +92,7 @@ const PaymentComponent = () => {
           {loading ? "Processing..." : "Add Money"}
         </button>
       </div>
-      <GoogleAd client="ca-pub-9925801540177456" slot="4077906455" />
+      {/* <GoogleAd client="ca-pub-9925801540177456" slot="4077906455" /> */}
     </>
   );
 };
