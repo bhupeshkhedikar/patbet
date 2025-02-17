@@ -79,6 +79,7 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
         betAmount: Number(betAmount),
         gameId,
         selectedTeam,
+        matchName: `${team1} vs ${team2}`, 
         status: "pending",
         winnings: 0,
         selectedMultiplier: Number(selectedMultiplier),
