@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { db, auth } from "../firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 import "../../src/BetStatusListener.css";
+import AdBanner from "./AdBanner";
 
 const BetStatusListener = () => {
   const [bets, setBets] = useState([]);
@@ -51,6 +52,7 @@ const BetStatusListener = () => {
 
   return (
     <div className="bet-status-container">
+        <AdBanner/>
       <h3 className="bet-title">Your Bets</h3>
       {loading ? (
         <p className="loading">Loading bets...</p>
@@ -92,9 +94,11 @@ const BetStatusListener = () => {
               </div>
             </div>
           ))}
+                <AdBanner/>
         </div>
       )}
     </div>
+    
   );
 };
 

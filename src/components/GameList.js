@@ -4,6 +4,7 @@ import { collection, getDocs,doc,getDoc,onSnapshot } from "firebase/firestore";
 import GameCard from "./GameCard";
 import AutoSlider from "./AutoSlider";
 import GoogleAd from "./GoogleAd";
+import AdBanner from "./AdBanner";
 
 const GameList = () => {
   const [games, setGames] = useState([]);
@@ -51,7 +52,7 @@ const GameList = () => {
     <>
 
     <div className="game-list">
-
+<AdBanner/>
       <h2 className="section-title">Upcoming Games</h2>
 <AutoSlider/>
         {
@@ -73,6 +74,7 @@ const GameList = () => {
         <p>No upcoming games</p>
       )}
       </div>
+      <AdBanner/>
       {/* <GoogleAd 
         client="ca-pub-9925801540177456" 
         slot="4077906455" 

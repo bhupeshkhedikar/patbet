@@ -54,7 +54,7 @@ const PaymentComponent = () => {
 
   return (
     <>
-      <div className="add-money-container">
+      <div className="add-money-container" style={{marginBottom:'80px'}}>
         <h2>Add Money</h2>
         <iframe
           width="315"

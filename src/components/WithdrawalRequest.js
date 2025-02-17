@@ -4,6 +4,7 @@ import { db, auth } from "../firebase"; // Import Firestore and auth
 import { doc, updateDoc, getDoc, addDoc, collection, onSnapshot } from "firebase/firestore";
 import GoogleAd from './GoogleAd';
 import { useNavigate } from 'react-router-dom';
+import AdBanner from './AdBanner';
 
 const WithdrawalRequest = () => {
   const [amount, setAmount] = useState(0);
@@ -105,7 +106,8 @@ const WithdrawalRequest = () => {
 
   return (
     <>
-    <div className="auth-container">
+      <div className="auth-container">
+        
       <div className="auth-box">
         <h2>Request Withdrawal</h2>
         <p style={{fontSize:'13px', color:'yellow'}}>Instant Withdrawal Within 5 to 30 min</p> <br/>
@@ -182,7 +184,8 @@ const WithdrawalRequest = () => {
         {errorMessage && <p className="error">{errorMessage}</p>}
         {successMessage && <p className="success">{successMessage}</p>}
       </div>
-    </div>
+      </div>
+      <AdBanner/>
      {/* <GoogleAd 
      client="ca-pub-9925801540177456" 
      slot="4077906455" 

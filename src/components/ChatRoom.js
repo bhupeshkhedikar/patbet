@@ -17,7 +17,7 @@ const ChatRoom = () => {
     }, []);
   
     return (
-      <div className='chat-container'>
+      <div className='chat-container' style={{marginBottom:'80px'}}>
         <div className='chat-header'>
           <img src='https://i.ibb.co/s9czLCDf/patbet.png' alt='PatBet Logo' className='chat-logo' />
           <h2>PatBet</h2>

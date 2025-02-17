@@ -14,6 +14,7 @@ import { useNavigate } from "react-router";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import GoogleAd from "./GoogleAd";
+import AdBanner from "./AdBanner";
 
 const ProfileSection = () => {
   const [userData, setUserData] = useState(null);
@@ -144,7 +145,7 @@ const ProfileSection = () => {
   return (
     <>
       <ToastContainer />
-      <div className="profile-container">
+      <div className="profile-container" style={{marginBottom:'80px'}}>
         <div className="profile-header">
           <img
             src={
@@ -216,6 +217,7 @@ const ProfileSection = () => {
     client="ca-pub-9925801540177456" 
     slot="4077906455" 
       /> */}
+          <AdBanner/>
         <div className="action-buttons" style={{marginTop:'15px'}}>
           <button className="action-btn" onClick={() => navigate("/addmoney")}>
             Recharge
