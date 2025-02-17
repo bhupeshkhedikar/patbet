@@ -45,7 +45,7 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <img
-        src="https://i.ibb.co/s9czLCDf/patbet.png"
+        src="https://i.ibb.co/5WPzx53W/patbet-logo.png"
         alt="Logo"
         className="logo"
         onClick={() => navigate("/")}

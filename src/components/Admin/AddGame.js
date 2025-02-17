@@ -9,11 +9,11 @@ const AddGame = () => {
     league: "उत्तरदान <----> दक्षिणदान",
     team1: {
       name: "",
-      logo: "https://i.ibb.co/gM8dM9Nt/Screenshot-2025-01-29-215509-removebg-preview.png",
+      logo: "https://i.ibb.co/DDD7g2CP/bailjodi.png",
     },
     team2: {
       name: "",
-      logo: "https://i.ibb.co/gM8dM9Nt/Screenshot-2025-01-29-215509-removebg-preview.png",
+      logo: "https://i.ibb.co/DDD7g2CP/bailjodi.png",
     },
     time: " ",
     winner: "",
