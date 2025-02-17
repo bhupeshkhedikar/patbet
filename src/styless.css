@@ -458,7 +458,7 @@ body {
 /* Adjusting Bottom Navigation Actions */
 .MuiBottomNavigationAction-root {
   color: #fff; /* Default Icon और Label का रंग */
-  min-width: 60px !important; /* Minimum width हटाना ताकि छोटे स्क्रीन पर compact रहे */
+  min-width: 57px !important; /* Minimum width हटाना ताकि छोटे स्क्रीन पर compact रहे */
   padding: 6px 0;
 
 }

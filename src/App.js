@@ -161,7 +161,24 @@ function App() {
         "& .MuiSvgIcon-root": { fontSize: { xs: "1.5rem", sm: "1.8rem", md: "2rem" } },
         "& .MuiBottomNavigationAction-label": { fontSize: { xs: "0.65rem", sm: "0.75rem", md: "0.85rem" } }
       }}
-    />
+          />
+             <BottomNavigationAction
+      label="Bets"
+      onClick={() => navigate("/bets")}
+      icon={<PaymentsIcon />}
+      sx={{
+        "& .MuiSvgIcon-root": { fontSize: { xs: "1.5rem", sm: "1.8rem", md: "2rem" } },
+        "& .MuiBottomNavigationAction-label": { fontSize: { xs: "0.65rem", sm: "0.75rem", md: "0.85rem" } }
+      }}
+          />
+              <BottomNavigationAction sx={{
+        "& .MuiSvgIcon-root": { fontSize: { xs: "1.5rem", sm: "1.8rem", md: "2rem" } },
+        "& .MuiBottomNavigationAction-label": { fontSize: { xs: "0.65rem", sm: "0.75rem", md: "0.85rem" } }
+      }}
+      label="Chat"
+      onClick={() => navigate("/chat")}
+      icon={<ChatBubbleIcon />}
+          />
     <BottomNavigationAction
       label="Withdrawal"
       onClick={() => navigate("/withdrawal")}
@@ -171,33 +188,18 @@ function App() {
         "& .MuiBottomNavigationAction-label": { fontSize: { xs: "0.65rem", sm: "0.75rem", md: "0.85rem" } }
       }}
     />
-    <BottomNavigationAction
+       
+           <BottomNavigationAction
     
-      label="AddMoney"
-      onClick={() => navigate("/addmoney")}
-      icon={<AccountBalanceWalletIcon />}
-      sx={{
-        "& .MuiSvgIcon-root": { fontSize: { xs: "1.5rem", sm: "1.8rem", md: "2rem" } },
-        "& .MuiBottomNavigationAction-label": { fontSize: { xs: "0.65rem", sm: "0.75rem", md: "0.85rem" } }
-      }}
-    />
-    <BottomNavigationAction
-      label="Bets"
-      onClick={() => navigate("/bets")}
-      icon={<PaymentsIcon />}
-      sx={{
-        "& .MuiSvgIcon-root": { fontSize: { xs: "1.5rem", sm: "1.8rem", md: "2rem" } },
-        "& .MuiBottomNavigationAction-label": { fontSize: { xs: "0.65rem", sm: "0.75rem", md: "0.85rem" } }
-      }}
+    label="Recharge"
+    onClick={() => navigate("/addmoney")}
+    icon={<AccountBalanceWalletIcon />}
+    sx={{
+      "& .MuiSvgIcon-root": { fontSize: { xs: "1.5rem", sm: "1.8rem", md: "2rem" } },
+      "& .MuiBottomNavigationAction-label": { fontSize: { xs: "0.65rem", sm: "0.75rem", md: "0.85rem" } }
+    }}
           />
-           <BottomNavigationAction sx={{
-        "& .MuiSvgIcon-root": { fontSize: { xs: "1.5rem", sm: "1.8rem", md: "2rem" } },
-        "& .MuiBottomNavigationAction-label": { fontSize: { xs: "0.65rem", sm: "0.75rem", md: "0.85rem" } }
-      }}
-      label="Chat"
-      onClick={() => navigate("/chat")}
-      icon={<ChatBubbleIcon />}
-    />
+          
     {user ? (
       <BottomNavigationAction
         label="Profile"

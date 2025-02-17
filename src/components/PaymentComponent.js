@@ -4,6 +4,7 @@ import { collection, addDoc } from "firebase/firestore";
 import '../../src/AddMoney.css';
 import GoogleAd from "./GoogleAd";
 import { useNavigate } from "react-router-dom";
+import AdBanner from "./AdBanner";
 
 const PaymentComponent = () => {
   const [urn, setUrn] = useState("");
@@ -92,6 +93,7 @@ const PaymentComponent = () => {
           {loading ? "Processing..." : "Add Money"}
         </button>
       </div>
+      <AdBanner/>
       {/* <GoogleAd client="ca-pub-9925801540177456" slot="4077906455" /> */}
     </>
   );
