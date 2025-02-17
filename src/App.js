@@ -173,7 +173,7 @@ function App() {
     />
     <BottomNavigationAction
     
-      label="Wallet"
+      label="AddMoney"
       onClick={() => navigate("/addmoney")}
       icon={<AccountBalanceWalletIcon />}
       sx={{
