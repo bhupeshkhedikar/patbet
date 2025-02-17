@@ -42,7 +42,10 @@ const GameList = () => {
       }
     };
 
-  if (loading) return <p style={{textAlign:'center',margin:'20px'}}>Loading games...</p>;
+  if (loading) return <div className="loader-container">
+  <div className="loader"></div>
+  <p>Loading Games...</p>
+</div>;
 
   return (
     <>
