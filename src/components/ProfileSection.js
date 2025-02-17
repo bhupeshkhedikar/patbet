@@ -212,10 +212,10 @@ const ProfileSection = () => {
             </p>
           </span>
         </div> */}
-        <GoogleAd 
+        {/* <GoogleAd 
     client="ca-pub-9925801540177456" 
     slot="4077906455" 
-      />
+      /> */}
         <div className="action-buttons" style={{marginTop:'15px'}}>
           <button className="action-btn" onClick={() => navigate("/addmoney")}>
             Recharge

@@ -171,10 +171,10 @@ const BetsHistory = () => {
         ))}
       </div>
     </div>
-    <GoogleAd 
+    {/* <GoogleAd 
     client="ca-pub-9925801540177456" 
     slot="4077906455" 
-      />
+      /> */}
       </>
   );
 };
