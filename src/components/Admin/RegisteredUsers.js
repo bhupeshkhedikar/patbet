@@ -7,29 +7,24 @@ const RegisteredUsers = () => {
   const [loading, setLoading] = useState(true);
   const [editingUserId, setEditingUserId] = useState(null);
   const [newWalletBalance, setNewWalletBalance] = useState("");
+  const [editingBetId, setEditingBetId] = useState(null);
+  const [newBetStatus, setNewBetStatus] = useState("");
 
   useEffect(() => {
     setLoading(true);
     const usersRef = collection(db, "users");
 
-    // Listen to Firestore for real-time updates
     const unsubscribe = onSnapshot(usersRef, (snapshot) => {
-      const fetchedUsers = [];
+      let fetchedUsers = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        name: doc.data().name || "N/A",
+        email: doc.data().email || "N/A",
+        walletBalance: doc.data().walletBalance || 0,
+        createdAt: doc.data().createdAt || null,
+        bets: [],
+        totalWinnings: 0,
+      }));
 
-      snapshot.forEach((doc) => {
-        const userData = doc.data();
-        fetchedUsers.push({
-          id: doc.id,
-          name: userData.name || "N/A",
-          email: userData.email || "N/A",
-          walletBalance: userData.walletBalance || 0,
-          createdAt: userData.createdAt || null,
-          bets: [],
-          totalWinnings: 0,
-        });
-      });
-
-      // Fetch bets for each user
       fetchedUsers.forEach((user) => {
         const betsRef = collection(db, "users", user.id, "bets");
         onSnapshot(betsRef, (betsSnapshot) => {
@@ -37,24 +32,25 @@ const RegisteredUsers = () => {
           let totalWinnings = 0;
           betsSnapshot.forEach((betDoc) => {
             const betData = betDoc.data();
-            userBets.push(betData);
+            userBets.push({ id: betDoc.id, ...betData });
             if (betData.status.toLowerCase() === "won") {
               totalWinnings += betData.betAmount;
             }
           });
+
           setUsers((prevUsers) =>
             prevUsers.map((u) => (u.id === user.id ? { ...u, bets: userBets, totalWinnings } : u))
           );
         });
       });
 
-      // Sorting Users with createdAt (newest first)
+      // Sorting users with createdAt (newest first)
       const usersWithCreatedAt = fetchedUsers.filter((user) => user.createdAt);
       const usersWithoutCreatedAt = fetchedUsers.filter((user) => !user.createdAt);
       usersWithCreatedAt.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
-      const sortedUsers = [...usersWithCreatedAt, ...usersWithoutCreatedAt];
+      fetchedUsers = [...usersWithCreatedAt, ...usersWithoutCreatedAt];
 
-      setUsers(sortedUsers);
+      setUsers(fetchedUsers);
       setLoading(false);
     });
 
@@ -63,14 +59,23 @@ const RegisteredUsers = () => {
 
   const handleUpdateWallet = async (userId) => {
     if (!newWalletBalance || isNaN(newWalletBalance)) return;
-
     try {
-      const userRef = doc(db, "users", userId);
-      await updateDoc(userRef, { walletBalance: Number(newWalletBalance) });
+      await updateDoc(doc(db, "users", userId), { walletBalance: Number(newWalletBalance) });
       setEditingUserId(null);
       setNewWalletBalance("");
     } catch (error) {
       console.error("Error updating wallet balance:", error);
+    }
+  };
+
+  const handleUpdateBetStatus = async (userId, betId) => {
+    if (!newBetStatus) return;
+    try {
+      await updateDoc(doc(db, "users", userId, "bets", betId), { status: newBetStatus });
+      setEditingBetId(null);
+      setNewBetStatus("");
+    } catch (error) {
+      console.error("Error updating bet status:", error);
     }
   };
 
@@ -80,9 +85,7 @@ const RegisteredUsers = () => {
       {loading ? (
         <p>Loading users...</p>
       ) : users.length === 0 ? (
-        <p className="no-users" style={{ textAlign: "center" }}>
-          No registered users yet.
-        </p>
+        <p style={{ textAlign: "center" }}>No registered users yet.</p>
       ) : (
         <div className="table-container">
           <table className="users-table">
@@ -133,25 +136,49 @@ const RegisteredUsers = () => {
                     <p className="total-winnings">Winnings: ₹{user.totalWinnings}</p>
                     <div className="bets-container">
                       {user.bets.length > 0 ? (
-                        user.bets.map((bet, idx) => {
-                          let statusClass = "status-pending";
-
-                          if (bet.status.toLowerCase() === "won") {
-                            statusClass = "status-won";
-                          } else if (bet.status.toLowerCase() === "lost") {
-                            statusClass = "status-lost";
-                          } else if (bet.status.toLowerCase() === "returned") {
-                            statusClass = "status-returned";
-                          }
-
-                          return (
-                            <p key={idx}>
-                              Bet {idx + 1}: ₹{bet.betAmount}: 
-                              {bet.selectedTeam} | 
-                              <span className={`status ${statusClass}`}>{bet.status}</span>
-                            </p>
-                          );
-                        })
+                        user.bets.map((bet, idx) => (
+                          <div key={idx}>
+                            Bet {idx + 1}: ₹{bet.betAmount} | {bet.selectedTeam} |{" "}
+                            {editingBetId === bet.id ? (
+                              <>
+                                <select
+                                  value={newBetStatus}
+                                  className="input-field"
+                                  onChange={(e) => setNewBetStatus(e.target.value)}
+                                >
+                                  <option value="pending">Pending</option>
+                                  <option value="won">Won</option>
+                                  <option value="lost">Lost</option>
+                                  <option value="returned">Returned</option>
+                                </select>
+                                <button
+                                  onClick={() => handleUpdateBetStatus(user.id, bet.id)}
+                                  className="approve-btn"
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  onClick={() => setEditingBetId(null)}
+                                  className="reject-btn"
+                                >
+                                  Cancel
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <span className={`status status-${bet.status.toLowerCase()}`}>
+                                  {bet.status}
+                                </span>
+                                <button
+                                  onClick={() => setEditingBetId(bet.id)}
+                                  className="approve-btn"
+                                >
+                                  Edit
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        ))
                       ) : (
                         <p>No Bets</p>
                       )}
