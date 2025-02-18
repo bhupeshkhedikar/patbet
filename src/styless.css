@@ -621,3 +621,26 @@ body {
       width: 20%;
     }
 }
+.admin-chat {
+  padding: 20px;
+}
+
+.message-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #0c0303;
+  padding: 8px;
+  margin: 5px 0;
+  border-radius: 5px;
+}
+
+.delete-btn {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  width: 100px;
+  border-radius: 3px;
+}

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc,collection,onSnapshot,deleteDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 
 const AdminChatControl = () => {
   const [isChatEnabled, setIsChatEnabled] = useState(false);
-
+  const [messages, setMessages] = useState([]);
   useEffect(() => {
     const fetchChatStatus = async () => {
       try {
@@ -26,6 +26,28 @@ const AdminChatControl = () => {
     fetchChatStatus();
   }, []);
 
+  useEffect(() => {
+    const messagesRef = collection(db, "messages");
+    const unsubscribe = onSnapshot(messagesRef, (snapshot) => {
+      const fetchedMessages = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setMessages(fetchedMessages);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleDeleteMessage = async (messageId) => {
+    try {
+      await deleteDoc(doc(db, "messages", messageId));
+    } catch (error) {
+      console.error("Error deleting message:", error);
+    }
+  };
+
+
   const toggleChat = async () => {
     try {
       const chatRef = doc(db, "adminSettings", "chatControl");
@@ -38,13 +60,34 @@ const AdminChatControl = () => {
   };
 
   return (
-    <div style={styles.container}>
+    <><div style={styles.container}>
       <h2>Admin Chat Control</h2>
       <p>Chat is currently: <strong>{isChatEnabled ? "Enabled ✅" : "Disabled ❌"}</strong></p>
       <button onClick={toggleChat} style={styles.button}>
         {isChatEnabled ? "Disable Chat" : "Enable Chat"}
       </button>
-    </div>
+    </div><div className="admin-chat">
+        <h3>Chat Messages</h3>
+        {messages.length === 0 ? (
+          <p>No messages yet.</p>
+        ) : (
+          <ul>
+            {messages.map((msg) => (
+              <li key={msg.id} className="message-item">
+                <strong>{msg.username}:</strong> {msg.text}
+                {msg.fileUrl && (
+                  <a href={msg.fileUrl} target="_blank" rel="noopener noreferrer">
+                    📎 Attachment
+                  </a>
+                )}
+                <button onClick={() => handleDeleteMessage(msg.id)} className="delete-btn">
+                  Delete
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div></>
   );
 };
 
