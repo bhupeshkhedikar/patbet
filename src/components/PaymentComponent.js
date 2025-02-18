@@ -57,14 +57,14 @@ const PaymentComponent = () => {
     <>
       <div className="add-money-container" style={{marginBottom:'80px'}}>
         <h2>Add Money</h2>
-        <iframe
+        {/* <iframe
           width="315"
           height="200"
           src="https://www.youtube.com/embed/X5qD0MRwjT4"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
-        ></iframe>
+        ></iframe> */}
 
         <div className="qr-section">
           <img src={qrCodeUrl} alt="UPI QR Code" className="qr-code" />

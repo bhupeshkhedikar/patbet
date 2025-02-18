@@ -6,7 +6,7 @@ import { serverTimestamp } from "firebase/firestore";
 const AddGame = () => {
   const [games, setGames] = useState([]);
   const [newGame, setNewGame] = useState({
-    league: "उत्तरदान <----> दक्षिणदान",
+    league: "दक्षिणदान <----> उत्तरदान",
     team1: {
       name: "",
       logo: "https://i.ibb.co/DDD7g2CP/bailjodi.png",
@@ -47,7 +47,7 @@ const AddGame = () => {
       setGames([...games, newGame]);
       alert("Game added successfully!");
       setNewGame({
-        league: "उत्तरदान <----> दक्षिणदान",
+        league: "दक्षिणदान <----> उत्तरदान",
         team1: {
           name: "",
           logo: "https://i.ibb.co/gM8dM9Nt/Screenshot-2025-01-29-215509-removebg-preview.png",
