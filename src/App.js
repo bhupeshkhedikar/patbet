@@ -123,7 +123,7 @@ function App() {
         <Routes>
           <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
           <Route path="/register" element={user ? <Navigate to="/" /> : <Register />} />
-          <Route path="/" element={<ProtectedRoute user={user}><GameList /></ProtectedRoute>} />
+          <Route path="/" element={<ProtectedRoute user={user} allowGuest={true}><GameList /></ProtectedRoute>} />
           <Route path="/addmoney" element={<ProtectedRoute user={user}><PaymentComponent /></ProtectedRoute>} />
           <Route path="/withdrawal" element={<ProtectedRoute user={user}><WithdrawalRequest /></ProtectedRoute>} />
           <Route path="/bets" element={<ProtectedRoute user={user}><BetStatusListener /></ProtectedRoute>} />

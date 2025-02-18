@@ -1,8 +1,9 @@
-// src/components/GameCard.js
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import BetNowModal from "./BetNowModal";
 import { db } from "../firebase";
 import { collection, onSnapshot, doc, getDoc } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const GameCard = ({ game }) => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -12,6 +13,17 @@ const GameCard = ({ game }) => {
   const [timeDifference, setTimeDifference] = useState("");
   const [betStartTime, setBetStartTime] = useState(null);
   const [betEndTime, setBetEndTime] = useState(null);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+  const auth = getAuth();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const fetchBetTimes = async () => {
@@ -47,7 +59,7 @@ const GameCard = ({ game }) => {
           id: doc.id,
           ...doc.data(),
         }))
-        .sort((a, b) => b.createdAt - a.createdAt); // Sorting in descending order
+        .sort((a, b) => b.createdAt - a.createdAt);
   
       const updatedGame = gameList.find((g) => g.id === game.id);
       if (updatedGame) {
@@ -58,7 +70,6 @@ const GameCard = ({ game }) => {
     return () => unsubscribe();
   }, [game.id]);
   
-
   const updateBettingStatus = (now) => {
     if (now < betStartTime) {
       setTimeDifference(`Betting starts at ${betStartTime.toLocaleTimeString()}`);
@@ -75,6 +86,14 @@ const GameCard = ({ game }) => {
 
   const isBeforeStart = betStartTime && currentTime < betStartTime;
   const isAfterEnd = betEndTime && currentTime > betEndTime;
+
+  const handleBetNowClick = () => {
+    if (!user) {
+      navigate("/register"); // Redirect to register page if user is not logged in
+      return;
+    }
+    setModalOpen(true);
+  };
 
   return (
     <div className="game-card">
@@ -96,7 +115,7 @@ const GameCard = ({ game }) => {
 
       <button
         className="bet-button"
-        onClick={() => setModalOpen(true)}
+        onClick={handleBetNowClick}
         disabled={!betEnabled || isBeforeStart || isAfterEnd}
       >
         {isBeforeStart ? "Betting Not Started" : isAfterEnd || !betEnabled ? "Betting Over (होड खत्म)" : "Bet Now (होड लगाये)"}
