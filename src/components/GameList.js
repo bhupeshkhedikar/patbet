@@ -64,7 +64,7 @@ const GameList = () => {
           width: "100%",
           display: "flex",
           justifyContent: "center",
-          padding: "10px",
+          // padding: "10px",
         }}
       >
         <Tabs
@@ -89,7 +89,7 @@ const GameList = () => {
               },
             },
             "& .MuiTabs-indicator": {
-              backgroundColor: "#E91E63", // Red underline for active tab
+              backgroundColor: 'yellow', // Red underline for active tab
               height: "3px", // Adjust underline height
               top: 0, // Move the indicator to the top
             },
