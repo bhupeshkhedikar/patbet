@@ -50,6 +50,7 @@ const AdminNavbar = () => {
           <li className={activeTab === "/manage-times" ? "active" : ""} onClick={() => handleNavigation("/manage-times")}>Manage Times</li>
           <li className={activeTab === "/announcements" ? "active" : ""} onClick={() => handleNavigation("/announcements")}>Announcements</li>
           <li className={activeTab === "/chatcontrol" ? "active" : ""} onClick={() => handleNavigation("/chatcontrol")}>Chats Enable Disable</li>
+          <li className={activeTab === "/lotsfeed" ? "active" : ""} onClick={() => handleNavigation("/lotsfeed")}>Lots Imgage Upload</li>
         </ul>
       </nav>
 
@@ -65,6 +66,7 @@ const AdminNavbar = () => {
           <li className={activeTab === "/manage-times" ? "active" : ""} onClick={() => handleNavigation("/manage-times")}>Manage Times</li>
           <li className={activeTab === "/announcements" ? "active" : ""} onClick={() => handleNavigation("/announcements")}>Announcements</li>
           <li className={activeTab === "/chatcontrol" ? "active" : ""} onClick={() => handleNavigation("/chatcontrol")}>Chats Enable Disable</li>
+          <li className={activeTab === "/lotsfeed" ? "active" : ""} onClick={() => handleNavigation("/lotsfeed")}>Lots Imgage Upload</li>
         </ul>
       </div>
     </>

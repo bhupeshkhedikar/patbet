@@ -39,6 +39,8 @@ import WithdrawalHistory from "./components/WithdrawalHistory";
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import ChatRoom from "./components/ChatRoom";
 import AdminChatControl from "./components/Admin/AdminChatControl";
+import Lots from "./components/Lots";
+import AdminImageUpload from "./components/Admin/AdminImageUpload";
 function App() {
   const [value, setValue] = useState(0);
   const [user, setUser] = useState(undefined);  // Initially undefined to track loading state
@@ -141,6 +143,7 @@ function App() {
           <Route path="/manage-times" element={<ProtectedRoute user={user}><AdminNavbar /><ManageTimes /></ProtectedRoute>} />
           <Route path="/announcements" element={<ProtectedRoute user={user}><AdminNavbar /><AnnouncementManager /></ProtectedRoute>} />
           <Route path="/chatcontrol" element={<ProtectedRoute user={user}><AdminNavbar /><AdminChatControl /></ProtectedRoute>} />
+          <Route path="/lotsfeed" element={<ProtectedRoute user={user}><AdminNavbar /><AdminImageUpload /></ProtectedRoute>} />
         </Routes>
       </main>
 
