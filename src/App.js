@@ -191,7 +191,7 @@ function App() {
        
            <BottomNavigationAction
     
-    label="Recharge"
+    label="Money"
     onClick={() => navigate("/addmoney")}
     icon={<AccountBalanceWalletIcon />}
     sx={{
