@@ -74,7 +74,7 @@ const BetStatusListener = () => {
                
                 <div className="bet-info">
                   <span className="label">Match Name:</span>
-                  <span className="value" style={{ color: "#1e90ff", fontSize: "14px" }}>{bet.matchName}</span>
+                  <span className="value" style={{ color: "yellow", fontSize: "14px" }}>{bet.matchName}</span>
                 </div>
                 <div className="bet-info">
                   <span className="label">Selected Team:</span>

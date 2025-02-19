@@ -188,64 +188,62 @@ const ManageGames = () => {
       
     
 
-  const updateBetsForGame = async (gameId, winnerTeamName) => {
-    console.log(
-      `Updating bets for game: ${gameId} | Winner: ${winnerTeamName}`
-    );
-
-    const usersRef = collection(db, "users");
-    const usersSnapshot = await getDocs(usersRef);
-
-    // Process each user sequentially
-    for (const userDoc of usersSnapshot.docs) {
-      const userId = userDoc.id;
-      const betsRef = collection(db, "users", userId, "bets");
-      const betsQuery = query(betsRef, where("gameId", "==", gameId));
-
-      const betsSnapshot = await getDocs(betsQuery);
-
-      // Fetch the user's current wallet balance once
-      const userRef = doc(db, "users", userId);
-      const userDocSnapshot = await getDoc(userRef);
-      let currentBalance = userDocSnapshot.exists()
-        ? Number(userDocSnapshot.data().walletBalance) || 0
-        : 0;
-
-      // Process each bet sequentially
-      for (const betDoc of betsSnapshot.docs) {
-        const betData = betDoc.data();
-        const betId = betDoc.id;
-
-        const betStatus =
-          betData.selectedTeam === winnerTeamName ? "won" : "lost";
-
-        // Calculate winnings
-        const betAmount = Number(betData.betAmount); // Bet amount as number
-        const selectedMultiplier = Number(betData.selectedMultiplier); // Multiplier as number
-        const winnings =
-          betStatus === "won" ? betAmount * selectedMultiplier : 0;
-
-        console.log(
-          `Updating bet ${betId}: Status -> ${betStatus}, Winnings -> ₹${winnings}`
-        );
-
-        // Update the bet status in Firestore
-        await updateDoc(doc(db, "users", userId, "bets", betId), {
-          status: betStatus,
-          winnings: winnings,
-        });
-
-        // Update the wallet balance if the bet is won
-        if (betStatus === "won") {
-          currentBalance += winnings; // Update the current balance locally
-          await updateDoc(userRef, { walletBalance: currentBalance }); // Update Firestore
-          console.log(
-            `Updated wallet balance for user ${userId}: ₹${currentBalance}`
-          );
+      const updateBetsForGame = async (gameId, winnerTeamName) => {
+        console.log(`Updating bets for game: ${gameId} | Winner: ${winnerTeamName}`);
+      
+        const commissionRate = 0.10; // 5% commission (change to 0.10 for 10%)
+      
+        const usersRef = collection(db, "users");
+        const usersSnapshot = await getDocs(usersRef);
+      
+        for (const userDoc of usersSnapshot.docs) {
+          const userId = userDoc.id;
+          const betsRef = collection(db, "users", userId, "bets");
+          const betsQuery = query(betsRef, where("gameId", "==", gameId));
+          const betsSnapshot = await getDocs(betsQuery);
+      
+          const userRef = doc(db, "users", userId);
+          const userDocSnapshot = await getDoc(userRef);
+          let currentBalance = userDocSnapshot.exists()
+            ? Number(userDocSnapshot.data().walletBalance) || 0
+            : 0;
+      
+          for (const betDoc of betsSnapshot.docs) {
+            const betData = betDoc.data();
+            const betId = betDoc.id;
+      
+            const betStatus =
+              betData.selectedTeam === winnerTeamName ? "won" : "lost";
+      
+            const betAmount = Number(betData.betAmount);
+            const selectedMultiplier = Number(betData.selectedMultiplier);
+            let winnings = betStatus === "won" ? betAmount * selectedMultiplier : 0;
+      
+            if (winnings > 0) {
+              const commission = winnings * commissionRate;
+              winnings -= commission; // Deduct commission
+            }
+      
+            console.log(
+              `Updating bet ${betId}: Status -> ${betStatus}, Winnings -> ₹${winnings}`
+            );
+      
+            await updateDoc(doc(db, "users", userId, "bets", betId), {
+              status: betStatus,
+              winnings: winnings,
+            });
+      
+            if (betStatus === "won") {
+              currentBalance += winnings;
+              await updateDoc(userRef, { walletBalance: currentBalance });
+              console.log(
+                `Updated wallet balance for user ${userId}: ₹${currentBalance}`
+              );
+            }
+          }
         }
-      }
-    }
-  };
+      };
+      
   return (
     < >
           <div style={{ margin:'0 auto'}}>

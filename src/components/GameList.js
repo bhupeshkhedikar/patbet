@@ -106,13 +106,13 @@ const GameList = () => {
         {activeTab === 0 ? (
           <div className="game-list">
             <AdBanner />
-            <h2 className="section-title">Upcoming Games</h2>
             <AutoSlider />
             {message ? (
               <p style={{ textAlign: "center", margin: "10px", color: "yellow", fontSize: "14px", fontWeight: "bold" }}>{message}</p>
             ) : (
               <p className="text-center text-white mt-4">No announcement available</p>
             )}
+                        <h2 className="section-title">Upcoming Games</h2>
             {games.length > 0 ? games.map((game) => <GameCard key={game.id} game={game} />) : <p>No upcoming games</p>}
             <AdBanner />
           </div>
