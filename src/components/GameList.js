@@ -96,8 +96,8 @@ const GameList = () => {
           }}
         >
           <Tab label="Dashboard" />
-          {/* <Tab label="Results" /> */}
-          <Tab label="Lots" /> {/* Add a third tab */}
+          <Tab label="Lots" />
+          <Tab label="Results" />{/* Add a third tab */}
         </Tabs>
       </Box>
 
@@ -120,7 +120,7 @@ const GameList = () => {
           <Lots/>
           //  <Results />
         ) : (
-          <div><Lots/></div> // Render content for the third tab
+          <div> <Results /></div> // Render content for the third tab
         )}
       </Box>
     </Box>

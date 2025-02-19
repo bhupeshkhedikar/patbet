@@ -40,12 +40,29 @@ const AddGame = () => {
         setErrorMessage("All fields are required!");
         return;
       }
-
+  
       const gamesRef = collection(db, "games");
-      await addDoc(gamesRef, newGame);
-
-      setGames([...games, newGame]);
+      const resultsRef = collection(db, "results");
+  
+      // Add game to the "games" collection
+      const gameDoc = await addDoc(gamesRef, newGame);
+  
+      // Add game to the "results" collection separately
+      await addDoc(resultsRef, {
+        gameId: gameDoc.id, // Store reference to the game
+        league: newGame.league,
+        team1: newGame.team1,
+        team2: newGame.team2,
+        time: newGame.time,
+        winner: "", // Empty initially, will be updated by admin
+        isBetEnabled: newGame.isBetEnabled,
+        createdAt: serverTimestamp(),
+      });
+  
+      setGames([...games, { id: gameDoc.id, ...newGame }]);
       alert("Game added successfully!");
+  
+      // Reset the form
       setNewGame({
         league: "दक्षिणदान <----> उत्तरदान",
         team1: {

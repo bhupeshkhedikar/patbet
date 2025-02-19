@@ -1,0 +1,83 @@
+.user-results-table {
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+    font-size: 12px; /* Adjusted for better readability on mobile */
+    padding: 15px;
+    background: #1e1e1e;
+    color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    overflow-x: auto; /* Ensures table scrolls on smaller screens */
+}
+.opinion-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem; /* Smaller font for mobile */
+    font-weight: bold;
+}
+
+.team1-pct, .team2-pct {
+    padding: 3px 6px;
+    border-radius: 5px;
+    font-weight: bold;
+    min-width: 35px;
+    text-align: center;
+    font-size: 10px; /* Adjusted for mobile */
+}
+
+.team1-pct {
+    background: linear-gradient(90deg, #ff3b3b, #ff9900);
+    color: #fff;
+}
+
+.team2-pct {
+    background: linear-gradient(90deg, #0066ff, #00cfff);
+    color: #fff;
+}
+
+.vs-divider {
+    font-size: 10px;
+    font-weight: bold;
+    color: #bbb;
+    opacity: 0.8;
+}
+
+.winner {
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.winner-badge {
+    color: #ffcc00;
+    padding: 3px 6px;
+    border-radius: 5px;
+    font-size: 10px;
+}
+
+.pending {
+    color: #ffcc00;
+    font-weight: bold;
+    font-size: 10px;
+}
+
+/* Make table responsive */
+@media (max-width: 600px) {
+    .user-results-table {
+        font-size: 10px;
+        padding: 10px;
+    }
+
+    .opinion-bar {
+        font-size: 10px;
+    }
+
+    .team1-pct, .team2-pct, .winner-badge, .pending {
+        font-size: 13px;
+        padding: 2px 5px;
+        min-width: 30px;
+    }
+
+}

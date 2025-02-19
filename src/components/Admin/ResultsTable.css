@@ -1,0 +1,95 @@
+.results-table {
+  width: 100%;
+  max-width: 900px;
+  margin: auto;
+  font-size: 12px;
+  padding: 15px;
+  background: #1e1e1e;
+  color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+
+.admin-table-settings {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.admin-table-settings input {
+  padding: 5px;
+  margin-right: 10px;
+  width: 70%;
+  border: none;
+  border-radius: 5px;
+}
+
+.admin-table-settings button {
+  padding: 5px 10px;
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
+
+.opinion-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.team1-pct, .team2-pct {
+  padding: 3px 6px;
+  border-radius: 4px;
+  min-width: 30px;
+  text-align: center;
+}
+
+.team1-pct {
+  background: linear-gradient(90deg, #ff3b3b, #ff9900);
+  color: #fff;
+}
+
+.team2-pct {
+  background: linear-gradient(90deg, #0066ff, #00cfff);
+  color: #fff;
+}
+
+.vs-divider {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #bbb;
+}
+
+.delete-btn {
+  padding: 5px 8px;
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.delete-btn:hover {
+  background: #cc0000;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .results-table {
+    padding: 10px;
+    font-size: 10px;
+  }
+
+  .delete-btn {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+}
