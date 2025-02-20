@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BetNowModal from "./BetNowModal";
 import { db } from "../firebase";
-import { collection, onSnapshot, doc, getDoc,query,orderBy } from "firebase/firestore";
+import { collection, onSnapshot, doc, getDoc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const GameCard = ({ game }) => {
@@ -51,27 +51,24 @@ const GameCard = ({ game }) => {
   }, [betStartTime, betEndTime]);
 
   useEffect(() => {
-    const gamesQuery = query(collection(db, "games"), orderBy("createdAt", "desc"));
+    const gamesRef = collection(db, "games");
   
-    const unsubscribe = onSnapshot(
-      gamesQuery,
-      (querySnapshot) => {
-        const gameList = querySnapshot.docs.map((doc) => ({
+    const unsubscribe = onSnapshot(gamesRef, (querySnapshot) => {
+      const gameList = querySnapshot.docs
+        .map((doc) => ({
           id: doc.id,
           ...doc.data(),
-          createdAt: doc.data().createdAt?.toMillis() || 0,
-        }));
+        }))
+        .sort((a, b) => b.createdAt - a.createdAt);
   
-        setBetEnabled(gameList.find((g) => g.id === game.id)?.isBetEnabled || false);
-      },
-      (error) => {
-        console.error("Error fetching games:", error);
+      const updatedGame = gameList.find((g) => g.id === game.id);
+      if (updatedGame) {
+        setBetEnabled(updatedGame.isBetEnabled);
       }
-    );
+    });
   
     return () => unsubscribe();
   }, [game.id]);
-  
   
   const updateBettingStatus = (now) => {
     if (now < betStartTime) {
