@@ -83,7 +83,7 @@ const Result = () => {
 
           return (
             <div key={game.id} className="game-result">
-              <h3 style={{color:'lightgreen'}}>{game.league}</h3>
+              <h5 style={{color:'lightgreen',margin:'6px'}}>{game.league}</h5>
               <p style={{fontSize: '14px',color: '#b0b3c5'}}>
                 {game.team1.name} vs {game.team2.name}
               </p>
