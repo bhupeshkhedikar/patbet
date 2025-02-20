@@ -98,7 +98,7 @@ const GameList = () => {
         >
           <Tab label="Dashboard" />
           <Tab label="Lots" />
-          <Tab label="कौन जितेगा" />{/* Add a third tab */}
+          <Tab label="कौन जितेगा..?" />{/* Add a third tab */}
         </Tabs>
       </Box>
 
