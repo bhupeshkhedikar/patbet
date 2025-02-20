@@ -72,7 +72,7 @@ const Lots = () => {
     );
 
   return (
-    <div className="lots-container" style={{ padding: "20px" }}>
+    <div className="lots-container" style={{ padding: "20px",marginBottom:'100px' }}>
       <h2 className="section-title">Lots Feed</h2>
 
       <div className="feed" style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
