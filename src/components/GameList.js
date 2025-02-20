@@ -7,6 +7,7 @@ import AutoSlider from "./AutoSlider";
 import AdBanner from "./AdBanner";
 import Results from "./Results"; // Import Results component
 import Lots from "./Lots";
+import Result from "./Result";
 
 const GameList = () => {
   const [games, setGames] = useState([]);
@@ -97,7 +98,7 @@ const GameList = () => {
         >
           <Tab label="Dashboard" />
           <Tab label="Lots" />
-          <Tab label="Results" />{/* Add a third tab */}
+          <Tab label="कौन जितेगा" />{/* Add a third tab */}
         </Tabs>
       </Box>
 
@@ -120,7 +121,7 @@ const GameList = () => {
           <Lots/>
           //  <Results />
         ) : (
-          <div> <Results /></div> // Render content for the third tab
+          <div> <Result /></div> // Render content for the third tab
         )}
       </Box>
     </Box>

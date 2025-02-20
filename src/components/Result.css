@@ -1,83 +1,107 @@
-.user-results-table {
-    width: 100%;
-    max-width: 800px;
-    margin: auto;
-    font-size: 12px; /* Adjusted for better readability on mobile */
-    padding: 15px;
-    background: #1e1e1e;
-    color: #fff;
+.result-container {
+    width: 90%;
+    max-width: 600px;
+    margin: 20px auto;
+    background: #1c1e26;
+    padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    overflow-x: auto; /* Ensures table scrolls on smaller screens */
-}
-.opinion-bar {
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    color: white;
+    text-align: center;
+    font-family: Arial, sans-serif;
+  }
+  
+  .game-result {
+    background: #2a2d3a;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #444857;
+  }
+  
+  .vote-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  
+  .vote-buttons button {
+    width: 48%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s ease;
+  }
+  
+  .vote-buttons button:first-child {
+    background: linear-gradient(135deg, #ff5757, #ff1e1e);
+  }
+  
+  .vote-buttons button:last-child {
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+  }
+  
+  .vote-buttons button:hover {
+    opacity: 0.8;
+  }
+  
+  .progress-bar {
+    height: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    position: relative;
+    background: #444857;
+    overflow: hidden;
+  }
+  
+  .progress-fill {
+    height: 100%;
+    transition: width 0.5s ease-in-out;
+  }
+  
+  .team1 .progress-fill {
+    background: linear-gradient(90deg, #ff5757, #ff1e1e);
+  }
+  
+  .team2 .progress-fill {
+    background: linear-gradient(90deg, #00c6ff, #0072ff);
+  }
+  
+  .compact-percentage {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 4px;
-    font-size: 0.8rem; /* Smaller font for mobile */
+    gap: 5px;
+    font-size: 0.9rem; /* Smaller text */
     font-weight: bold;
-}
-
-.team1-pct, .team2-pct {
-    padding: 3px 6px;
+    margin-top: 8px;
+  }
+  
+  .team1-pct, .team2-pct {
+    padding: 4px 8px;
     border-radius: 5px;
     font-weight: bold;
-    min-width: 35px;
+    color: #fff;
+    min-width: 40px;
     text-align: center;
-    font-size: 10px; /* Adjusted for mobile */
-}
-
-.team1-pct {
-    background: linear-gradient(90deg, #ff3b3b, #ff9900);
-    color: #fff;
-}
-
-.team2-pct {
-    background: linear-gradient(90deg, #0066ff, #00cfff);
-    color: #fff;
-}
-
-.vs-divider {
-    font-size: 10px;
+  }
+  
+  .team1-pct {
+    background: linear-gradient(90deg, #ff3b3b, #ff9900); /* Compact Red-Orange */
+  }
+  
+  .team2-pct {
+    background: linear-gradient(90deg, #0066ff, #00cfff); /* Compact Blue-Light Blue */
+  }
+  
+  .vs-divider {
+    font-size: 0.9rem;
     font-weight: bold;
-    color: #bbb;
-    opacity: 0.8;
-}
-
-.winner {
-    font-size: 10px;
-    font-weight: bold;
-}
-
-.winner-badge {
-    color: #ffcc00;
-    padding: 3px 6px;
-    border-radius: 5px;
-    font-size: 10px;
-}
-
-.pending {
-    color: #ffcc00;
-    font-weight: bold;
-    font-size: 10px;
-}
-
-/* Make table responsive */
-@media (max-width: 600px) {
-    .user-results-table {
-        font-size: 10px;
-        padding: 10px;
-    }
-
-    .opinion-bar {
-        font-size: 10px;
-    }
-
-    .team1-pct, .team2-pct, .winner-badge, .pending {
-        font-size: 13px;
-        padding: 2px 5px;
-        min-width: 30px;
-    }
-
-}
+    color: yellow;
+    opacity: 0.7;
+  }
+  
