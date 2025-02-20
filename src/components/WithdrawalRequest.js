@@ -177,7 +177,7 @@ const WithdrawalRequest = () => {
         {/* Submit Button */}
         <button onClick={handleRequestWithdrawal}>Request Withdrawal</button>
 
-        <p style={{ fontSize: '10px', color: 'grey',marginTop:'20px' }}> 12% transaction fee will be deducted from the withdrawal amount.
+        <p style={{ fontSize: '10px', color: 'grey',marginTop:'20px' }}> 10% transaction fee will be deducted from the withdrawal amount.
         You need to win at least ₹300 from bets to withdraw.</p>
 
         {/* Error and Success Messages */}

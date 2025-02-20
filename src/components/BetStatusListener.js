@@ -97,6 +97,11 @@ const BetStatusListener = () => {
                   <span className="value" style={{ color: "#9c27b0", fontSize: "14px" }}>{formatDate(bet.createdAt)}</span>
                 </div>
               </div>
+              {bet.status === "won" && (
+                <p className="commission-message" style={{ fontSize: "7px", color: "grey", marginTop: "5px", textAlign: "center" }}>
+                  * A small commission fee of 10% will be deducted from your winnings.
+                </p>
+              )}
             </div>
           ))}
                 <AdBanner/>
