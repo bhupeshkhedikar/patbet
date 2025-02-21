@@ -72,8 +72,8 @@
 }
 
 .bet-status.returned {
-  color: #ff9800;
-  background: rgba(255, 152, 0, 0.2);
+  color: magenta;
+  background: rgba(85, 53, 6, 0.2);
 }
 
 .bet-status.pending {
