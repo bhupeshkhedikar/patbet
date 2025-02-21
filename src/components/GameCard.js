@@ -99,6 +99,9 @@ const GameCard = ({ game }) => {
 
   return (
     <div className="game-card">
+        {game.srNo && (
+    <div className="sr-no-badge">{game.srNo}</div>
+  )}
       <p className="league-title">{game.league}</p>
       <p className="timer">{timeDifference}</p>
 
