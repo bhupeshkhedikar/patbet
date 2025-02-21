@@ -80,6 +80,7 @@ const GameList = () => {
               color: "white !important",
               fontWeight: "bold",
               fontSize: isMobile ? "12px" : "16px",
+              boxShadow: '0px 0px 10px rgba(255, 215, 0, 0.5) ',
               textTransform: "none",
               padding: isMobile ? "6px 8px" : "10px 20px",
               minWidth: "unset",
