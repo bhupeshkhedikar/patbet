@@ -5,18 +5,19 @@ import { collection, onSnapshot, doc, getDoc } from "firebase/firestore";
 import GameCard from "./GameCard";
 import AutoSlider from "./AutoSlider";
 import AdBanner from "./AdBanner";
-import Results from "./Results"; // Import Results component
+import Results from "./Results";
 import Lots from "./Lots";
 import Result from "./Result";
+import VideoFeed from "./VideoFeed"; // Import VideoFeed component
 
 const GameList = () => {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
-  const [activeTab, setActiveTab] = useState(0); // 0 = All, 1 = Results
+  const [activeTab, setActiveTab] = useState(0);
 
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // Check if the screen is small (mobile)
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     const gamesCollection = collection(db, "games");
@@ -65,40 +66,40 @@ const GameList = () => {
           width: "100%",
           display: "flex",
           justifyContent: "center",
-          // padding: "10px",
         }}
       >
         <Tabs
           value={activeTab}
           onChange={(e, newValue) => setActiveTab(newValue)}
-          variant="scrollable" // Allow scrolling if tabs don't fit
-          scrollButtons="auto" // Show scroll buttons if needed
+          variant="scrollable"
+          scrollButtons="auto"
           textColor="inherit"
           sx={{
             width: "100%",
             "& .MuiTab-root": {
               color: "white !important",
               fontWeight: "bold",
-              fontSize: isMobile ? "12px" : "16px", // Smaller font size on mobile
+              fontSize: isMobile ? "12px" : "16px",
               textTransform: "none",
-              padding: isMobile ? "6px 8px" : "10px 20px", // Reduced padding on mobile
-              minWidth: "unset", // Allow tabs to shrink
-              flex: 1, // Distribute space evenly among tabs
+              padding: isMobile ? "6px 8px" : "10px 20px",
+              minWidth: "unset",
+              flex: 1,
               "&.Mui-selected": {
-                color: " white !important", // Keep text color for active tab
-                backgroundColor: "#E91E63", // Remove background color
+                color: "white !important",
+                backgroundColor: "#E91E63",
               },
             },
             "& .MuiTabs-indicator": {
-              backgroundColor: 'yellow', // Red underline for active tab
-              height: "3px", // Adjust underline height
-              top: 0, // Move the indicator to the top
+              backgroundColor: "yellow",
+              height: "3px",
+              top: 0,
             },
           }}
         >
           <Tab label="Dashboard" />
           <Tab label="Lots" />
-          <Tab label="कौन जितेगा..?" />{/* Add a third tab */}
+          <Tab label="कौन जितेगा..?" />
+          <Tab label="Video Feed" /> {/* New Tab for Video Feed */}
         </Tabs>
       </Box>
 
@@ -109,19 +110,36 @@ const GameList = () => {
             <AdBanner />
             <AutoSlider />
             {message ? (
-              <p style={{ textAlign: "center", margin: "10px", color: "yellow", fontSize: "14px", fontWeight: "bold" }}>{message}</p>
+              <p
+                style={{
+                  textAlign: "center",
+                  margin: "10px",
+                  color: "yellow",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                }}
+              >
+                {message}
+              </p>
             ) : (
-              <p className="text-center text-white mt-4">No announcement available</p>
+              <p className="text-center text-white mt-4">
+                No announcement available
+              </p>
             )}
-                        <h2 className="section-title">Upcoming Games</h2>
-            {games.length > 0 ? games.map((game) => <GameCard key={game.id} game={game} />) : <p>No upcoming games</p>}
+            <h2 className="section-title">Upcoming Games</h2>
+            {games.length > 0 ? (
+              games.map((game) => <GameCard key={game.id} game={game} />)
+            ) : (
+              <p>No upcoming games</p>
+            )}
             <AdBanner />
           </div>
         ) : activeTab === 1 ? (
-          <Lots/>
-          //  <Results />
+          <Lots />
+        ) : activeTab === 2 ? (
+          <Result />
         ) : (
-          <div> <Result /></div> // Render content for the third tab
+          <VideoFeed /> // Render Video Feed in the fourth tab
         )}
       </Box>
     </Box>

@@ -52,6 +52,7 @@ const AdminNavbar = () => {
           <li className={activeTab === "/chatcontrol" ? "active" : ""} onClick={() => handleNavigation("/chatcontrol")}>Chats Enable Disable</li>
           <li className={activeTab === "/lotsfeed" ? "active" : ""} onClick={() => handleNavigation("/lotsfeed")}>Lots Imgage Upload</li>
           <li className={activeTab === "/manageresults" ? "active" : ""} onClick={() => handleNavigation("/manageresults")}>Results Table</li>
+          <li className={activeTab === "/delete-video" ? "active" : ""} onClick={() => handleNavigation("/delete-video")}>Delete Video</li>
         </ul>
       </nav>
 
@@ -69,6 +70,8 @@ const AdminNavbar = () => {
           <li className={activeTab === "/chatcontrol" ? "active" : ""} onClick={() => handleNavigation("/chatcontrol")}>Chats Enable Disable</li>
           <li className={activeTab === "/lotsfeed" ? "active" : ""} onClick={() => handleNavigation("/lotsfeed")}>Lots Imgage Upload</li>
           <li className={activeTab === "/manageresults" ? "active" : ""} onClick={() => handleNavigation("/manageresults")}>Results Table</li>
+          <li className={activeTab === "/delete-video" ? "active" : ""} onClick={() => handleNavigation("/delete-video")}>Delete Video</li>
+          
         </ul>
       </div>
     </>

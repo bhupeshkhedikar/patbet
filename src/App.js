@@ -42,6 +42,7 @@ import AdminChatControl from "./components/Admin/AdminChatControl";
 import Lots from "./components/Lots";
 import AdminImageUpload from "./components/Admin/AdminImageUpload";
 import ResultsTable from "./components/Admin/ResultsTable";
+import DeleteVideo from './components/Admin/DeleteVideo';
 function App() {
   const [value, setValue] = useState(0);
   const [user, setUser] = useState(undefined);  // Initially undefined to track loading state
@@ -146,6 +147,7 @@ function App() {
           <Route path="/chatcontrol" element={<ProtectedRoute user={user}><AdminNavbar /><AdminChatControl /></ProtectedRoute>} />
           <Route path="/lotsfeed" element={<ProtectedRoute user={user}><AdminNavbar /><AdminImageUpload /></ProtectedRoute>} />
           <Route path="/manageresults" element={<ProtectedRoute user={user}><AdminNavbar /><ResultsTable /></ProtectedRoute>} />
+          <Route path="/delete-video" element={<ProtectedRoute user={user}><DeleteVideo /></ProtectedRoute>} />
         </Routes>
       </main>
 
