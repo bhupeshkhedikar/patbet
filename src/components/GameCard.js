@@ -58,8 +58,9 @@ const GameCard = ({ game }) => {
         .map((doc) => ({
           id: doc.id,
           ...doc.data(),
+          srNo: doc.data().srNo ? parseInt(doc.data().srNo) : Infinity, // Sr. No को integer में बदलना
         }))
-        .sort((a, b) => b.createdAt - a.createdAt);
+        .sort((a, b) => a.srNo - b.srNo); // Sr. No के हिसाब से सॉर्ट
   
       const updatedGame = gameList.find((g) => g.id === game.id);
       if (updatedGame) {
@@ -69,6 +70,7 @@ const GameCard = ({ game }) => {
   
     return () => unsubscribe();
   }, [game.id]);
+  
   
   const updateBettingStatus = (now) => {
     if (now < betStartTime) {
