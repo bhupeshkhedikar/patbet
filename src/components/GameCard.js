@@ -60,7 +60,7 @@ const GameCard = ({ game }) => {
           ...doc.data(),
           srNo: doc.data().srNo ? parseInt(doc.data().srNo) : Infinity, // Sr. No को integer में बदलना
         }))
-        .sort((a, b) => a.srNo - b.srNo); // Sr. No के हिसाब से सॉर्ट
+        .sort((a, b) => a.srNo - b.srNo); // Ascending Order (छोटा से बड़ा)
   
       const updatedGame = gameList.find((g) => g.id === game.id);
       if (updatedGame) {
@@ -70,6 +70,7 @@ const GameCard = ({ game }) => {
   
     return () => unsubscribe();
   }, [game.id]);
+  
   
   
   const updateBettingStatus = (now) => {

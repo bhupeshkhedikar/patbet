@@ -27,8 +27,9 @@ const GameList = () => {
         .map((doc) => ({
           id: doc.id,
           ...doc.data(),
+          srNo: doc.data().srNo ? parseInt(doc.data().srNo) : Infinity, // Ensure it's an integer
         }))
-        .sort((a, b) => b.createdAt - a.createdAt);
+        .sort((a, b) => a.srNo - b.srNo); // Correct sorting from 1,2,3...
 
       setGames(gamesList);
       setLoading(false);
