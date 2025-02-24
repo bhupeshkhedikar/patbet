@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./AutoSlider.css";
 
 const images = [
+  'https://i.ibb.co/G4YBwp9g/1740415550654.jpg',
   'https://i.ibb.co/gLnKmMf2/1740071666614.jpg',
   'https://i.ibb.co/yFtPwhyR/1739551658608.png',
     'https://i.ibb.co/8LhBzXXm/imresizer-1739360154608.jpg',
