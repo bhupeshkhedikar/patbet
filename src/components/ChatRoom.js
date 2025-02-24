@@ -26,6 +26,7 @@ const ChatRoom = () => {
       <div className='chat-messages'>
         {messages.map(msg => <Message key={msg.id} message={msg} isUser={msg.userId === auth.currentUser?.uid} />)}
       </div>
+      <img src='https://i.ibb.co/JwdccMm5/Screenshot-2025-02-24-192514.png'/>
       <MessageInput />
     </div></>
     );
