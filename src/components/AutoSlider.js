@@ -31,7 +31,7 @@ const AutoSlider = () => {
 
         return nextIndex;
       });
-    }, 5000); // Change image every 3 seconds
+    }, 8000); // Change image every 3 seconds
 
     return () => clearInterval(interval);
   }, [direction]);
