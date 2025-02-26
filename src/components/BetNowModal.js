@@ -13,7 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
-  const [betAmount, setBetAmount] = useState(20);
+  const [betAmount, setBetAmount] = useState(100);
   const [selectedMultiplier, setSelectedMultiplier] = useState(2);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [walletBalance, setWalletBalance] = useState(0);
