@@ -110,7 +110,7 @@ const GameList = () => {
         {activeTab === 0 ? (
           <div className="game-list">
            <h3 style={{ textAlign: "center", fontFamily: "Roboto, sans-serif" }}>
-  होडी के गेम सुबह १० बजे शुरू होंगे | कम से कम १०० रू. से बेटिंग शुरू होगी | 
+  होडी के गेम सुबह १० बजे से शुरू हो चुके हे | कम से कम १०० रू. से बेटिंग शुरू होगी | 
   अभी अपना अकाऊन्ट रिचार्ज करा के रखे
 </h3>
 
