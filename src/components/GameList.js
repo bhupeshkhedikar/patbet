@@ -9,6 +9,7 @@ import Results from "./Results";
 import Lots from "./Lots";
 import Result from "./Result";
 import VideoFeed from "./VideoFeed"; // Import VideoFeed component
+import BullockCartRacingGame from "./BullockCartRacingGame";
 
 const GameList = () => {
   const [games, setGames] = useState([]);
@@ -101,7 +102,9 @@ const GameList = () => {
           <Tab label="Dashboard" />
           <Tab label="Lots" />
           <Tab label="कौन जितेगा..?" />
-          <Tab label="Video Feed" /> {/* New Tab for Video Feed */}
+          <Tab label="Video Feed" />
+           <Tab label="ऑनलाइन पट" />
+          {/* New Tab for Video Feed */}
         </Tabs>
       </Box>
 
@@ -141,13 +144,15 @@ const GameList = () => {
             )}
             <AdBanner />
           </div>
-        ) : activeTab === 1 ? (
-          <Lots />
-        ) : activeTab === 2 ? (
-          <Result />
-        ) : (
-          <VideoFeed /> // Render Video Feed in the fourth tab
-        )}
+       ) : activeTab === 1 ? (
+        <Lots />
+      ) : activeTab === 2 ? (
+        <Result />
+      ) : activeTab === 3 ? (
+        <VideoFeed /> // Tab 3 now shows VideoFeed
+      ) : (
+        <BullockCartRacingGame /> // Tab 4 for BullockCartRacingGame
+      )}
       </Box>
     </Box>
   );

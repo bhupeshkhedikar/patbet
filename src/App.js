@@ -43,6 +43,7 @@ import Lots from "./components/Lots";
 import AdminImageUpload from "./components/Admin/AdminImageUpload";
 import ResultsTable from "./components/Admin/ResultsTable";
 import DeleteVideo from './components/Admin/DeleteVideo';
+import BullockCartRacingGame from "./components/BullockCartRacingGame";
 function App() {
   const [value, setValue] = useState(0);
   const [user, setUser] = useState(undefined);  // Initially undefined to track loading state
@@ -148,6 +149,7 @@ function App() {
           <Route path="/lotsfeed" element={<ProtectedRoute user={user}><AdminNavbar /><AdminImageUpload /></ProtectedRoute>} />
           <Route path="/manageresults" element={<ProtectedRoute user={user}><AdminNavbar /><ResultsTable /></ProtectedRoute>} />
           <Route path="/delete-video" element={<ProtectedRoute user={user}><DeleteVideo /></ProtectedRoute>} />
+          <Route path="/race" element={<ProtectedRoute user={user}><BullockCartRacingGame /></ProtectedRoute>} />
         </Routes>
       </main>
 
