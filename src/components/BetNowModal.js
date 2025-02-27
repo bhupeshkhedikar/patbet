@@ -13,7 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
-  const [betAmount, setBetAmount] = useState(100);
+  const [betAmount, setBetAmount] = useState(20);
   const [selectedMultiplier, setSelectedMultiplier] = useState(2);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [walletBalance, setWalletBalance] = useState(0);
@@ -42,8 +42,8 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
       return;
     }
 
-    if (betAmount < 100) {
-      alert("न्यूनतम शर्त राशि ₹100 है!");
+    if (betAmount < 20) {
+      alert("न्यूनतम शर्त राशि ₹20 है!");
       return;
     }
   
@@ -100,8 +100,8 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
 
   const handleBetAmountChange = (e) => {
     const value = Number(e.target.value);
-    if (value < 100) {
-      setBetWarning("Minimum bet amount is ₹100");
+    if (value < 20) {
+      setBetWarning("Minimum bet amount is ₹20");
     }
 
     // else if (value > 50) {
@@ -137,7 +137,7 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
               <input
                 type="number"
                 value={betAmount}
-                min="100"
+                min="20"
                 onChange={handleBetAmountChange}
                 className="bet-input"
               />
