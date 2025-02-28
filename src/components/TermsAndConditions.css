@@ -1,0 +1,48 @@
+.terms-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    color: #fff;
+  }
+  
+  .terms-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #f8f8f8;
+  }
+  
+  .terms-section {
+    margin-bottom: 20px;
+  }
+  
+  .terms-section h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #f8f8f8;
+  }
+  
+  .terms-section p,
+  .terms-section ul {
+    font-size: 16px;
+    color: #cfcfcf;
+    line-height: 1.5;
+  }
+  
+  .terms-section ul {
+    list-style-type: disc;
+    padding-left: 20px;
+  }
+  
+  .terms-footer {
+    text-align: center;
+    font-size: 14px;
+    color: #a0a0a0;
+    margin-top: 20px;
+  }
+  

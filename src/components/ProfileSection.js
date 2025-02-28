@@ -238,6 +238,10 @@ const ProfileSection = () => {
         <div className="menu-item" onClick={() => navigate("/mywithdrawals")}>
           <img src="https://cdn-icons-png.flaticon.com/512/8813/8813844.png" alt="Transactions" />
           <span>My Withdrawals</span>
+          </div>
+          <div className="menu-item" onClick={() => navigate("/termsandconditions")}>
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjEHla3jGSCPLhR1UjGKruLlDiCk3xd2MwLg&s" alt="tc" />
+          <span>Terms and Conditions </span>
         </div>
         {/* <div className="menu-item">
           <img src="https://cdn-icons-png.flaticon.com/512/709/709682.png" alt="Bonus" />
