@@ -135,6 +135,7 @@ const GameCard = ({ game }) => {
         gameId={game.id}
         team1={game.team1.name}
         team2={game.team2.name}
+        maxBetAmount={game.maxBetAmount}
       />
     </div>
   );

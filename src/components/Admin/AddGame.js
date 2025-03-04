@@ -19,11 +19,13 @@ const AddGame = () => {
     time: "",
     winner: "",
     isBetEnabled: false,
+    maxBetAmount: 1000,
     createdAt: serverTimestamp(),
   });
   const [errorMessage, setErrorMessage] = useState("");
 
   // Fetch all games from Firebase
+  const maxBetOptions = [60, 100, 200, 300, 500, 1000, 2000, 3000];
   useEffect(() => {
     const fetchGames = async () => {
       const gamesRef = collection(db, 'games');
@@ -64,6 +66,7 @@ const AddGame = () => {
         time: newGame.time,
         winner: "",
         isBetEnabled: newGame.isBetEnabled,
+        maxBetAmount: 1000, // Default max bet amount
         createdAt: serverTimestamp(),
       });
 
@@ -84,6 +87,7 @@ const AddGame = () => {
         },
         time: "",
         winner: "",
+        maxBetAmount: 1000, // Default max bet amount
         isBetEnabled: false,
       });
     } catch (error) {
@@ -151,6 +155,21 @@ const AddGame = () => {
           })
         }
       />
+        {/* Max Bet Amount Selection */}
+        <select
+        style={{ marginBottom: "20px" }}
+        value={newGame.maxBetAmount}
+        onChange={e =>
+          setNewGame({ ...newGame, maxBetAmount: Number(e.target.value) })
+        }
+      >
+        <option value="">Select Max Bet Amount</option>
+        {maxBetOptions.map(amount => (
+          <option key={amount} value={amount}>
+            ₹{amount}
+          </option>
+        ))}
+      </select>
 
       <select
         style={{ marginBottom: "20px" }}

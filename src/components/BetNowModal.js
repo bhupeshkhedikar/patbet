@@ -12,7 +12,7 @@ import {
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
-const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
+const BetNowModal = ({ isOpen, onClose, team1, team2, gameId, maxBetAmount}) => {
   const [betAmount, setBetAmount] = useState(60);
   const [selectedMultiplier, setSelectedMultiplier] = useState(2);
   const [selectedTeam, setSelectedTeam] = useState(null);
@@ -47,10 +47,10 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
       return;
     }
   
-    // if (betAmount > 50) {
-    //   alert("Maximum bet amount is ₹50!");
-    //   return;
-    // }
+    if (betAmount > maxBetAmount) {
+      alert(`Maximum bet amount is ₹${maxBetAmount}!`);
+      return;
+    }
 
     if (betAmount > walletBalance) {
       alert("आपके वॉलेट में पर्याप्त बैलेंस नहीं है!");
@@ -104,9 +104,9 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
       setBetWarning("Minimum bet amount is ₹60");
     }
 
-    // else if (value > 50) {
-    //   setBetWarning("Maximum bet amount is ₹50");
-    // }
+    else if (value > maxBetAmount) {
+      setBetWarning(`Maximum bet amount is is ₹${maxBetAmount}!`);
+    }
       
     else {
       setBetWarning("");
@@ -131,14 +131,15 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
             </div>
 
             <p className="wallet-text">Wallet Balance: ₹{walletBalance}</p>
-
+            {/* <p  className="wallet-text">Max Bet: ₹{maxBetAmount}</p> */}
             <div className="bet-section">
               <label className="bet-label">Bet Amount (₹)</label>
               <input
                 type="number"
                 value={betAmount}
                 min="60"
-                onChange={handleBetAmountChange}
+                  onChange={handleBetAmountChange}
+                  max={maxBetAmount}
                 className="bet-input"
               />
               {betWarning && <p style={{color:"red",fontSize:'14', margin:'5px'}}>{betWarning}</p>}
