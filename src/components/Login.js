@@ -57,7 +57,7 @@ const Login = () => {
     <div className="auth-container" style={{display:'flex', flexDirection:'column'}}>
       <ToastContainer />
       <div className="bonus-container">
-        <img src='https://i.ibb.co/p6qMF6fY/1739549616894.png' className="bonus-image" />
+        <img src='https://i.ibb.co/LdL5xRp9/1741105411005.png' className="bonus-image" />
     </div>
       <div className="auth-box">
         <h2>Login</h2>

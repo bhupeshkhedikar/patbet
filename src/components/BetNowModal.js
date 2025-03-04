@@ -42,8 +42,8 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
       return;
     }
 
-    if (betAmount < 20) {
-      alert("न्यूनतम शर्त राशि ₹20 है!");
+    if (betAmount < 60) {
+      alert("न्यूनतम शर्त राशि ₹60 है!");
       return;
     }
   
@@ -100,8 +100,8 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
 
   const handleBetAmountChange = (e) => {
     const value = Number(e.target.value);
-    if (value < 20) {
-      setBetWarning("Minimum bet amount is ₹20");
+    if (value < 60) {
+      setBetWarning("Minimum bet amount is ₹60");
     }
 
     // else if (value > 50) {
@@ -137,7 +137,7 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId }) => {
               <input
                 type="number"
                 value={betAmount}
-                min="20"
+                min="60"
                 onChange={handleBetAmountChange}
                 className="bet-input"
               />

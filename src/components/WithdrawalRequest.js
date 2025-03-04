@@ -40,8 +40,8 @@ const WithdrawalRequest = () => {
   const handleRequestWithdrawal = async () => {
     try {
       // Validate input fields
-      if (amount <= 350) {
-        setErrorMessage('Amount must be greater than 350');
+      if (amount <= 550) {
+        setErrorMessage('Amount must be greater than 550');
         return;
       }
       if (!paymentMethod) {
@@ -178,7 +178,7 @@ const WithdrawalRequest = () => {
         <button onClick={handleRequestWithdrawal}>Request Withdrawal</button>
 
         <p style={{ fontSize: '10px', color: 'grey',marginTop:'20px' }}> 10% transaction fee will be deducted from the withdrawal amount.
-        You need to win at least ₹300 from bets to withdraw.</p>
+        You need to win at least ₹500 from bets to withdraw.</p>
 
         {/* Error and Success Messages */}
         {errorMessage && <p className="error">{errorMessage}</p>}

@@ -32,7 +32,7 @@ const Register = () => {
       await setDoc(doc(db, "users", userId), {
         email: email,
         name,
-        walletBalance: 30,  // Initial wallet balance
+        walletBalance: 100,  // Initial wallet balance
         isAdmin: false, // Default admin status
         bets: [], // Initialize empty array for user's bets
         createdAt: serverTimestamp()
@@ -58,7 +58,7 @@ const Register = () => {
     <div className="auth-container" style={{display:'flex', flexDirection:'column'}}>
         <ToastContainer /> {/* Toast container for notifications */}
         <div className="bonus-container">
-        <img src='https://i.ibb.co/p6qMF6fY/1739549616894.png' className="bonus-image" />
+        <img src='https://i.ibb.co/LdL5xRp9/1741105411005.png' className="bonus-image" />
     </div>
         {/* <img src='https://i.ibb.co/p6qMF6fY/1739549616894.png' height='30%' width='80%'/> */}
         <div className="auth-box">
