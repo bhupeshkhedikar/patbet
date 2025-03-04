@@ -48,7 +48,7 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId, maxBetAmount}) => 
     }
   
     if (betAmount > maxBetAmount) {
-      alert(`Maximum bet amount is ₹${maxBetAmount}!`);
+      alert(`अधिकतम अनुमत शर्त राशि  ₹${maxBetAmount} है!`);
       return;
     }
 
@@ -101,11 +101,11 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId, maxBetAmount}) => 
   const handleBetAmountChange = (e) => {
     const value = Number(e.target.value);
     if (value < 60) {
-      setBetWarning("Minimum bet amount is ₹60");
+      setBetWarning("न्यूनतम शर्त राशि ₹60 है!");
     }
 
     else if (value > maxBetAmount) {
-      setBetWarning(`Maximum bet amount is is ₹${maxBetAmount}!`);
+      setBetWarning(`अधिकतम अनुमत शर्त राशि  ₹${maxBetAmount} है!`);
     }
       
     else {
