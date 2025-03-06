@@ -216,7 +216,61 @@ const Transactions = () => {
       };
     
     return(
-        <>
+      <>
+            <div className="deposit-requests"  style={{marginBottom:'100px'}}>
+      <h3>Deposit Requests</h3>
+      <table className="requests-table">
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>URN</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Request Date</th> {/* Added Request Date Column */}
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {addMoneyRequests.length > 0 ? (
+            addMoneyRequests.map(deposit => (
+              <tr key={deposit.id}>
+                <td>{deposit.userId}</td>
+                <td>{deposit.urn}</td>
+                <td>₹{deposit.amount}</td>
+                <td>{deposit.status}</td>
+                <td>
+                  {deposit.createdAt
+                    ? new Date(deposit.createdAt.toDate()).toLocaleString()
+                    : "N/A"}
+                </td> {/* Display formatted date */}
+                <td>
+                  <button
+                    className="approve-btn"
+                    onClick={() =>
+                      handleApproveDeposit(deposit.id, deposit.userId, deposit.amount)
+                    }
+                    disabled={deposit.status === "approved"}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    className="reject-btn"
+                    onClick={() => handleRejectDeposit(deposit.id)}
+                    disabled={deposit.status === "rejected"}
+                  >
+                    Reject
+                  </button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="6">No pending deposit requests.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
          <div className="withdrawal-requests">
       <h3>Withdrawal Requests</h3>
       {errorMessage && <p className="error-message">{errorMessage}</p>}
@@ -304,60 +358,7 @@ const Transactions = () => {
             ))}
           </tbody>
             </table> */}
-     <div className="deposit-requests"  style={{marginBottom:'100px'}}>
-      <h3>Deposit Requests</h3>
-      <table className="requests-table">
-        <thead>
-          <tr>
-            <th>User ID</th>
-            <th>URN</th>
-            <th>Amount</th>
-            <th>Status</th>
-            <th>Request Date</th> {/* Added Request Date Column */}
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {addMoneyRequests.length > 0 ? (
-            addMoneyRequests.map(deposit => (
-              <tr key={deposit.id}>
-                <td>{deposit.userId}</td>
-                <td>{deposit.urn}</td>
-                <td>₹{deposit.amount}</td>
-                <td>{deposit.status}</td>
-                <td>
-                  {deposit.createdAt
-                    ? new Date(deposit.createdAt.toDate()).toLocaleString()
-                    : "N/A"}
-                </td> {/* Display formatted date */}
-                <td>
-                  <button
-                    className="approve-btn"
-                    onClick={() =>
-                      handleApproveDeposit(deposit.id, deposit.userId, deposit.amount)
-                    }
-                    disabled={deposit.status === "approved"}
-                  >
-                    Approve
-                  </button>
-                  <button
-                    className="reject-btn"
-                    onClick={() => handleRejectDeposit(deposit.id)}
-                    disabled={deposit.status === "rejected"}
-                  >
-                    Reject
-                  </button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="6">No pending deposit requests.</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+ 
         </>
         
     )
