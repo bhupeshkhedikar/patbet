@@ -26,7 +26,7 @@ const TermsAndConditions = () => {
         <ul>
           <li>A <strong>10% transaction fee</strong> will be deducted from the withdrawal amount.</li>
           <li>You must <strong>win at least ₹500 from bets</strong> before making a withdrawal.</li>
-          <li>The <strong>minimum withdrawal amount</strong> is <strong>₹550</strong>.</li>
+          <li>The <strong>minimum withdrawal amount</strong> is <strong>₹1000</strong>.</li>
           <li>Bonus amounts provided by the platform <strong>cannot be withdrawn</strong>.</li>
           <li>Withdrawals are processed after admin approval.</li>
         </ul>

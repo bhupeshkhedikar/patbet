@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import AdBanner from './AdBanner';
 
 const WithdrawalRequest = () => {
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState();
   const [paymentMethod, setPaymentMethod] = useState('');
   const [upiId, setUpiId] = useState('');
   const [bankAccount, setBankAccount] = useState('');
@@ -40,8 +40,8 @@ const WithdrawalRequest = () => {
   const handleRequestWithdrawal = async () => {
     try {
       // Validate input fields
-      if (amount <= 550) {
-        setErrorMessage('Amount must be greater than 550');
+      if (amount <= 1000) {
+        setErrorMessage('Amount must be greater than 1000');
         return;
       }
       if (!paymentMethod) {
