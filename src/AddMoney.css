@@ -125,4 +125,13 @@
   .requests-table .rejected {
     color: #f44336;
   }
-  
+  .qr-code {
+  width: 180px;
+  height: 180px;
+  border-radius: 10px;
+  transition: transform 0.3s ease;
+}
+
+.qr-code:hover {
+  transform: scale(1.05);
+}

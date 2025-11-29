@@ -1,203 +1,269 @@
-import { BorderRight } from '@mui/icons-material';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from "react";
+import { doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { db, auth } from "../firebase";
+
+const cartNames = [
+  "गोल्डी आणि सिल्व्हर","पर्ल आणि डायमंड","वीर आणि वरद","शक्ती आणि संजीवनी",
+  "भैरव आणि भूपाल","रणवीर आणि रणधीर","दत्ता आणि दामोदर","गणेश आणि गजानन",
+  "सम्राट आणि सूर्यवीर","यशवंत आणि युगंधर","केसर आणि कृष्णा","मल्लेश आणि मुरलीधर",
+  "अग्निवीर आणि तेजस्वी","प्रताप आणि प्रभाकर","शिवराज आणि शौर्यवीर","धनराज आणि देवेंद्र",
+  "माणिक आणि मोती","सागर आणि संदीप","आदित्य आणि अविनाश","दीपक आणि दिगंबर",
+  "सिंहगर्जना आणि सिंहशक्ती","गजेंद्र आणि गरुडवीर","सिद्धी आणि समाधी","अमर आणि अनंता",
+  "ध्रुव आणि दीपक","आकाश आणि अनिल","परशुराम आणि पांडुरंग","भवानी आणि भैरवी",
+  "रणधीर आणि रणजित","समर्थ आणि सत्यम","कस्तुरी आणि कमल","गंगाधर आणि गोविंद",
+  "महादेव आणि मयूरेश","शिवदास आणि सूर्यदास","जगत आणि जनार्दन","चंद्रहास आणि चंद्रशेखर"
+];
+
+const getRandomNames = () => cartNames[Math.floor(Math.random() * cartNames.length)];
 
 const BullockCartRacingGame = () => {
-        const cartNames = [
-          "गोल्डी आणि सिल्व्हर",
-          "पर्ल आणि डायमंड",
-          "वीर आणि वरद",
-          "शक्ती आणि संजीवनी",
-          "भैरव आणि भूपाल",
-          "रणवीर आणि रणधीर",
-          "दत्ता आणि दामोदर",
-          "गणेश आणि गजानन",
-          "सम्राट आणि सूर्यवीर",
-          "यशवंत आणि युगंधर",
-          "केसर आणि कृष्णा",
-          "मल्लेश आणि मुरलीधर",
-          "अग्निवीर आणि तेजस्वी",
-          "प्रताप आणि प्रभाकर",
-          "शिवराज आणि शौर्यवीर",
-          "धनराज आणि देवेंद्र",
-          "माझ्या आणि माल्हार",
-          "सागर आणि संदीप",
-          "आदित्य आणि अविनाश",
-          "दीपक आणि दिगंबर",
-          "सिंहगर्जना आणि सिंहशक्ती",
-          "गजेंद्र आणि गरुडवीर",
-          "सिद्धी आणि समाधी",
-          "अमर आणि अनंता",
-          "ध्रुव आणि दीपक",
-          "आकाश आणि अनिल",
-          "परशुराम आणि पांडुरंग",
-          "भवानी आणि भैरवी",
-          "रणधीर आणि रणजित",
-          "समर्थ आणि सत्यम",
-          "कस्तुरी आणि कमल",
-          "माणिक आणि मोती",
-          "गंगाधर आणि गोविंद",
-          "महादेव आणि मयूरेश",
-          "शिवदास आणि सूर्यदास",
-          "जगत आणि जनार्दन",
-          "चंद्रहास आणि चंद्रशेखर",
-          "ज्योति आणि जयहिंद",
-          "विजयराज आणि वसंत",
-          "अभिषेक आणि अनिरुद्ध",
-          "धवल आणि दिवाकर",
-          "पवन आणि प्रकाश",
-          "संकेत आणि सौरभ",
-          "विनायक आणि विशाल",
-          "अलख आणि अनमोल",
-          "सुप्रिया आणि सुदर्शन",
-          "शुभम आणि शशिकांत",
-          "राजेंद्र आणि रत्नाकर",
-          "कैलास आणि केदारनाथ",
-          "त्रिवेणी आणि तीर्थराज",
-          "गिरधर आणि गोवर्धन",
-          "वरुण आणि वसंत",
-          "तुफान आणि तारणहार",
-          "रुद्र आणि रक्षक",
-          "राघव आणि रत्नेश",
-          "वैभव आणि विजय",
-          "बलराम आणि बुद्धीवीर",
-          "नरसिंह आणि नंदन",
-          "संपत आणि सम्राट",
-          "वेदांत आणि विनायक",
-        ];
-      
-        const getRandomNames = () => {
-          const randomIndex = Math.floor(Math.random() * cartNames.length);
-          return cartNames[randomIndex];
-        };
-      
-        const [tracks, setTracks] = useState([
-          { id: 1, cart: { id: 1, name: getRandomNames(), position: 0, speed: 0 } },
-          { id: 2, cart: { id: 2, name: getRandomNames(), position: 0, speed: 0 } },
-        ]);
+  const [tracks, setTracks] = useState([
+    { id: 1, cart: { id: 1, name: getRandomNames(), position: 0 } },
+    { id: 2, cart: { id: 2, name: getRandomNames(), position: 0 } },
+  ]);
+
   const [raceStarted, setRaceStarted] = useState(false);
   const [raceFinished, setRaceFinished] = useState(false);
-  const [selectedCart, setSelectedCart] = useState(null);
-  const [betAmount, setBetAmount] = useState(10);
-  const [balance, setBalance] = useState(1000);
-  const [result, setResult] = useState('');
 
+  // selectedCart stores the selected cart id (1 or 2)
+  const [selectedCart, setSelectedCart] = useState(null);
+  // selectedCartName stores the name at time of selection for clarity
+  const [selectedCartName, setSelectedCartName] = useState(null);
+
+  const [betAmount, setBetAmount] = useState(10);
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [result, setResult] = useState("");
+
+  const user = auth.currentUser;
+
+  // ⭐ SOUND REFS
+  const startSound = useRef(null);
+  const runningSound = useRef(null);
+  const winSound = useRef(null);
+  const lossSound = useRef(null);
+
+  useEffect(() => {
+    // Load sound files
+    startSound.current = new Audio("/sounds/start.wav");
+    runningSound.current = new Audio("/sounds/cart_moving.wav");
+    winSound.current = new Audio("/sounds/victory.wav");
+    lossSound.current = new Audio("/sounds/loss.wav");
+
+    runningSound.current.loop = true;
+  }, []);
+
+  // ⭐ Load Real Wallet Balance (listen to user doc)
+  useEffect(() => {
+    if (!user) return;
+
+    const userRef = doc(db, "users", user.uid);
+
+    const unsub = onSnapshot(userRef, (snap) => {
+      if (snap.exists()) {
+        setWalletBalance(snap.data().walletBalance || 0);
+      }
+    });
+
+    return () => unsub();
+  }, [user]);
+
+  // Helper: decide winner using a *provided* snapshot of tracks to avoid stale closures
+  const decideWinner = async (currentTracks) => {
+    if (!currentTracks || currentTracks.length === 0) return;
+
+    // find the winner based on positions in the *currentTracks* snapshot
+    const winner = currentTracks.reduce((a, b) =>
+      a.cart.position > b.cart.position ? a : b
+    );
+
+    // ensure we have a user
+    if (!user) {
+      // just set result message, no DB ops
+      setResult(
+        selectedCart === winner.cart.id
+          ? `🏆 तुम्ही जिंकलात! तुम्ही बेट लावले होते: ${selectedCartName || selectedCart} — विजेता: ${winner.cart.name}`
+          : `❌ तुम्ही हरलात! विजेता: ${winner.cart.name} (तुम्ही बेट लावले होते: ${selectedCartName || selectedCart})`
+      );
+      return;
+    }
+
+    const userRef = doc(db, "users", user.uid);
+
+    // Compare selected cart id with winner's id
+    if (selectedCart === winner.cart.id) {
+      const winAmount = betAmount * 2;
+
+      // Update DB with new wallet balance (compute from the latest UI balance snapshot)
+      // note: using walletBalance from state; in highly concurrent apps one might re-fetch or use transactions.
+      const newBalance = (walletBalance || 0) + winAmount;
+      try {
+        await updateDoc(userRef, { walletBalance: newBalance });
+        setWalletBalance(newBalance);
+      } catch (err) {
+        // fallback: still update local state so UI shows win
+        setWalletBalance((prev) => prev + winAmount);
+      }
+
+      setResult(
+        `🏆 तुम्ही जिंकलात! तुम्ही बेट लावले होते: ${selectedCartName || selectedCart} — विजेता: ${winner.cart.name}`
+      );
+
+      if (winSound.current) winSound.current.play();
+    } else {
+      setResult(
+        `❌ तुम्ही हरलात! विजेता: ${winner.cart.name} (तुम्ही बेट लावले होते: ${selectedCartName || selectedCart})`
+      );
+
+      if (lossSound.current) lossSound.current.play();
+    }
+  };
+
+  // ⭐ Start Race
+  const startRace = async () => {
+    if (!user) return alert("Please login first!");
+    if (!selectedCart) return alert("एक बैलगाड़ी निवडा!");
+    if (betAmount <= 0) return alert("कृपया योग्य पैज निवडा!");
+    if (betAmount > walletBalance) return alert("वॉलेट मध्ये पुरेसे पैसे नाहीत!");
+
+    const userRef = doc(db, "users", user.uid);
+
+    // deduct bet immediately (optimistic)
+    try {
+      const newBalAfterBet = (walletBalance || 0) - betAmount;
+      await updateDoc(userRef, { walletBalance: newBalAfterBet });
+      setWalletBalance(newBalAfterBet);
+    } catch (err) {
+      // still update local if DB update fails to avoid blocking the game UX
+      setWalletBalance((prev) => prev - betAmount);
+    }
+
+    // 🔊 Play start sound
+    if (startSound.current) startSound.current.play();
+
+    // 🔊 Start running background sound
+    setTimeout(() => {
+      if (runningSound.current) runningSound.current.play();
+    }, 300);
+
+    setRaceStarted(true);
+    setRaceFinished(false);
+
+    // IMPORTANT FIX:
+    // DO NOT re-randomize cart names here — keep the currently visible names.
+    // Only reset positions to 0 so the carts start from the bottom with the same names the user saw.
+    setTracks((prev) =>
+      prev.map((t) => ({
+        ...t,
+        cart: {
+          ...t.cart,
+          position: 0,
+        },
+      }))
+    );
+  };
+
+  // ⭐ Racing Animation
   useEffect(() => {
     if (raceStarted && !raceFinished) {
       const interval = setInterval(() => {
-        setTracks((prevTracks) =>
-          prevTracks.map((track) => ({
+        setTracks((prev) =>
+          prev.map((track) => ({
             ...track,
             cart: {
               ...track.cart,
               position: track.cart.position + Math.random() * 10,
-              speed: Math.random() * 10,
             },
           }))
         );
-      }, 100);
+      }, 90);
 
       return () => clearInterval(interval);
     }
   }, [raceStarted, raceFinished]);
 
+  // ⭐ Check if race finished - when finished, pass the current snapshot to decideWinner
   useEffect(() => {
-    const isRaceFinished = tracks.some(
-      (track) => track.cart.position >= 500
-    );
-    if (isRaceFinished) {
+    if (!tracks || tracks.length === 0) return;
+    const finished = tracks.some((t) => t.cart.position >= 500);
+    if (finished) {
       setRaceFinished(true);
       setRaceStarted(false);
-      determineWinner();
+
+      // stop running sound
+      if (runningSound.current) runningSound.current.pause();
+
+      // pass the current tracks snapshot to decideWinner to avoid stale closures
+      decideWinner(tracks);
     }
+    // intentionally depend on tracks so this runs as positions update
   }, [tracks]);
-
-  const startRace = () => {
-    if (selectedCart && betAmount <= balance) {
-      setBalance((prevBalance) => prevBalance - betAmount);
-      setRaceStarted(true);
-      setRaceFinished(false);
-      setResult('');
-      setTracks([
-        { id: 1, cart: { id: 1, name: getRandomNames(), position: 0, speed: 0 } },
-        { id: 2, cart: { id: 2, name: getRandomNames(), position: 0, speed: 0 } },
-      ]);
-    } else {
-      alert('Please select a cart and ensure your bet is within your balance.');
-    }
-  };
-
-  const determineWinner = () => {
-    const winner = tracks.reduce((prev, current) =>
-      prev.cart.position > current.cart.position ? prev : current
-    );
-    if (selectedCart === winner.cart.id) {
-      const winnings = betAmount * 2;
-      setBalance((prevBalance) => prevBalance + winnings);
-      setResult(`You won! ${winner.cart.name} is the winner. You won ${winnings} coins!`);
-    } else {
-      setResult(`You lost! ${winner.cart.name} is the winner.`);
-    }
-  };
 
   const resetGame = () => {
     setRaceStarted(false);
     setRaceFinished(false);
     setSelectedCart(null);
+    setSelectedCartName(null);
     setBetAmount(10);
-    setResult('');
+    setResult("");
+
+    // When resetting game, give fresh random names
     setTracks([
-      { id: 1, cart: { id: 1, name: getRandomNames(), position: 0, speed: 0 } },
-      { id: 2, cart: { id: 2, name: getRandomNames(), position: 0, speed: 0 } },
+      { id: 1, cart: { id: 1, name: getRandomNames(), position: 0 } },
+      { id: 2, cart: { id: 2, name: getRandomNames(), position: 0 } },
     ]);
+
+    // Stop any playing sounds
+    if (runningSound.current) {
+      runningSound.current.pause();
+      runningSound.current.currentTime = 0;
+    }
+    if (startSound.current) {
+      startSound.current.pause();
+      startSound.current.currentTime = 0;
+    }
   };
 
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>ऑनलाईन शंकरपट</h1>
-          <div style={styles.balance}>आपका बॅलन्स: {balance} coins</div>
-          {raceFinished && (
-        <div style={styles.resultSection}>
-          <h2>{result}</h2>
-        </div>
-      )}
+
+      <div style={styles.balance}>वॉलेट बॅलन्स: ₹{walletBalance}</div>
+
+      {raceFinished && <h2>{result}</h2>}
+
+      {/* RACE TRACKS */}
       <div style={styles.trackContainer}>
-        <div style={styles.track}>
-          <div style={styles.trackInner}>
-            <div
-              style={{
-                ...styles.cart,
-                bottom: `${tracks[0].cart.position}px`,
-              }}
-            >
-              <img
-                src="https://i.ibb.co/01y6FtM/image-2-removebg-preview.png"
-                alt="Bullock Cart"
-                style={styles.cartImage}
-              />
+        {tracks.map((track) => (
+          <div key={track.id} style={styles.trackWrapper}>
+
+            {/* Track */}
+            <div style={styles.track}>
+              <div
+                style={{
+                  ...styles.cart,
+                  bottom: `${track.cart.position}px`,
+                }}
+              >
+                <img
+                  src="https://i.ibb.co/01y6FtM/image-2-removebg-preview.png"
+                  alt=""
+                  style={styles.cartImage}
+                />
+              </div>
             </div>
+
+            {/* Cart Name (NEW) */}
+            <div style={styles.cartName}>{track.cart.name}</div>
+
           </div>
-        </div>
-        <div style={styles.separator}></div>
-        <div style={styles.track}>
-          <div style={styles.trackInner}>
-            <div
-              style={{
-                ...styles.cart,
-                bottom: `${tracks[1].cart.position}px`,
-              }}
-            >
-              <img
-                src="https://i.ibb.co/01y6FtM/image-2-removebg-preview.png"
-                alt="Bullock Cart"
-                style={styles.cartImage}
-              />
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
-      {!raceStarted && (
-        <div style={styles.bettingSection}>
-          <h2>बेट लगाये </h2>
+
+      {/* BETTING SECTION */}
+      {!raceStarted && !raceFinished && (
+        <>
+          <h2>बेट लावा</h2>
+
           <div style={styles.cartSelection}>
             {tracks.map((track) => (
               <button
@@ -205,144 +271,145 @@ const BullockCartRacingGame = () => {
                 style={{
                   ...styles.cartButton,
                   backgroundColor:
-                    selectedCart === track.cart.id ? 'green' : 'chocolate',
+                    selectedCart === track.cart.id ? "green" : "chocolate",
                 }}
-                onClick={() => setSelectedCart(track.cart.id)}
+                onClick={() => {
+                  // set both id and snapshot name to avoid confusion later
+                  setSelectedCart(track.cart.id);
+                  setSelectedCartName(track.cart.name);
+                }}
               >
-                {track.cart.name} (ट्रॅक {track.id})
+                {track.cart.name}
               </button>
             ))}
           </div>
-          <div style={styles.betAmount}>
-            <label>बेट रुपये : </label>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              background: "rgba(255, 255, 255, 0.15)",
+              padding: "12px",
+              borderRadius: "12px",
+              width: "90%",
+              margin: "10px auto",
+              backdropFilter: "blur(6px)",
+              border: "1px solid rgba(255,255,255,0.25)",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+            }}
+          >
+            <label
+              style={{
+                fontSize: "14px",
+                fontWeight: "600",
+                color: "#fff",
+                marginBottom: "6px",
+              }}
+            >
+              रक्कम:
+            </label>
+
             <input
               type="number"
-              value={betAmount}
-              onChange={(e) => setBetAmount(parseInt(e.target.value, 10))}
               min="10"
-              max={balance}
+              value={betAmount}
+              onChange={(e) => setBetAmount(Number(e.target.value))}
+              style={{
+                width: "100%",
+                padding: "10px",
+                fontSize: "15px",
+                borderRadius: "10px",
+                border: "1px solid #E91E63",
+                outline: "none",
+                background: "rgba(0,0,0,0.25)",
+                color: "#fff",
+                boxShadow: "inset 0 0 8px rgba(0,0,0,0.25)",
+                transition: "0.3s",
+              }}
             />
           </div>
+
           <button style={styles.startButton} onClick={startRace}>
             शर्यत सुरू करा
           </button>
-        </div>
+        </>
       )}
+
       {raceFinished && (
-        <div style={styles.resultSection}>
-          <button style={styles.resetButton} onClick={resetGame}>
-            पुन्हा खेळा
-          </button>
-        </div>
+        <button style={styles.resetButton} onClick={resetGame}>
+          पुन्हा खेळा
+        </button>
       )}
     </div>
   );
 };
 
 const styles = {
-  container: {
-    textAlign: 'center',
-    fontFamily: 'Arial, sans-serif',
-    backgroundColor: '#f0e68c',
-    padding: '20px',
-    borderRadius: '10px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-  },
-  title: {
-    fontSize: '1.3rem',
-    color: '#8b4513',
-  },
-  balance: {
-    fontSize: '1rem',
-    margin: '10px 0',
-    color: '#8b4513',
-  },
+  container: { textAlign: "center", marginBottom: "100px" },
+  title: { fontSize: "1.3rem", color: "white" },
+  balance: { fontSize: "1rem", margin: "10px 0", color: "yellow" },
+
   trackContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: '20px',
-    margin: '20px 0',
-    position: 'relative',
+    display: "flex",
+    justifyContent: "center",
+    gap: "20px",
+    margin: "20px 0",
   },
+
+  /* WRAPPER */
+  trackWrapper: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+
   track: {
-    // flex: 1,
-      height: '500px',
-    width:'150px',
-    backgroundColor: '#a0522d',
-    borderRadius: '10px',
-    border: '2px solid #8b4513',
-    position: 'relative',
-      overflow: 'hidden',
-    BorderRight:'30px solid red'
+    width: "150px",
+    height: "500px",
+    background: "#a0522d",
+    borderRadius: "10px",
+    overflow: "hidden",
+    position: "relative",
   },
-  trackInner: {
-    position: 'relative',
-    height: '100%',
-    backgroundSize: 'cover',
-  },
+
   cart: {
-    position: 'absolute',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    // width: '30%',
-    //   height: '18%',
-    transition: 'bottom 0.1s linear',
+    position: "absolute",
+    left: "80%",
+    transform: "translateX(-50%)",
+    transition: "bottom 0.1s linear",
   },
-  cartImage: {
-      width: '90%',
-      marginLeft:"45px",
-    height: '18%',
+  cartImage: { width: "70px" },
+
+  cartName: {
+    color: "white",
+    fontWeight: "600",
+    marginTop: "8px",
+    fontSize: "15px",
+    textAlign: "center",
+    width: "100px",
   },
-  separator: {
-    width: '2px',
-    height: '500px',
-    backgroundColor: '#8b4513',
-  },
-    bettingSection: {
-      color:'black',
-    marginTop: '20px',
-  },
-  cartSelection: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '10px',
-    margin: '10px 0',
-  },
+
+  cartSelection: { display: "flex", gap: "10px" },
   cartButton: {
-    padding: '10px 20px',
-    fontSize: '1rem',
-    borderRadius: '5px',
-    border: 'none',
-    cursor: 'pointer',
-    backgroundColor: '#8b4513',
-    color: '#fff',
+    padding: "10px",
+    borderRadius: "5px",
+    cursor: "pointer",
+    color: "white",
   },
-  betAmount: {
-    margin: '10px 0',
-  },
+  betAmount: { margin: "10px 0" },
+
   startButton: {
-    padding: '10px 20px',
-    fontSize: '1rem',
-    backgroundColor: '#228b22',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-  },
-    resultSection: {
-        color: 'black',
-        fontSize:'0.6rem',
-    marginTop: '20px',
+    padding: "10px 20px",
+    background: "green",
+    color: "#fff",
+    borderRadius: "5px",
   },
   resetButton: {
-    padding: '10px 20px',
-    fontSize: '1rem',
-    backgroundColor: '#dc3545',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
+    padding: "10px 20px",
+    background: "#dc3545",
+    color: "#fff",
+    borderRadius: "5px",
   },
 };
 
