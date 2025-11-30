@@ -20,7 +20,6 @@ import "../Admin/AdminPanel.css";
 import useGameWinnerListener from "../useGameWinnerListener";
 import { updateBetsForTie, updateBetsForGame } from "../betUpdates";
 
-
 const ManageGames = () => {
   const [games, setGames] = useState([]);
   const [allGames, setAllGames] = useState([]);
@@ -74,8 +73,7 @@ const ManageGames = () => {
     return () => unsubscribe();
   }, []);
 
-
-//   useGameWinnerListener(isManualUpdate);
+  //   useGameWinnerListener(isManualUpdate);
   // const handleAddGame = async () => {
   //   try {
   //     if (
@@ -111,192 +109,217 @@ const ManageGames = () => {
   //     setErrorMessage("Error adding game: " + error.message);
   //   }
   //   };
-    
-    // // const updateBetsForTie = async (gameId) => {
-    //     console.log(`Updating bets for game: ${gameId} | Result: Tie`);
-      
-    //     const usersRef = collection(db, "users");
-    //     const usersSnapshot = await getDocs(usersRef);
-      
-    //     for (const userDoc of usersSnapshot.docs) {
-    //       const userId = userDoc.id;
-    //       const betsRef = collection(db, "users", userId, "bets");
-    //       const betsQuery = query(betsRef, where("gameId", "==", gameId));
-    //       const betsSnapshot = await getDocs(betsQuery);
-      
-    //       for (const betDoc of betsSnapshot.docs) {
-    //         const betId = betDoc.id;
-      
-    //         // Update each bet as "tie"
-    //         await updateDoc(doc(db, "users", userId, "bets", betId), {
-    //           status: "tie",
-    //           winnings: 0,
-    //         });
-      
-    //         console.log(`Bet ${betId} marked as tie for user ${userId}`);
-    //       }
-    //     }
-    //   };
-      
-    const handleToggleBetting = async (gameId, isEnabled) => {
-        try {
-          console.log(`Setting betting for game ${gameId} to ${isEnabled}`);
-          
-          // Ensure the gameId is valid and passed properly
-          if (!gameId) {
-            console.error("Invalid game ID");
-            return;
-          }
-      
-          // Get a reference to the specific game document
-          const gameRef = doc(db, "games", gameId);
-      
-          // Update the bettingEnabled field
-          await updateDoc(gameRef, { isBetEnabled: isEnabled });
-      
-          alert(`Betting has been ${isEnabled ? "enabled" : "disabled"} for this game.`);
-        } catch (error) {
-          console.error("Error updating betting status:", error);
-          alert("An error occurred while updating betting status.");
-        }
-    };
-    
-      
-      
-      const handleSetWinner = async (gameId, winner) => {
-        if (!gameId || !winner) {
-          alert("Please select a game and a winner!");
-          return;
-        }
-      
-        try {
-          console.log(`Setting winner for game ${gameId} to ${winner}`);
-      
-          // Avoid calling `updateBetsForGame` when only toggling betting
-          if (winner === "tie") {
-            await updateBetsForTie(gameId);
-          } else {
-            await updateBetsForGame(gameId, winner);
-          }
-      
-          alert("Bets and balances have been updated successfully!");
-        } catch (error) {
-          console.error("Error updating bets:", error);
-          alert("An error occurred while updating bets.");
-        }
-      };
-      
-    
 
-      const updateBetsForGame = async (gameId, winnerTeamName) => {
-        console.log(`Updating bets for game: ${gameId} | Winner: ${winnerTeamName}`);
-      
-        const commissionRate = 0.10; // 5% commission (change to 0.10 for 10%)
-      
-        const usersRef = collection(db, "users");
-        const usersSnapshot = await getDocs(usersRef);
-      
-        for (const userDoc of usersSnapshot.docs) {
-          const userId = userDoc.id;
-          const betsRef = collection(db, "users", userId, "bets");
-          const betsQuery = query(betsRef, where("gameId", "==", gameId));
-          const betsSnapshot = await getDocs(betsQuery);
-      
-          const userRef = doc(db, "users", userId);
-          const userDocSnapshot = await getDoc(userRef);
-          let currentBalance = userDocSnapshot.exists()
-            ? Number(userDocSnapshot.data().walletBalance) || 0
-            : 0;
-      
-          for (const betDoc of betsSnapshot.docs) {
-            const betData = betDoc.data();
-            const betId = betDoc.id;
-      
-            const betStatus =
-              betData.selectedTeam === winnerTeamName ? "won" : "lost";
-      
-            const betAmount = Number(betData.betAmount);
-            const selectedMultiplier = Number(betData.selectedMultiplier);
-            let winnings = betStatus === "won" ? betAmount * selectedMultiplier : 0;
-      
-            if (winnings > 0) {
-              const commission = winnings * commissionRate;
-              winnings -= commission; // Deduct commission
-            }
-      
-            console.log(
-              `Updating bet ${betId}: Status -> ${betStatus}, Winnings -> ₹${winnings}`
-            );
-      
-            await updateDoc(doc(db, "users", userId, "bets", betId), {
-              status: betStatus,
-              winnings: winnings,
-            });
-      
-            if (betStatus === "won") {
-              currentBalance += winnings;
-              await updateDoc(userRef, { walletBalance: currentBalance });
-              console.log(
-                `Updated wallet balance for user ${userId}: ₹${currentBalance}`
-              );
-            }
-          }
+  // // const updateBetsForTie = async (gameId) => {
+  //     console.log(`Updating bets for game: ${gameId} | Result: Tie`);
+
+  //     const usersRef = collection(db, "users");
+  //     const usersSnapshot = await getDocs(usersRef);
+
+  //     for (const userDoc of usersSnapshot.docs) {
+  //       const userId = userDoc.id;
+  //       const betsRef = collection(db, "users", userId, "bets");
+  //       const betsQuery = query(betsRef, where("gameId", "==", gameId));
+  //       const betsSnapshot = await getDocs(betsQuery);
+
+  //       for (const betDoc of betsSnapshot.docs) {
+  //         const betId = betDoc.id;
+
+  //         // Update each bet as "tie"
+  //         await updateDoc(doc(db, "users", userId, "bets", betId), {
+  //           status: "tie",
+  //           winnings: 0,
+  //         });
+
+  //         console.log(`Bet ${betId} marked as tie for user ${userId}`);
+  //       }
+  //     }
+  //   };
+
+  const handleToggleBetting = async (gameId, isEnabled) => {
+    try {
+      console.log(`Setting betting for game ${gameId} to ${isEnabled}`);
+
+      // Ensure the gameId is valid and passed properly
+      if (!gameId) {
+        console.error("Invalid game ID");
+        return;
+      }
+
+      // Get a reference to the specific game document
+      const gameRef = doc(db, "games", gameId);
+
+      // Update the bettingEnabled field
+      await updateDoc(gameRef, { isBetEnabled: isEnabled });
+
+      alert(
+        `Betting has been ${isEnabled ? "enabled" : "disabled"} for this game.`
+      );
+    } catch (error) {
+      console.error("Error updating betting status:", error);
+      alert("An error occurred while updating betting status.");
+    }
+  };
+
+  // const handleSetWinner = async (gameId, winner) => {
+  //   if (!gameId || !winner) {
+  //     alert("Please select a game and a winner!");
+  //     return;
+  //   }
+
+  //   try {
+  //     console.log(`Setting winner for game ${gameId} to ${winner}`);
+
+  //     // Avoid calling `updateBetsForGame` when only toggling betting
+  //     if (winner === "tie") {
+  //       await updateBetsForTie(gameId);
+  //     } else {
+  //       await updateBetsForGame(gameId, winner);
+  //     }
+
+  //     alert("Bets and balances have been updated successfully!");
+  //   } catch (error) {
+  //     console.error("Error updating bets:", error);
+  //     alert("An error occurred while updating bets.");
+  //   }
+  // };
+
+ const handleSetWinner = async (gameId, winner) => {
+  if (!gameId || !winner) {
+    alert("Please select a game and a winner!");
+    return;
+  }
+
+  try {
+    console.log("Setting winner:", winner);
+
+    await updateDoc(doc(db, "games", gameId), {
+      winner: winner
+    });
+
+    alert("Winner updated! All bets will be updated automatically.");
+  } catch (error) {
+    console.error("Error setting winner:", error);
+    alert("Error setting winner: " + error.message);
+  }
+};
+
+ 
+  const updateBetsForGame = async (gameId, winnerTeamName) => {
+    console.log(
+      `Updating bets for game: ${gameId} | Winner: ${winnerTeamName}`
+    );
+
+    const commissionRate = 0.1; // 5% commission (change to 0.10 for 10%)
+
+    const usersRef = collection(db, "users");
+    const usersSnapshot = await getDocs(usersRef);
+
+    for (const userDoc of usersSnapshot.docs) {
+      const userId = userDoc.id;
+      const betsRef = collection(db, "users", userId, "bets");
+      const betsQuery = query(betsRef, where("gameId", "==", gameId));
+      const betsSnapshot = await getDocs(betsQuery);
+
+      const userRef = doc(db, "users", userId);
+      const userDocSnapshot = await getDoc(userRef);
+      let currentBalance = userDocSnapshot.exists()
+        ? Number(userDocSnapshot.data().walletBalance) || 0
+        : 0;
+
+      for (const betDoc of betsSnapshot.docs) {
+        const betData = betDoc.data();
+        const betId = betDoc.id;
+
+        const betStatus =
+          betData.selectedTeam === winnerTeamName ? "won" : "lost";
+
+        const betAmount = Number(betData.betAmount);
+        const selectedMultiplier = Number(betData.odds);
+        let winnings = betStatus === "won" ? betAmount * selectedMultiplier : 0;
+
+        if (winnings > 0) {
+          const commission = winnings * commissionRate;
+          winnings -= commission; // Deduct commission
         }
-      };
-      
+
+        console.log(
+          `Updating bet ${betId}: Status -> ${betStatus}, Winnings -> ₹${winnings}`
+        );
+
+        await updateDoc(doc(db, "users", userId, "bets", betId), {
+          status: betStatus,
+          winnings: winnings,
+        });
+
+        if (betStatus === "won") {
+          currentBalance += winnings;
+          await updateDoc(userRef, { walletBalance: currentBalance });
+          console.log(
+            `Updated wallet balance for user ${userId}: ₹${currentBalance}`
+          );
+        }
+      }
+    }
+  };
+
   return (
-    < >
-          <div style={{ margin:'0 auto'}}>
-      <div className="game-selection">
-        <h2>Select Game and Winner</h2>
-        <div className="select-group">
-          <label>Select Game</label>
-          <select
-            value={selectedGame}
-            onChange={e => setSelectedGame(e.target.value)}
-          >
-            <option value="">Select Game</option>
-            {games.map(game => (
-              <option key={game.id} value={game.id}>
-                {game.league} - {game.team1.name} vs {game.team2.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {selectedGame && (
+    <>
+      <div style={{ margin: "0 auto" }}>
+        <div className="game-selection">
+          <h2>Select Game and Winner</h2>
           <div className="select-group">
-            <label>Select Winner</label>
+            <label>Select Game</label>
             <select
-              value={selectedWinner}
-              onChange={e => setSelectedWinner(e.target.value)}
+              value={selectedGame}
+              onChange={e => setSelectedGame(e.target.value)}
             >
-              <option value="">Select Winner</option>
-              <option value="tie">Tie</option>
-              <option
-                value={games.find(game => game.id === selectedGame)?.team1.name}
-              >
-                {games.find(game => game.id === selectedGame)?.team1.name}
-              </option>
-              <option
-                value={games.find(game => game.id === selectedGame)?.team2.name}
-              >
-                {games.find(game => game.id === selectedGame)?.team2.name}
-              </option>
+              <option value="">Select Game</option>
+              {games.map(game => (
+                <option key={game.id} value={game.id}>
+                  {game.league} - {game.team1.name} vs {game.team2.name}
+                </option>
+              ))}
             </select>
           </div>
-        )}
 
-<button
-  className="set-winner-btn"
-  onClick={() => handleSetWinner(selectedGame, selectedWinner)}
->
-  Set Winner
-</button>
+          {selectedGame && (
+            <div className="select-group">
+              <label>Select Winner</label>
+              <select
+                value={selectedWinner}
+                onChange={e => setSelectedWinner(e.target.value)}
+              >
+                <option value="">Select Winner</option>
+                <option value="tie">Tie</option>
+                <option
+                  value={
+                    games.find(game => game.id === selectedGame)?.team1.name
+                  }
+                >
+                  {games.find(game => game.id === selectedGame)?.team1.name}
+                </option>
+                <option
+                  value={
+                    games.find(game => game.id === selectedGame)?.team2.name
+                  }
+                >
+                  {games.find(game => game.id === selectedGame)?.team2.name}
+                </option>
+              </select>
+            </div>
+          )}
 
-        {errorMessage && <p className="error-message">{errorMessage}</p>}
-      </div>
-      {/* <div className="add-game">
+          <button
+            className="set-winner-btn"
+            onClick={() => handleSetWinner(selectedGame, selectedWinner)}
+          >
+            Set Winner
+          </button>
+
+          {errorMessage && <p className="error-message">{errorMessage}</p>}
+        </div>
+        {/* <div className="add-game">
         <h2>Add New Game</h2>
         <input
           type="text"
@@ -347,35 +370,42 @@ const ManageGames = () => {
           Add Game
         </button>
           </div> */}
-          </div>
-          <div>
-          <div>
-  <table className="requests-table" style={{marginBottom:'200px'}}>
-    <thead>
-      <tr>
-        <th>League</th>
-        <th>Team 1</th>
-        <th>Team 2</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      {allGames.map(game => (
-        <tr key={game.id}>
-          <td>{game.league}</td>
-          <td>{game.team1.name}</td>
-          <td>{game.team2.name}</td>
-          <td>
-          <button className={game.isBetEnabled ? "enable-betting" : "disable-betting"}  onClick={() => handleToggleBetting(game.id, true)}>Enable Betting</button>
-<button onClick={() => handleToggleBetting(game.id, false)}>Disable Betting</button>
-
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
-
+      </div>
+      <div>
+        <div>
+          <table className="requests-table" style={{ marginBottom: "200px" }}>
+            <thead>
+              <tr>
+                <th>League</th>
+                <th>Team 1</th>
+                <th>Team 2</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {allGames.map(game => (
+                <tr key={game.id}>
+                  <td>{game.league}</td>
+                  <td>{game.team1.name}</td>
+                  <td>{game.team2.name}</td>
+                  <td>
+                    <button
+                      className={
+                        game.isBetEnabled ? "enable-betting" : "disable-betting"
+                      }
+                      onClick={() => handleToggleBetting(game.id, true)}
+                    >
+                      Enable Betting
+                    </button>
+                    <button onClick={() => handleToggleBetting(game.id, false)}>
+                      Disable Betting
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );

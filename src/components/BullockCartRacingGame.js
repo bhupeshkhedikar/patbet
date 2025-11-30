@@ -2,21 +2,27 @@ import React, { useState, useEffect, useRef } from "react";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db, auth } from "../firebase";
 
+/* ***************************************
+   CART NAMES
+**************************************** */
 const cartNames = [
-  "गोल्डी आणि सिल्व्हर","पर्ल आणि डायमंड","वीर आणि वरद","शक्ती आणि संजीवनी",
-  "भैरव आणि भूपाल","रणवीर आणि रणधीर","दत्ता आणि दामोदर","गणेश आणि गजानन",
-  "सम्राट आणि सूर्यवीर","यशवंत आणि युगंधर","केसर आणि कृष्णा","मल्लेश आणि मुरलीधर",
-  "अग्निवीर आणि तेजस्वी","प्रताप आणि प्रभाकर","शिवराज आणि शौर्यवीर","धनराज आणि देवेंद्र",
-  "माणिक आणि मोती","सागर आणि संदीप","आदित्य आणि अविनाश","दीपक आणि दिगंबर",
-  "सिंहगर्जना आणि सिंहशक्ती","गजेंद्र आणि गरुडवीर","सिद्धी आणि समाधी","अमर आणि अनंता",
-  "ध्रुव आणि दीपक","आकाश आणि अनिल","परशुराम आणि पांडुरंग","भवानी आणि भैरवी",
-  "रणधीर आणि रणजित","समर्थ आणि सत्यम","कस्तुरी आणि कमल","गंगाधर आणि गोविंद",
-  "महादेव आणि मयूरेश","शिवदास आणि सूर्यदास","जगत आणि जनार्दन","चंद्रहास आणि चंद्रशेखर"
+  "गोल्डी और सिल्वर","पर्ल और डायमंड","वीर और वरद","शक्ति और संजीवनी",
+  "भैरव और भूपाल","रणवीर और रणधीर","दत्ता और दामोदर","गणेश और गजानन",
+  "सम्राट और सूर्यवीर","यशवंत और युगंधर","केसर और कृष्णा","मल्लेश और मुरलीधर",
+  "अग्निवीर और तेजस्वी","प्रताप और प्रभाकर","शिवराज और शौर्यवीर","धनराज और देवेंद्र",
+  "माणिक और मोती","सागर और संदीप","आदित्य और अविनाश","दीपक और दिगंबर",
+  "सिंहगर्जना और सिंहशक्ती","गजेंद्र और गरुड़वीर","सिद्धी और समाधी","अमर और अनंता",
+  "ध्रुव और दीपक","आकाश और अनिल","परशुराम और पांडुरंग","भवानी और भैरवी",
+  "रणधीर और रणजीत","समर्थ और सत्यं","कस्तूरी और कमल","गंगाधर और गोविंद",
+  "महादेव और मयूरेश","शिवदास और सूर्यदास","जगत और जनार्दन","चंद्रहास और चंद्रशेखर"
 ];
 
 const getRandomNames = () => cartNames[Math.floor(Math.random() * cartNames.length)];
 
 const BullockCartRacingGame = () => {
+  /* ***************************************
+     STATES
+  **************************************** */
   const [tracks, setTracks] = useState([
     { id: 1, cart: { id: 1, name: getRandomNames(), position: 0 } },
     { id: 2, cart: { id: 2, name: getRandomNames(), position: 0 } },
@@ -24,38 +30,35 @@ const BullockCartRacingGame = () => {
 
   const [raceStarted, setRaceStarted] = useState(false);
   const [raceFinished, setRaceFinished] = useState(false);
-
-  // selectedCart stores the selected cart id (1 or 2)
   const [selectedCart, setSelectedCart] = useState(null);
-  // selectedCartName stores the name at time of selection for clarity
   const [selectedCartName, setSelectedCartName] = useState(null);
-
   const [betAmount, setBetAmount] = useState(10);
   const [walletBalance, setWalletBalance] = useState(0);
-  const [result, setResult] = useState("");
+  
+  /* ********** NEW MODAL STATES *********** */
+  const [showResultModal, setShowResultModal] = useState(false);
+  const [isWin, setIsWin] = useState(false);
+  const [winAmount, setWinAmount] = useState(0);
 
   const user = auth.currentUser;
 
-  // ⭐ SOUND REFS
+  /* ********** SOUNDS *********** */
   const startSound = useRef(null);
   const runningSound = useRef(null);
   const winSound = useRef(null);
   const lossSound = useRef(null);
 
   useEffect(() => {
-    // Load sound files
     startSound.current = new Audio("/sounds/start.wav");
     runningSound.current = new Audio("/sounds/cart_moving.wav");
     winSound.current = new Audio("/sounds/victory.wav");
     lossSound.current = new Audio("/sounds/loss.wav");
-
     runningSound.current.loop = true;
   }, []);
 
-  // ⭐ Load Real Wallet Balance (listen to user doc)
+  /* ********** LOAD USER WALLET *********** */
   useEffect(() => {
     if (!user) return;
-
     const userRef = doc(db, "users", user.uid);
 
     const unsub = onSnapshot(userRef, (snap) => {
@@ -67,112 +70,85 @@ const BullockCartRacingGame = () => {
     return () => unsub();
   }, [user]);
 
-  // Helper: decide winner using a *provided* snapshot of tracks to avoid stale closures
+  /* ***************************************
+     DECIDE WINNER + SHOW MODAL
+  **************************************** */
   const decideWinner = async (currentTracks) => {
-    if (!currentTracks || currentTracks.length === 0) return;
-
-    // find the winner based on positions in the *currentTracks* snapshot
     const winner = currentTracks.reduce((a, b) =>
       a.cart.position > b.cart.position ? a : b
     );
 
-    // ensure we have a user
-    if (!user) {
-      // just set result message, no DB ops
-      setResult(
-        selectedCart === winner.cart.id
-          ? `🏆 तुम्ही जिंकलात! तुम्ही बेट लावले होते: ${selectedCartName || selectedCart} — विजेता: ${winner.cart.name}`
-          : `❌ तुम्ही हरलात! विजेता: ${winner.cart.name} (तुम्ही बेट लावले होते: ${selectedCartName || selectedCart})`
-      );
-      return;
-    }
+    if (!user) return;
 
     const userRef = doc(db, "users", user.uid);
 
-    // Compare selected cart id with winner's id
     if (selectedCart === winner.cart.id) {
-      const winAmount = betAmount * 2;
+      const winAmountCalc = betAmount * 2;
 
-      // Update DB with new wallet balance (compute from the latest UI balance snapshot)
-      // note: using walletBalance from state; in highly concurrent apps one might re-fetch or use transactions.
-      const newBalance = (walletBalance || 0) + winAmount;
-      try {
-        await updateDoc(userRef, { walletBalance: newBalance });
-        setWalletBalance(newBalance);
-      } catch (err) {
-        // fallback: still update local state so UI shows win
-        setWalletBalance((prev) => prev + winAmount);
-      }
+      setWinAmount(winAmountCalc);
+      setIsWin(true);
+      setShowResultModal(true);
 
-      setResult(
-        `🏆 तुम्ही जिंकलात! तुम्ही बेट लावले होते: ${selectedCartName || selectedCart} — विजेता: ${winner.cart.name}`
-      );
+      setTimeout(() => setShowResultModal(false), 3000);
+
+      const newBalance = walletBalance + winAmountCalc;
+      await updateDoc(userRef, { walletBalance: newBalance });
+      setWalletBalance(newBalance);
 
       if (winSound.current) winSound.current.play();
     } else {
-      setResult(
-        `❌ तुम्ही हरलात! विजेता: ${winner.cart.name} (तुम्ही बेट लावले होते: ${selectedCartName || selectedCart})`
-      );
+      setIsWin(false);
+      setShowResultModal(true);
+
+      setTimeout(() => setShowResultModal(false), 3000);
 
       if (lossSound.current) lossSound.current.play();
     }
   };
 
-  // ⭐ Start Race
+  /* ***************************************
+     START RACE
+  **************************************** */
   const startRace = async () => {
-    if (!user) return alert("Please login first!");
-    if (!selectedCart) return alert("एक बैलगाड़ी निवडा!");
-    if (betAmount <= 0) return alert("कृपया योग्य पैज निवडा!");
-    if (betAmount > walletBalance) return alert("वॉलेट मध्ये पुरेसे पैसे नाहीत!");
+    if (!user) return alert("कृपया पहले लॉगिन करें!");
+    if (!selectedCart) return alert("कृपया एक बैलगाड़ी चुनें!");
+    if (betAmount <= 0) return alert("कृपया सही राशि दर्ज करें!");
+    if (betAmount > walletBalance) return alert("वॉलेट में पर्याप्त बैलेंस नहीं है!");
 
     const userRef = doc(db, "users", user.uid);
 
-    // deduct bet immediately (optimistic)
     try {
-      const newBalAfterBet = (walletBalance || 0) - betAmount;
-      await updateDoc(userRef, { walletBalance: newBalAfterBet });
-      setWalletBalance(newBalAfterBet);
-    } catch (err) {
-      // still update local if DB update fails to avoid blocking the game UX
-      setWalletBalance((prev) => prev - betAmount);
+      const newBal = walletBalance - betAmount;
+      await updateDoc(userRef, { walletBalance: newBal });
+      setWalletBalance(newBal);
+    } catch {
+      setWalletBalance(prev => prev - betAmount);
     }
 
-    // 🔊 Play start sound
     if (startSound.current) startSound.current.play();
-
-    // 🔊 Start running background sound
-    setTimeout(() => {
-      if (runningSound.current) runningSound.current.play();
-    }, 300);
+    setTimeout(() => runningSound.current?.play(), 300);
 
     setRaceStarted(true);
     setRaceFinished(false);
 
-    // IMPORTANT FIX:
-    // DO NOT re-randomize cart names here — keep the currently visible names.
-    // Only reset positions to 0 so the carts start from the bottom with the same names the user saw.
-    setTracks((prev) =>
-      prev.map((t) => ({
+    setTracks(prev =>
+      prev.map(t => ({
         ...t,
-        cart: {
-          ...t.cart,
-          position: 0,
-        },
+        cart: { ...t.cart, position: 0 }
       }))
     );
   };
 
-  // ⭐ Racing Animation
+  /* ***************************************
+     RACING ANIMATION
+  **************************************** */
   useEffect(() => {
     if (raceStarted && !raceFinished) {
       const interval = setInterval(() => {
-        setTracks((prev) =>
-          prev.map((track) => ({
+        setTracks(prev =>
+          prev.map(track => ({
             ...track,
-            cart: {
-              ...track.cart,
-              position: track.cart.position + Math.random() * 10,
-            },
+            cart: { ...track.cart, position: track.cart.position + Math.random() * 10 }
           }))
         );
       }, 90);
@@ -181,100 +157,82 @@ const BullockCartRacingGame = () => {
     }
   }, [raceStarted, raceFinished]);
 
-  // ⭐ Check if race finished - when finished, pass the current snapshot to decideWinner
+  /* ***************************************
+     CHECK FINISH
+  **************************************** */
   useEffect(() => {
-    if (!tracks || tracks.length === 0) return;
-    const finished = tracks.some((t) => t.cart.position >= 500);
+    const finished = tracks.some(t => t.cart.position >= 500);
     if (finished) {
       setRaceFinished(true);
       setRaceStarted(false);
-
-      // stop running sound
-      if (runningSound.current) runningSound.current.pause();
-
-      // pass the current tracks snapshot to decideWinner to avoid stale closures
+      runningSound.current?.pause();
       decideWinner(tracks);
     }
-    // intentionally depend on tracks so this runs as positions update
   }, [tracks]);
 
+  /* ***************************************
+     RESET GAME
+  **************************************** */
   const resetGame = () => {
     setRaceStarted(false);
     setRaceFinished(false);
     setSelectedCart(null);
     setSelectedCartName(null);
     setBetAmount(10);
-    setResult("");
 
-    // When resetting game, give fresh random names
     setTracks([
       { id: 1, cart: { id: 1, name: getRandomNames(), position: 0 } },
       { id: 2, cart: { id: 2, name: getRandomNames(), position: 0 } },
     ]);
-
-    // Stop any playing sounds
-    if (runningSound.current) {
-      runningSound.current.pause();
-      runningSound.current.currentTime = 0;
-    }
-    if (startSound.current) {
-      startSound.current.pause();
-      startSound.current.currentTime = 0;
-    }
   };
 
+  /* ***************************************
+     RETURN UI
+  **************************************** */
   return (
     <div style={styles.container}>
-      <h1 style={styles.title}>ऑनलाईन शंकरपट</h1>
+      <h1 style={styles.title}>ऑनलाइन बैलगाड़ी रेस</h1>
+      <div style={styles.balance}>वॉलेट बैलेंस: ₹{walletBalance}</div>
 
-      <div style={styles.balance}>वॉलेट बॅलन्स: ₹{walletBalance}</div>
-
-      {raceFinished && <h2>{result}</h2>}
-
-      {/* RACE TRACKS */}
       <div style={styles.trackContainer}>
-        {tracks.map((track) => (
+        {tracks.map(track => (
           <div key={track.id} style={styles.trackWrapper}>
-
-            {/* Track */}
             <div style={styles.track}>
               <div
                 style={{
                   ...styles.cart,
-                  bottom: `${track.cart.position}px`,
+                  bottom: `${track.cart.position}px`
                 }}
               >
                 <img
                   src="https://i.ibb.co/01y6FtM/image-2-removebg-preview.png"
-                  alt=""
                   style={styles.cartImage}
                 />
               </div>
             </div>
 
-            {/* Cart Name (NEW) */}
             <div style={styles.cartName}>{track.cart.name}</div>
-
           </div>
         ))}
       </div>
 
-      {/* BETTING SECTION */}
+      {/* -----------------------------------------
+          BETTING SECTION
+      ------------------------------------------- */}
       {!raceStarted && !raceFinished && (
         <>
-          <h2>बेट लावा</h2>
+          <h2>बेट लगाएँ</h2>
 
           <div style={styles.cartSelection}>
-            {tracks.map((track) => (
+            {tracks.map(track => (
               <button
-                key={track.cart.id}
+                key={track.id}
                 style={{
                   ...styles.cartButton,
                   backgroundColor:
                     selectedCart === track.cart.id ? "green" : "chocolate",
                 }}
                 onClick={() => {
-                  // set both id and snapshot name to avoid confusion later
                   setSelectedCart(track.cart.id);
                   setSelectedCartName(track.cart.name);
                 }}
@@ -284,71 +242,71 @@ const BullockCartRacingGame = () => {
             ))}
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-              background: "rgba(255, 255, 255, 0.15)",
-              padding: "12px",
-              borderRadius: "12px",
-              width: "90%",
-              margin: "10px auto",
-              backdropFilter: "blur(6px)",
-              border: "1px solid rgba(255,255,255,0.25)",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-            }}
-          >
-            <label
-              style={{
-                fontSize: "14px",
-                fontWeight: "600",
-                color: "#fff",
-                marginBottom: "6px",
-              }}
-            >
-              रक्कम:
-            </label>
+          <div style={styles.betBox}>
+            <label style={styles.label}>राशि:</label>
 
             <input
               type="number"
               min="10"
               value={betAmount}
+              placeholder="न्यूनतम राशि ₹10"
               onChange={(e) => setBetAmount(Number(e.target.value))}
-              style={{
-                width: "100%",
-                padding: "10px",
-                fontSize: "15px",
-                borderRadius: "10px",
-                border: "1px solid #E91E63",
-                outline: "none",
-                background: "rgba(0,0,0,0.25)",
-                color: "#fff",
-                boxShadow: "inset 0 0 8px rgba(0,0,0,0.25)",
-                transition: "0.3s",
-              }}
+              style={styles.input}
             />
           </div>
 
           <button style={styles.startButton} onClick={startRace}>
-            शर्यत सुरू करा
+            रेस शुरू करें
           </button>
         </>
       )}
 
       {raceFinished && (
         <button style={styles.resetButton} onClick={resetGame}>
-          पुन्हा खेळा
+          फिर से खेलें
         </button>
+      )}
+
+      {/* ***************************************
+          WIN / LOSS MODAL
+      **************************************** */}
+      {showResultModal && (
+        <div style={modalStyles.overlay}>
+          <div style={modalStyles.modal}>
+            {isWin ? (
+              <>
+                <div style={modalStyles.emoji}>🎉🎉🎉</div>
+                <h2 style={{ color: "#00ff99" }}>आप जीते! 🏆</h2>
+                <p style={{ fontSize: "18px" }}>जीत की राशि:</p>
+                <h1 style={{ color: "#FFD700", fontSize: "40px" }}>
+                  ₹{winAmount}
+                </h1>
+              </>
+            ) : (
+              <>
+                <div style={modalStyles.emoji}>😔</div>
+                <h2 style={{ color: "red" }}>आप हार गए</h2>
+                <p>अगली बार बेहतर किस्मत!</p>
+              </>
+            )}
+
+            <p style={{ marginTop: "20px", fontSize: "12px", opacity: 0.7 }}>
+              बंद हो रहा है...
+            </p>
+          </div>
+        </div>
       )}
     </div>
   );
 };
 
+/* ***************************************
+   STYLES
+**************************************** */
 const styles = {
-  container: { textAlign: "center", marginBottom: "100px" },
-  title: { fontSize: "1.3rem", color: "white" },
-  balance: { fontSize: "1rem", margin: "10px 0", color: "yellow" },
+  container: { textAlign: "center", marginBottom: "90px" },
+  title: { color: "white", fontSize: "22px" },
+  balance: { color: "yellow", marginBottom: "10px" },
 
   trackContainer: {
     display: "flex",
@@ -357,20 +315,15 @@ const styles = {
     margin: "20px 0",
   },
 
-  /* WRAPPER */
-  trackWrapper: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
+  trackWrapper: { textAlign: "center" },
 
   track: {
     width: "150px",
     height: "500px",
     background: "#a0522d",
     borderRadius: "10px",
-    overflow: "hidden",
     position: "relative",
+    overflow: "hidden",
   },
 
   cart: {
@@ -379,37 +332,94 @@ const styles = {
     transform: "translateX(-50%)",
     transition: "bottom 0.1s linear",
   },
+
   cartImage: { width: "70px" },
 
   cartName: {
+    marginTop: "8px",
     color: "white",
     fontWeight: "600",
-    marginTop: "8px",
-    fontSize: "15px",
-    textAlign: "center",
-    width: "100px",
   },
 
-  cartSelection: { display: "flex", gap: "10px" },
+  cartSelection: { display: "flex", justifyContent: "center", gap: "10px" },
+
   cartButton: {
     padding: "10px",
-    borderRadius: "5px",
-    cursor: "pointer",
     color: "white",
+    borderRadius: "5px",
+    border: "none",
+    cursor: "pointer",
+    fontWeight: "600",
   },
-  betAmount: { margin: "10px 0" },
+
+  betBox: {
+    width: "90%",
+    margin: "12px auto",
+    padding: "12px",
+    background: "rgba(255,255,255,0.1)",
+    borderRadius: "10px",
+  },
+
+  label: { color: "white", marginBottom: "5px", display: "block" },
+
+  input: {
+    width: "100%",
+    padding: "10px",
+    borderRadius: "8px",
+    background: "rgba(0,0,0,0.3)",
+    color: "white",
+    border: "1px solid #ff4081",
+  },
 
   startButton: {
-    padding: "10px 20px",
     background: "green",
-    color: "#fff",
-    borderRadius: "5px",
-  },
-  resetButton: {
+    color: "white",
     padding: "10px 20px",
-    background: "#dc3545",
-    color: "#fff",
     borderRadius: "5px",
+    marginTop: "10px",
+  },
+
+  resetButton: {
+    background: "#e91e63",
+    color: "white",
+    padding: "10px 20px",
+    borderRadius: "5px",
+    marginTop: "10px",
+  },
+};
+
+/* ***************************************
+   MODAL STYLES
+**************************************** */
+const modalStyles = {
+  overlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "100vh",
+    background: "rgba(0,0,0,0.7)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    backdropFilter: "blur(4px)",
+    zIndex: 99999,
+  },
+  modal: {
+    width: "80%",
+    maxWidth: "350px",
+    background: "rgba(20,20,20,0.95)",
+    borderRadius: "15px",
+    padding: "20px",
+    textAlign: "center",
+    color: "white",
+    boxShadow: "0 0 20px #00ff99",
+    animation: "popup 0.5s ease-out",
+  },
+  emoji: {
+    fontSize: "50px",
+    marginBottom: "10px",
+    animation: "bounce 1s infinite",
   },
 };
 

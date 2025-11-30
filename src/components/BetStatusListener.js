@@ -22,19 +22,21 @@ const BetStatusListener = () => {
 
     const unsubscribe = onSnapshot(
       betsRef,
-      (snapshot) => {
-        const updatedBets = snapshot.docs.map((doc) => ({
+      snapshot => {
+        const updatedBets = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
         }));
 
         // Sort bets by createdAt (latest first)
-        updatedBets.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+        updatedBets.sort(
+          (a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)
+        );
 
         setBets(updatedBets);
         setLoading(false);
       },
-      (error) => {
+      error => {
         console.error("Error fetching bets:", error);
         setLoading(false);
       }
@@ -44,15 +46,19 @@ const BetStatusListener = () => {
   }, []);
 
   // Function to format timestamp to DD-MM-YYYY HH:mm
-  const formatDate = (timestamp) => {
+  const formatDate = timestamp => {
     if (!timestamp?.seconds) return "N/A";
     const date = new Date(timestamp.seconds * 1000);
-    return date.toLocaleDateString("en-GB") + " " + date.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+    return (
+      date.toLocaleDateString("en-GB") +
+      " " +
+      date.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })
+    );
   };
 
   return (
     <div className="bet-status-container">
-        <AdBanner/>
+      <AdBanner />
       <h3 className="bet-title">Your Bets</h3>
       {loading ? (
         <p className="loading">Loading bets...</p>
@@ -60,55 +66,158 @@ const BetStatusListener = () => {
         <p className="no-bets">No bets placed yet.</p>
       ) : (
         <div className="bets-list">
-          {bets.map((bet) => (
-            <div key={bet.id} className={`bet-card ${bet.status}`}>
-              <div className="bet-header">
-                <span className={`bet-status ${bet.status}`}>
-                  {bet.status === "won" && "विजयी"}
-                  {bet.status === "lost" && "पराजित"}
-                  {bet.status === "pending" && "बेट लगी हे-फ़ैसला आना बाकी है"}
-                  {bet.status === "returned" && "एकतरफा खेल/टाई/चान्स  - पैसे वापसी"}
-                </span>
+          {bets.map(bet => {
+            // Calculate earnings
+            const grossWinning = bet.betAmount * bet.odds;
+            const deduction = grossWinning * 0.1;
+            const finalPayout = grossWinning - deduction;
+
+            return (
+              <div key={bet.id} className={`bet-card ${bet.status}`}>
+                <div className="bet-header">
+                  <span className={`bet-status ${bet.status}`}>
+                    {bet.status === "won" && "विजयी"}
+                    {bet.status === "lost" && "पराजित"}
+                    {bet.status === "pending" &&
+                      "बेट लगी है - फैसला आना बाकी है"}
+                    {bet.status === "returned" &&
+                      "एकतरफा खेल / टाई - पैसे वापसी"}
+                  </span>
+                </div>
+
+                <div className="bet-body">
+                  <div className="bet-info">
+                    <span className="label">मैच का नाम:</span>
+                    <span
+                      className="value"
+                      style={{ color: "yellow", fontSize: "14px" }}
+                    >
+                      {bet.matchName}
+                    </span>
+                  </div>
+
+                  <div className="bet-info">
+                    <span className="label">चुनी हुई टीम:</span>
+                    <span
+                      className="value"
+                      style={{ color: "#1e90ff", fontSize: "14px" }}
+                    >
+                      {bet.selectedTeam}
+                    </span>
+                  </div>
+
+                  <div className="bet-info">
+                    <span className="label">बेट राशि:</span>
+                    <span className="value" style={{ color: "#ffcc00" }}>
+                      ₹{bet.betAmount || 0}
+                    </span>
+                  </div>
+
+                  <div className="bet-info">
+                    <span className="label">मल्टिप्लायर:</span>
+                    <span className="value" style={{ color: "#00bcd4" }}>
+                      {bet.odds}x
+                    </span>
+                  </div>
+
+                  <div className="bet-info">
+                    <span className="label">जीती हुई राशि:</span>
+                    <span
+                      className="value"
+                      style={{
+                        color:
+                          bet.status === "lost"
+                            ? "#f44336"
+                            : bet.status === "pending"
+                            ? "#ffa500"
+                            : "#4caf50",
+                        fontSize: "15px",
+                      }}
+                    >
+                      ₹{bet.winnings}
+                    </span>
+                  </div>
+
+                  <div className="bet-info">
+                    <span className="label">बेट तिथि:</span>
+                    <span
+                      className="value"
+                      style={{ color: "#9c27b0", fontSize: "14px" }}
+                    >
+                      {formatDate(bet.createdAt)}
+                    </span>
+                  </div>
+
+                  {/* NEW SECTION — Earnings Breakdown */}
+                  {/* {bet.status === "won" && (
+                    <div
+                      style={{
+                        marginTop: "10px",
+                        background: "#0d0d0d",
+                        padding: "10px",
+                        borderRadius: "8px",
+                        border: "1px solid #333",
+                      }}
+                    >
+                      <p style={{ fontSize: "12px", color: "#76ff03" }}>
+                        🟢 <b>कमाई विवरण:</b>
+                      </p>
+
+                      <p
+                        style={{
+                          fontSize: "11px",
+                          color: "white",
+                          margin: "3px 0",
+                        }}
+                      >
+                        कुल जीत (बेट × मल्टिप्लायर):{" "}
+                        <b>₹{grossWinning.toFixed(2)}</b>
+                      </p>
+
+                      <p
+                        style={{
+                          fontSize: "11px",
+                          color: "orange",
+                          margin: "3px 0",
+                        }}
+                      >
+                        कटौती (10%): <b>₹{deduction.toFixed(2)}</b>
+                      </p>
+
+                      <p
+                        style={{
+                          fontSize: "12px",
+                          color: "#4caf50",
+                          margin: "3px 0",
+                        }}
+                      >
+                        अंतिम राशि (आपको मिली): <b>₹{finalPayout.toFixed(2)}</b>
+                      </p>
+                    </div>
+                  )} */}
+                </div>
+
+                {bet.status === "won" && (
+                  <p
+                    className="commission-message"
+                    style={{
+                      fontSize: "8px",
+                      color: "grey",
+                      marginTop: "4px",
+                      textAlign: "center",
+                    }}
+                  >
+                    * आपकी जीत पर 10% कमीशन काटा जाता है।
+                  </p>
+                )}
               </div>
-              <div className="bet-body">
-               
-                <div className="bet-info">
-                  <span className="label">Match Name:</span>
-                  <span className="value" style={{ color: "yellow", fontSize: "14px" }}>{bet.matchName}</span>
-                </div>
-                <div className="bet-info">
-                  <span className="label">Selected Team:</span>
-                  <span className="value" style={{ color: "#1e90ff", fontSize: "14px" }}>{bet.selectedTeam}</span>
-                </div>
-                <div className="bet-info">
-                  <span className="label">Bet Amount:</span>
-                  <span className="value" style={{ color: "#ffcc00" }}>₹{bet.betAmount || 0}</span>
-                </div>
-                <div className="bet-info">
-                  <span className="label">Multiplier:</span>
-                  <span className="value" style={{ color: "#00bcd4" }}>{bet.selectedMultiplier}x</span>
-                </div>
-                <div className="bet-info">
-                  <span className="label">Winnings:</span>
-                  <span className="value" style={{ color: bet.status === "lost" ? "#f44336" : bet.status === "pending" ? "#ffa500" : "#4caf50", fontSize: "15px" }}>₹{bet.winnings}</span>
-                </div>
-                <div className="bet-info">
-                  <span className="label">Bet Date:</span>
-                  <span className="value" style={{ color: "#9c27b0", fontSize: "14px" }}>{formatDate(bet.createdAt)}</span>
-                </div>
-              </div>
-              {bet.status === "won" && (
-                <p className="commission-message" style={{ fontSize: "7px", color: "grey", marginTop: "5px", textAlign: "center" }}>
-                  * A small commission fee of 10% will be deducted from your winnings.
-                </p>
-              )}
-            </div>
-          ))}
-                <AdBanner/>
+            );
+          })}
+
+          <AdBanner />
         </div>
       )}
     </div>
-    
   );
 };
 

@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase"; // Firebase auth import
-import { Link, useNavigate } from "react-router-dom"; // Router for navigation
-import { ToastContainer, toast } from "react-toastify"; // Toast notifications
-import "react-toastify/dist/ReactToastify.css"; // Toast styles
+import { auth } from "../firebase";
+import { Link, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-import { getDoc, doc } from "firebase/firestore"; // Firestore imports
-import { db } from "../firebase"; // Firebase Firestore import
+import { getDoc, doc } from "firebase/firestore";
+import { db } from "../firebase";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -17,74 +17,80 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Fetch user data from Firestore to check if they are an admin
-      const userDocRef = doc(db, "users", user.uid); // User document reference
+      const userDocRef = doc(db, "users", user.uid);
       const docSnap = await getDoc(userDocRef);
 
       if (docSnap.exists()) {
         const userData = docSnap.data();
-        const isAdmin = userData.isAdmin; // Fetch isAdmin from Firestore
+        const isAdmin = userData.isAdmin;
 
-        // Save user data to localStorage (UID and isAdmin)
         localStorage.setItem("userUID", user.uid);
         localStorage.setItem("isAdmin", isAdmin);
 
-        // Display success message
-        toast.success("Login Successful!", { autoClose: 1000 });
+        toast.success("लॉगिन सफल हुआ!", { autoClose: 1000 });
 
-        // Redirect directly to the Admin Panel if user is admin
         setTimeout(() => {
           if (isAdmin) {
-            navigate("/admin"); // Redirect to Admin Panel if user is admin
+            navigate("/admin");
           } else {
-            navigate("/"); // Redirect to Home page if user is not an admin
+            navigate("/");
           }
         }, 1000);
       } else {
-        throw new Error("User data not found in Firestore.");
+        throw new Error("यूज़र डेटा नहीं मिला।");
       }
     } catch (err) {
       setError(err.message);
-      toast.error("Login Failed! " + err.message);
+      toast.error("लॉगिन असफल! " + err.message);
     }
   };
 
   return (
-    <div className="auth-container" style={{display:'flex', flexDirection:'column'}}>
+    <div className="auth-container" style={{ display: "flex", flexDirection: "column" }}>
       <ToastContainer />
+
       <div className="bonus-container">
-        <img src='https://i.ibb.co/LdL5xRp9/1741105411005.png' className="bonus-image" />
-    </div>
+        <img src="https://i.ibb.co/LdL5xRp9/1741105411005.png" className="bonus-image" />
+      </div>
+
       <div className="auth-box">
-        <h2>Login</h2>
+        <h2>लॉगिन करें</h2>
+
         {error && <p className="error">{error}</p>}
+
         <form onSubmit={handleLogin}>
           <input
             type="email"
-            placeholder="Email"
+            placeholder="ईमेल दर्ज करें"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
+
           <input
             type="password"
-            placeholder="Password"
+            placeholder="पासवर्ड दर्ज करें"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit">Login</button>
+
+          <button type="submit">लॉगिन</button>
         </form>
-        <p>
-          Don't have an account? <Link to="/register"><p style={{color:'yellow'}}>Register</p></Link>
+
+        <p style={{ marginTop: "10px" }}>
+          क्या आपका अकाउंट नहीं है?{" "}
+          <Link to="/register">
+            <p style={{ color: "yellow", display: "inline" }}>रजिस्टर करें</p>
+          </Link>
         </p>
       </div>
     </div>
-    
   );
 };
 

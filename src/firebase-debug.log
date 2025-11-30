@@ -1,0 +1,19 @@
+[debug] [2025-11-30T09:03:11.478Z] ----------------------------------------------------------------------
+[debug] [2025-11-30T09:03:11.485Z] Command:       C:\nvm4w\nodejs\node.exe C:\nvm4w\nodejs\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2025-11-30T09:03:11.486Z] CLI Version:   14.26.0
+[debug] [2025-11-30T09:03:11.486Z] Platform:      win32
+[debug] [2025-11-30T09:03:11.486Z] Node Version:  v20.19.0
+[debug] [2025-11-30T09:03:11.487Z] Time:          Sun Nov 30 2025 14:33:11 GMT+0530 (India Standard Time)
+[debug] [2025-11-30T09:03:11.487Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\HP\Desktop\all folders\folderpatbet\patbet\src
+

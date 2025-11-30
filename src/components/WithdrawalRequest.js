@@ -1,32 +1,39 @@
-import React, { useState, useEffect } from 'react';
-import '../../src/WithdrawalRequest.css';
-import { db, auth } from "../firebase"; // Import Firestore and auth
-import { doc, updateDoc, getDoc, addDoc, collection, onSnapshot } from "firebase/firestore";
-import GoogleAd from './GoogleAd';
-import { useNavigate } from 'react-router-dom';
-import AdBanner from './AdBanner';
+import React, { useState, useEffect } from "react";
+import "../../src/WithdrawalRequest.css";
+import { db, auth } from "../firebase";
+import {
+  doc,
+  updateDoc,
+  addDoc,
+  collection,
+  onSnapshot,
+} from "firebase/firestore";
+import GoogleAd from "./GoogleAd";
+import { useNavigate } from "react-router-dom";
+import AdBanner from "./AdBanner";
 
 const WithdrawalRequest = () => {
   const [amount, setAmount] = useState();
-  const [paymentMethod, setPaymentMethod] = useState('');
-  const [upiId, setUpiId] = useState('');
-  const [bankAccount, setBankAccount] = useState('');
-  const [confirmBankAccount, setConfirmBankAccount] = useState('');
-  const [ifscCode, setIfscCode] = useState('');
-  const [name, setName] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const [userId, setUserId] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [upiId, setUpiId] = useState("");
+  const [bankAccount, setBankAccount] = useState("");
+  const [confirmBankAccount, setConfirmBankAccount] = useState("");
+  const [ifscCode, setIfscCode] = useState("");
+  const [name, setName] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [userId, setUserId] = useState("");
   const [walletBalance, setWalletBalance] = useState(0);
+
   const user = auth.currentUser;
-  const navigate=useNavigate();
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (user) {
       setUserId(user.uid);
       const userRef = doc(db, "users", user.uid);
 
-      // Listen for real-time wallet balance updates
-      const unsubscribe = onSnapshot(userRef, (docSnapshot) => {
+      const unsubscribe = onSnapshot(userRef, docSnapshot => {
         if (docSnapshot.exists()) {
           const data = docSnapshot.data();
           setWalletBalance(data.walletBalance || 0);
@@ -39,158 +46,216 @@ const WithdrawalRequest = () => {
 
   const handleRequestWithdrawal = async () => {
     try {
-      // Validate input fields
-      if (amount <= 1000) {
-        setErrorMessage('Amount must be greater than 1000');
+      // Clear previous messages
+      setErrorMessage("");
+      setSuccessMessage("");
+
+      if (!amount || amount <= 1000) {
+        alert("राशि 1000 रुपये से अधिक होनी चाहिए।");
+        setErrorMessage("राशि 1000 रुपये से अधिक होनी चाहिए।");
         return;
       }
+
       if (!paymentMethod) {
-        setErrorMessage('Please select a payment method');
+        alert("कृपया भुगतान विधि चुनें।");
+        setErrorMessage("कृपया भुगतान विधि चुनें।");
         return;
       }
+
       if (!name) {
-        setErrorMessage('Please enter your name');
+        alert("कृपया अपना नाम दर्ज करें।");
+        setErrorMessage("कृपया अपना नाम दर्ज करें।");
         return;
       }
-      if (paymentMethod === 'UPI' && !upiId) {
-        setErrorMessage('Please enter your UPI ID');
+
+      if (paymentMethod === "UPI" && !upiId) {
+        alert("कृपया अपना UPI ID दर्ज करें।");
+        setErrorMessage("कृपया अपना UPI ID दर्ज करें।");
         return;
       }
-      if (paymentMethod === 'Bank') {
-        if (!bankAccount || !ifscCode) {
-          setErrorMessage('Please enter your bank account details and IFSC code');
+
+      if (paymentMethod === "Bank") {
+        if (!bankAccount) {
+          alert("कृपया अपना बैंक खाता नंबर दर्ज करें।");
+          setErrorMessage("कृपया अपना बैंक खाता नंबर दर्ज करें।");
           return;
         }
+
+        if (!confirmBankAccount) {
+          alert("कृपया खाता नंबर की पुष्टि करें।");
+          setErrorMessage("कृपया खाता नंबर की पुष्टि करें।");
+          return;
+        }
+
         if (bankAccount !== confirmBankAccount) {
-          setErrorMessage('Account number and confirm account number must match');
+          alert("दोनों खाता नंबर मैच नहीं हो रहे हैं।");
+          setErrorMessage("दोनों खाता नंबर मैच नहीं हो रहे हैं।");
+          return;
+        }
+
+        if (!ifscCode) {
+          alert("कृपया IFSC कोड दर्ज करें।");
+          setErrorMessage("कृपया IFSC कोड दर्ज करें।");
+          return;
+        }
+
+        if (ifscCode.length !== 11) {
+          alert("कृपया वैध 11 अंकों का IFSC कोड दर्ज करें।");
+          setErrorMessage("कृपया वैध 11 अंकों का IFSC कोड दर्ज करें।");
           return;
         }
       }
 
-      // Check if wallet balance is sufficient
+      const deduction = amount * 0.05;
+      const finalAmount = amount - deduction;
+
       const walletBalanceFloat = parseFloat(walletBalance);
-      if (walletBalanceFloat < amount) {
-        setErrorMessage('Insufficient balance');
+      if (walletBalanceFloat < finalAmount) {
+        alert("आपके वॉलेट में पर्याप्त बैलेंस नहीं है।");
+        setErrorMessage("आपके वॉलेट में पर्याप्त बैलेंस नहीं है।");
         return;
       }
 
-      // Deduct the requested amount from wallet balance
       const userRef = doc(db, "users", userId);
+
       await updateDoc(userRef, {
-        walletBalance: walletBalanceFloat - amount,
+        walletBalance: walletBalanceFloat - finalAmount,
       });
 
-      // Create withdrawal request in Firestore
-      await addDoc(collection(db, 'withdrawalRequests'), {
+      await addDoc(collection(db, "withdrawalRequests"), {
         userId,
         amount,
+        finalAmount: finalAmount.toFixed(2),
+        deduction: deduction.toFixed(2),
         name,
         paymentMethod,
-        upiId: paymentMethod === 'UPI' ? upiId : null,
-        bankAccount: paymentMethod === 'Bank' ? bankAccount : null,
-        ifscCode: paymentMethod === 'Bank' ? ifscCode : null,
-        status: 'pending',
+        upiId: paymentMethod === "UPI" ? upiId : null,
+        bankAccount: paymentMethod === "Bank" ? bankAccount : null,
+        ifscCode: paymentMethod === "Bank" ? ifscCode : null,
+        status: "pending",
         requestDate: new Date(),
-        reason:null
+        reason: null,
       });
 
-      setSuccessMessage('Withdrawal request successfully created');
-      alert('Withdrawal request successfully created');
-      setErrorMessage('');
-      navigate('/mywithdrawals')
+      alert("विड्रॉल अनुरोध सफलतापूर्वक सबमिट किया गया!");
+      setSuccessMessage("विड्रॉल अनुरोध सफलतापूर्वक सबमिट किया गया!");
+
+      navigate("/mywithdrawals");
     } catch (error) {
-      setErrorMessage('Error creating withdrawal request');
-      console.error('Error creating withdrawal request:', error);
+      alert("विड्रॉल अनुरोध बनाते समय त्रुटि हुई।");
+      setErrorMessage("विड्रॉल अनुरोध बनाते समय त्रुटि हुई।");
+      console.error("Error:", error);
     }
   };
 
+  const finalAmount = amount ? amount - amount * 0.05 : 0;
+
   return (
     <>
-      <div className="auth-container">
-        
-      <div className="auth-box">
-        <h2>Request Withdrawal</h2>
-        <p style={{fontSize:'13px', color:'yellow'}}>Instant Withdrawal Within 5 to 30 min</p> <br/>
-        <p className="wallet-text">Wallet Balance: ₹{walletBalance}</p>
+      <div className="auth-container" style={{ marginBottom: "100px" }}>
+        <div className="auth-box" tyle={{ marginBottom: "50px" }}>
+          <h2>विड्रॉल अनुरोध</h2>
+          <p style={{ fontSize: "13px", color: "yellow" }}>
+            5 से 30 मिनट के अंदर इंस्टेंट विड्रॉल
+          </p>
+          <br />
+          <p className="wallet-text">वॉलेट बैलेंस: ₹{walletBalance}</p>
 
-        {/* Amount Input */}
-        <input
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          placeholder="Enter amount"
-        />
+          {errorMessage && <p className="error">{errorMessage}</p>}
+          {successMessage && <p className="success">{successMessage}</p>}
 
-        {/* Name Input */}
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Enter your name"
-        />
+          <input
+            type="number"
+            min="1001"
+            value={amount}
+            onChange={e => setAmount(Number(e.target.value))}
+            placeholder="न्यूनतम राशि: ₹1000 से अधिक"
+          />
 
-        {/* Payment Method Selection */}
-        <select
-          value={paymentMethod}
-          onChange={(e) => setPaymentMethod(e.target.value)}
-          className="payment-method-select"
-        >
-          <option value="">Select Payment Method</option>
-          {/* <option value="UPI">UPI</option> */}
-          <option value="Bank">Bank Transfer</option>
-        </select>
-
-        {/* UPI ID Input */}
-        {paymentMethod === 'UPI' && (
           <input
             type="text"
-            value={upiId}
-            onChange={(e) => setUpiId(e.target.value)}
-            placeholder="Enter UPI ID"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="अपना नाम दर्ज करें"
           />
-        )}
 
-        {/* Bank Account Inputs */}
-        {paymentMethod === 'Bank' && (
-          <>
+          <select
+            value={paymentMethod}
+            onChange={e => setPaymentMethod(e.target.value)}
+            className="payment-method-select"
+          >
+            <option value="">भुगतान विधि चुनें</option>
+            {/* <option value="UPI">UPI</option> */}
+            <option value="Bank">बैंक ट्रांसफर</option>
+          </select>
+
+          {paymentMethod === "UPI" && (
             <input
               type="text"
-              value={bankAccount}
-              onChange={(e) => setBankAccount(e.target.value)}
-              placeholder="Enter Bank Account Number"
+              value={upiId}
+              onChange={e => setUpiId(e.target.value)}
+              placeholder="UPI ID दर्ज करें"
             />
-            <input
-              type="text"
-              value={confirmBankAccount}
-              onChange={(e) => setConfirmBankAccount(e.target.value)}
-              placeholder="Confirm Bank Account Number"
-            />
-            <input
-              type="text"
-              value={ifscCode}
-              onChange={(e) => setIfscCode(e.target.value)}
-              placeholder="Enter IFSC Code"
-            />
-          </>
-        )}
+          )}
 
-        {/* Submit Button */}
-        <button onClick={handleRequestWithdrawal}>Request Withdrawal</button>
+          {paymentMethod === "Bank" && (
+            <>
+              <input
+                type="text"
+                value={bankAccount}
+                onChange={e => setBankAccount(e.target.value)}
+                placeholder="बैंक खाता संख्या दर्ज करें"
+              />
+              <input
+                type="text"
+                value={confirmBankAccount}
+                onChange={e => setConfirmBankAccount(e.target.value)}
+                placeholder="खाता संख्या की पुष्टि करें"
+              />
+              <input
+                type="text"
+                value={ifscCode}
+                onChange={e => setIfscCode(e.target.value)}
+                placeholder="IFSC कोड दर्ज करें"
+              />
+            </>
+          )}
 
-        <p style={{ fontSize: '10px', color: 'grey',marginTop:'20px' }}> 10% transaction fee will be deducted from the withdrawal amount.
-        You need to win at least ₹500 from bets to withdraw.</p>
+          {amount > 0 && (
+            <p style={{ color: "lightgreen", marginTop: "10px" }}>
+              अंतिम विड्रॉल राशि (5% शुल्क के बाद):{" "}
+              <b>₹{finalAmount.toFixed(2)}</b>
+            </p>
+          )}
 
-        {/* Error and Success Messages */}
-        {errorMessage && <p className="error">{errorMessage}</p>}
-        {successMessage && <p className="success">{successMessage}</p>}
+          <button
+            onClick={handleRequestWithdrawal}
+            style={{
+              width: "100%",
+              padding: "14px",
+              backgroundColor: "#08e676",
+              color: "black",
+              border: "none",
+              borderRadius: "12px",
+              fontSize: "18px",
+              fontWeight: "700",
+              boxShadow: "0 0 12px #08e676",
+              marginTop: "20px",
+              cursor: "pointer",
+            }}
+          >
+            निकालें ₹{finalAmount.toFixed(2)}
+          </button>
+
+          <p style={{ fontSize: "10px", color: "grey", marginTop: "20px" }}>
+            विड्रॉल राशि पर 5% शुल्क लागू होगा। <br />
+            न्यूनतम विड्रॉल राशि: ₹1000।
+          </p>
+        </div>
       </div>
-      </div>
-      <AdBanner/>
-     {/* <GoogleAd 
-     client="ca-pub-9925801540177456" 
-     slot="4077906455" 
-       /> */}
-       </>
+
+      <AdBanner />
+    </>
   );
 };
 
