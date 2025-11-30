@@ -2,9 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db, auth } from "../firebase";
 
-/* ***************************************
-   CART NAMES
-**************************************** */
 const cartNames = [
   "गोल्डी और सिल्वर","पर्ल और डायमंड","वीर और वरद","शक्ति और संजीवनी",
   "भैरव और भूपाल","रणवीर और रणधीर","दत्ता और दामोदर","गणेश और गजानन",
@@ -20,9 +17,6 @@ const cartNames = [
 const getRandomNames = () => cartNames[Math.floor(Math.random() * cartNames.length)];
 
 const BullockCartRacingGame = () => {
-  /* ***************************************
-     STATES
-  **************************************** */
   const [tracks, setTracks] = useState([
     { id: 1, cart: { id: 1, name: getRandomNames(), position: 0 } },
     { id: 2, cart: { id: 2, name: getRandomNames(), position: 0 } },
@@ -30,19 +24,19 @@ const BullockCartRacingGame = () => {
 
   const [raceStarted, setRaceStarted] = useState(false);
   const [raceFinished, setRaceFinished] = useState(false);
+
   const [selectedCart, setSelectedCart] = useState(null);
   const [selectedCartName, setSelectedCartName] = useState(null);
+
   const [betAmount, setBetAmount] = useState(10);
   const [walletBalance, setWalletBalance] = useState(0);
-  
-  /* ********** NEW MODAL STATES *********** */
+
   const [showResultModal, setShowResultModal] = useState(false);
   const [isWin, setIsWin] = useState(false);
   const [winAmount, setWinAmount] = useState(0);
 
   const user = auth.currentUser;
 
-  /* ********** SOUNDS *********** */
   const startSound = useRef(null);
   const runningSound = useRef(null);
   const winSound = useRef(null);
@@ -56,9 +50,9 @@ const BullockCartRacingGame = () => {
     runningSound.current.loop = true;
   }, []);
 
-  /* ********** LOAD USER WALLET *********** */
   useEffect(() => {
     if (!user) return;
+
     const userRef = doc(db, "users", user.uid);
 
     const unsub = onSnapshot(userRef, (snap) => {
@@ -70,9 +64,7 @@ const BullockCartRacingGame = () => {
     return () => unsub();
   }, [user]);
 
-  /* ***************************************
-     DECIDE WINNER + SHOW MODAL
-  **************************************** */
+  /* ********** WINNER LOGIC + MODAL ********** */
   const decideWinner = async (currentTracks) => {
     const winner = currentTracks.reduce((a, b) =>
       a.cart.position > b.cart.position ? a : b
@@ -84,31 +76,29 @@ const BullockCartRacingGame = () => {
 
     if (selectedCart === winner.cart.id) {
       const winAmountCalc = betAmount * 2;
-
       setWinAmount(winAmountCalc);
       setIsWin(true);
       setShowResultModal(true);
-
-      setTimeout(() => setShowResultModal(false), 3000);
 
       const newBalance = walletBalance + winAmountCalc;
       await updateDoc(userRef, { walletBalance: newBalance });
       setWalletBalance(newBalance);
 
-      if (winSound.current) winSound.current.play();
-    } else {
-      setIsWin(false);
-      setShowResultModal(true);
+      winSound.current?.play();
 
       setTimeout(() => setShowResultModal(false), 3000);
+    } else {
+      setIsWin(false);
+      setWinAmount(betAmount); // LOSS amount shown
+      setShowResultModal(true);
 
-      if (lossSound.current) lossSound.current.play();
+      lossSound.current?.play();
+
+      setTimeout(() => setShowResultModal(false), 3000);
     }
   };
 
-  /* ***************************************
-     START RACE
-  **************************************** */
+  /* ********** START RACE ********** */
   const startRace = async () => {
     if (!user) return alert("कृपया पहले लॉगिन करें!");
     if (!selectedCart) return alert("कृपया एक बैलगाड़ी चुनें!");
@@ -117,38 +107,35 @@ const BullockCartRacingGame = () => {
 
     const userRef = doc(db, "users", user.uid);
 
-    try {
-      const newBal = walletBalance - betAmount;
-      await updateDoc(userRef, { walletBalance: newBal });
-      setWalletBalance(newBal);
-    } catch {
-      setWalletBalance(prev => prev - betAmount);
-    }
+    const newBal = walletBalance - betAmount;
+    await updateDoc(userRef, { walletBalance: newBal });
+    setWalletBalance(newBal);
 
-    if (startSound.current) startSound.current.play();
+    startSound.current?.play();
     setTimeout(() => runningSound.current?.play(), 300);
 
     setRaceStarted(true);
     setRaceFinished(false);
 
-    setTracks(prev =>
-      prev.map(t => ({
+    setTracks((prev) =>
+      prev.map((t) => ({
         ...t,
-        cart: { ...t.cart, position: 0 }
+        cart: { ...t.cart, position: 0 },
       }))
     );
   };
 
-  /* ***************************************
-     RACING ANIMATION
-  **************************************** */
+  /* ********** RACING ANIMATION ********** */
   useEffect(() => {
     if (raceStarted && !raceFinished) {
       const interval = setInterval(() => {
-        setTracks(prev =>
-          prev.map(track => ({
+        setTracks((prev) =>
+          prev.map((track) => ({
             ...track,
-            cart: { ...track.cart, position: track.cart.position + Math.random() * 10 }
+            cart: {
+              ...track.cart,
+              position: track.cart.position + Math.random() * 10,
+            },
           }))
         );
       }, 90);
@@ -157,11 +144,9 @@ const BullockCartRacingGame = () => {
     }
   }, [raceStarted, raceFinished]);
 
-  /* ***************************************
-     CHECK FINISH
-  **************************************** */
+  /* ********** CHECK FINISH ********** */
   useEffect(() => {
-    const finished = tracks.some(t => t.cart.position >= 500);
+    const finished = tracks.some((t) => t.cart.position >= 500);
     if (finished) {
       setRaceFinished(true);
       setRaceStarted(false);
@@ -170,9 +155,7 @@ const BullockCartRacingGame = () => {
     }
   }, [tracks]);
 
-  /* ***************************************
-     RESET GAME
-  **************************************** */
+  /* ********** RESET ********** */
   const resetGame = () => {
     setRaceStarted(false);
     setRaceFinished(false);
@@ -186,22 +169,21 @@ const BullockCartRacingGame = () => {
     ]);
   };
 
-  /* ***************************************
-     RETURN UI
-  **************************************** */
+  /* ********** UI ********** */
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>ऑनलाइन बैलगाड़ी रेस</h1>
       <div style={styles.balance}>वॉलेट बैलेंस: ₹{walletBalance}</div>
 
+      {/* RACE TRACKS */}
       <div style={styles.trackContainer}>
-        {tracks.map(track => (
+        {tracks.map((track) => (
           <div key={track.id} style={styles.trackWrapper}>
             <div style={styles.track}>
               <div
                 style={{
                   ...styles.cart,
-                  bottom: `${track.cart.position}px`
+                  bottom: `${track.cart.position}px`,
                 }}
               >
                 <img
@@ -216,17 +198,15 @@ const BullockCartRacingGame = () => {
         ))}
       </div>
 
-      {/* -----------------------------------------
-          BETTING SECTION
-      ------------------------------------------- */}
+      {/* BETTING SECTION */}
       {!raceStarted && !raceFinished && (
         <>
           <h2>बेट लगाएँ</h2>
 
           <div style={styles.cartSelection}>
-            {tracks.map(track => (
+            {tracks.map((track) => (
               <button
-                key={track.id}
+                key={track.cart.id}
                 style={{
                   ...styles.cartButton,
                   backgroundColor:
@@ -267,9 +247,7 @@ const BullockCartRacingGame = () => {
         </button>
       )}
 
-      {/* ***************************************
-          WIN / LOSS MODAL
-      **************************************** */}
+      {/* ********** RESULT MODAL ********** */}
       {showResultModal && (
         <div style={modalStyles.overlay}>
           <div style={modalStyles.modal}>
@@ -277,8 +255,9 @@ const BullockCartRacingGame = () => {
               <>
                 <div style={modalStyles.emoji}>🎉🎉🎉</div>
                 <h2 style={{ color: "#00ff99" }}>आप जीते! 🏆</h2>
+
                 <p style={{ fontSize: "18px" }}>जीत की राशि:</p>
-                <h1 style={{ color: "#FFD700", fontSize: "40px" }}>
+                <h1 style={{ color: "#FFD700", fontSize: "38px" }}>
                   ₹{winAmount}
                 </h1>
               </>
@@ -286,11 +265,17 @@ const BullockCartRacingGame = () => {
               <>
                 <div style={modalStyles.emoji}>😔</div>
                 <h2 style={{ color: "red" }}>आप हार गए</h2>
-                <p>अगली बार बेहतर किस्मत!</p>
+
+                <p style={{ fontSize: "17px", marginTop: "10px" }}>
+                  आपने हारी राशि:
+                </p>
+                <h1 style={{ color: "orange", fontSize: "35px" }}>
+                  ₹{winAmount}
+                </h1>
               </>
             )}
 
-            <p style={{ marginTop: "20px", fontSize: "12px", opacity: 0.7 }}>
+            <p style={{ marginTop: "18px", fontSize: "13px", opacity: 0.7 }}>
               बंद हो रहा है...
             </p>
           </div>
@@ -402,18 +387,18 @@ const modalStyles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    backdropFilter: "blur(4px)",
-    zIndex: 99999,
+    backdropFilter: "blur(5px)",
+    zIndex: 999999,
   },
   modal: {
-    width: "80%",
+    width: "85%",
     maxWidth: "350px",
-    background: "rgba(20,20,20,0.95)",
-    borderRadius: "15px",
+    background: "rgba(25,25,25,0.95)",
+    borderRadius: "18px",
     padding: "20px",
     textAlign: "center",
     color: "white",
-    boxShadow: "0 0 20px #00ff99",
+    boxShadow: "0 0 25px #00ff99",
     animation: "popup 0.5s ease-out",
   },
   emoji: {
