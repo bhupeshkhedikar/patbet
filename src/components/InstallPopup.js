@@ -5,7 +5,7 @@ const InstallPopup = () => {
   const [visible, setVisible] = useState(true); // Always show
 
   useEffect(() => {
-    const handler = (e) => {
+    const handler = e => {
       e.preventDefault();
       setDeferredPrompt(e);
       setVisible(true);
@@ -16,37 +16,35 @@ const InstallPopup = () => {
 
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
-    
-    useEffect(() => {
-  window.addEventListener("beforeinstallprompt", (e) => {
-    e.preventDefault();
-    setDeferredPrompt(e);
 
-    // Auto open install popup immediately when allowed
-    e.prompt();
-  });
-}, []);
+  useEffect(() => {
+    window.addEventListener("beforeinstallprompt", e => {
+      e.preventDefault();
+      setDeferredPrompt(e);
 
+      // Auto open install popup immediately when allowed
+      e.prompt();
+    });
+  }, []);
 
-const installApp = async () => {
-  if (!deferredPrompt) {
-    alert(
-      "Your browser will show the install option automatically when PWA is supported.\n\n" +
-      "Tips:\n• Use Chrome\n• Visit at least once\n• Use HTTPS\n• Avoid Facebook/Instagram in-app browser"
-    );
-    return;
-  }
+  const installApp = async () => {
+    if (!deferredPrompt) {
+      alert(
+        "Your browser will show the install option automatically when PWA is supported.\n\n" +
+          "Tips:\n• Use Chrome\n• Visit at least once\n• Use HTTPS\n• Avoid Facebook/Instagram in-app browser"
+      );
+      return;
+    }
 
-  deferredPrompt.prompt();
+    deferredPrompt.prompt();
 
-  const result = await deferredPrompt.userChoice;
+    const result = await deferredPrompt.userChoice;
 
-  if (result.outcome === "accepted") {
-    localStorage.setItem("pwaInstalled", "true");
-    setVisible(false);
-  }
-};
-
+    if (result.outcome === "accepted") {
+      localStorage.setItem("pwaInstalled", "true");
+      setVisible(false);
+    }
+  };
 
   const closePopup = () => setVisible(false);
 
@@ -55,33 +53,30 @@ const installApp = async () => {
   return (
     <div style={styles.outer}>
       <div style={styles.card}>
-
         {/* Close Button */}
-        <span style={styles.closeBtn} onClick={closePopup}>✕</span>
+        <span style={styles.closeBtn} onClick={closePopup}>
+          ✕
+        </span>
 
         {/* Left Section */}
         <div style={styles.left}>
-          <img
-            src="patbet.png"
-            alt="PatBet"
-            style={styles.icon}
-          />
+          <img src="patbet.png" alt="PatBet" style={styles.icon} />
 
           <div>
             <p style={styles.title}>Install PatBet App</p>
-            <p style={styles.subtitle}>Play Smoothly</p>
+            <p style={styles.subtitle}>Download Our App Now</p>
           </div>
         </div>
 
         {/* Install Button */}
-        <button style={styles.installBtn} onClick={installApp}>
+
+        <a style={styles.installBtn} href="/PatBet.apk">
           Install
-        </button>
+        </a>
       </div>
     </div>
   );
 };
-
 
 /* ------------------------------------------------------------------
    PATBET THEME POPUP WITH CLOSE BUTTON
@@ -107,7 +102,7 @@ const styles = {
     alignItems: "center",
     boxShadow: "0 0 12px rgba(8, 230, 118, 0.4)",
     border: "1px solid rgba(8, 230, 118, 0.4)",
-    position: "relative"
+    position: "relative",
   },
 
   closeBtn: {
@@ -119,7 +114,7 @@ const styles = {
     cursor: "pointer",
     padding: "2px 6px",
     borderRadius: "50%",
-    marginTop:'5px',
+    marginTop: "5px",
     transition: "0.2s",
   },
 
@@ -128,7 +123,7 @@ const styles = {
     alignItems: "center",
     gap: "10px",
     flex: 1,
-    marginRight: "10px"
+    marginRight: "10px",
   },
 
   icon: {
@@ -163,8 +158,9 @@ const styles = {
     fontWeight: "700",
     width: "70px",
     boxShadow: "0 0 10px #08e676",
-      cursor: "pointer",
-    marginRight:'30px'
+    cursor: "pointer",
+    marginRight: "30px",
+    textDecoration: "none",
   },
 };
 
