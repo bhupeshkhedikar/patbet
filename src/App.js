@@ -48,6 +48,7 @@ import TermsAndConditions from "./components/TermsAndConditions";
 import { analytics } from "./firebase";
 import { getFirestore, doc, setDoc, deleteDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { logEvent } from "firebase/analytics";
+import InstallPopup from "./components/InstallPopup";
 
 function App() {
   const [value, setValue] = useState(0);
@@ -134,7 +135,11 @@ const navItem = {
 
 
   return (
-    <div className="app-container">
+    
+    <>
+    
+      <InstallPopup /><div className="app-container">
+
       <Navbar />
       <main style={{ height: "600px", overflow: "scroll" }}>
         <Routes>
@@ -143,8 +148,7 @@ const navItem = {
 
           <Route
             path="/"
-            element={<ProtectedRoute user={user} allowGuest={true}><GameList /></ProtectedRoute>}
-          />
+            element={<ProtectedRoute user={user} allowGuest={true}><GameList /></ProtectedRoute>} />
           <Route path="/addmoney" element={<ProtectedRoute user={user}><PaymentComponent /></ProtectedRoute>} />
           <Route path="/withdrawal" element={<ProtectedRoute user={user}><WithdrawalRequest /></ProtectedRoute>} />
           <Route path="/bets" element={<ProtectedRoute user={user}><BetStatusListener /></ProtectedRoute>} />
@@ -172,103 +176,98 @@ const navItem = {
       </main>
 
       {/* ⭐ UPDATED BOTTOM NAV WITHOUT CHAT + NEW COLORS */}
-{/* ⭐ FIXED ALIGNMENT BOTTOM NAVIGATION */}
-<Box
-  sx={{
-    width: "100%",
-    position: "fixed",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: "#1B1F36",
-    boxShadow: "0px -2px 8px rgba(0,0,0,0.25)",
-    zIndex: 2000,
-    paddingBottom: "3px",
-    height: "78px",
-  }}
->
-  {/* ⭐ Floating Center Button */}
-  <div
-    style={{
-      position: "absolute",
-      left: "50%",
-      top: "-32px",
-      transform: "translateX(-50%)",
-      width: "65px",
-      height: "65px",
-      background: "#FF9800",
-      borderRadius: "50%",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      boxShadow: "0px 4px 12px rgba(0,0,0,0.4)",
-      cursor: "pointer",
-      marginTop: "5px",
-      zIndex: 3000,
-    }}
-    onClick={() => navigate("/")}
-  >
-    <HomeIcon style={{ fontSize: "34px", color: "white" }} />
-  </div>
+      {/* ⭐ FIXED ALIGNMENT BOTTOM NAVIGATION */}
+      <Box
+        sx={{
+          width: "100%",
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: "#1B1F36",
+          boxShadow: "0px -2px 8px rgba(0,0,0,0.25)",
+          zIndex: 2000,
+          paddingBottom: "3px",
+          height: "78px",
+        }}
+      >
+        {/* ⭐ Floating Center Button */}
+        <div
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: "-32px",
+            transform: "translateX(-50%)",
+            width: "65px",
+            height: "65px",
+            background: "#FF9800",
+            borderRadius: "50%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0px 4px 12px rgba(0,0,0,0.4)",
+            cursor: "pointer",
+            marginTop: "5px",
+            zIndex: 3000,
+          }}
+          onClick={() => navigate("/")}
+        >
+          <HomeIcon style={{ fontSize: "34px", color: "white" }} />
+        </div>
 
-  <BottomNavigation
-    showLabels
-    value={value}
-    onChange={(e, newValue) => setValue(newValue)}
-    sx={{
-      height: "78px",
-      paddingTop: "20px",
-      display: "flex",
-      justifyContent: "space-around",
-      alignItems: "center",
-      backgroundColor: "#1B1F36",
-    }}
-  >
-    {/* ⭐ Hindi Titles */}
-    <BottomNavigationAction
-      label="बेट्स"
-      icon={<PaymentsIcon />}
-      onClick={() => navigate("/bets")}
-      sx={navItem}
-    />
+        <BottomNavigation
+          showLabels
+          value={value}
+          onChange={(e, newValue) => setValue(newValue)}
+          sx={{
+            height: "78px",
+            paddingTop: "20px",
+            display: "flex",
+            justifyContent: "space-around",
+            alignItems: "center",
+            backgroundColor: "#1B1F36",
+          }}
+        >
+          {/* ⭐ Hindi Titles */}
+          <BottomNavigationAction
+            label="बेट्स"
+            icon={<PaymentsIcon />}
+            onClick={() => navigate("/bets")}
+            sx={navItem} />
 
-    <BottomNavigationAction
-      label="पैसा निकाले"
-      icon={<AccountBalanceIcon />}
-      onClick={() => navigate("/withdrawal")}
-      sx={navItem}
-    />
+          <BottomNavigationAction
+            label="पैसा निकाले"
+            icon={<AccountBalanceIcon />}
+            onClick={() => navigate("/withdrawal")}
+            sx={navItem} />
 
-    {/* Center gap */}
-    <div style={{ width: "70px" }}></div>
+          {/* Center gap */}
+          <div style={{ width: "70px" }}></div>
 
-    <BottomNavigationAction
-      label="पैसा डाले"
-      icon={<AccountBalanceWalletIcon />}
-      onClick={() => navigate("/addmoney")}
-      sx={navItem}
-    />
+          <BottomNavigationAction
+            label="पैसा डाले"
+            icon={<AccountBalanceWalletIcon />}
+            onClick={() => navigate("/addmoney")}
+            sx={navItem} />
 
-    {user ? (
-      <BottomNavigationAction
-        label="प्रोफ़ाइल"
-        icon={<AccountCircleIcon />}
-        onClick={() => navigate("/profile")}
-        sx={navItem}
-      />
-    ) : (
-      <BottomNavigationAction
-        label="लॉगिन"
-        icon={<LoginIcon />}
-        onClick={() => navigate("/login")}
-        sx={navItem}
-      />
-    )}
-  </BottomNavigation>
-</Box>
+          {user ? (
+            <BottomNavigationAction
+              label="प्रोफ़ाइल"
+              icon={<AccountCircleIcon />}
+              onClick={() => navigate("/profile")}
+              sx={navItem} />
+          ) : (
+            <BottomNavigationAction
+              label="लॉगिन"
+              icon={<LoginIcon />}
+              onClick={() => navigate("/login")}
+              sx={navItem} />
+          )}
+        </BottomNavigation>
+      </Box>
 
 
-    </div>
+    </div></>
   );
 }
 
