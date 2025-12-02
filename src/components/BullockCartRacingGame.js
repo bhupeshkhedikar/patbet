@@ -187,9 +187,14 @@ const BullockCartRacingGame = () => {
                 }}
               >
                 <img
-                  src="https://i.ibb.co/01y6FtM/image-2-removebg-preview.png"
+                  src={
+                    raceStarted
+                      ? "/racee.gif"   // 👉 GIF when race starts
+                      : "https://i.ibb.co/01y6FtM/image-2-removebg-preview.png"  // 👉 Static image before race
+                  }
                   style={styles.cartImage}
                 />
+
               </div>
             </div>
 
