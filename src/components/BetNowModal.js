@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { increment } from "firebase/firestore";
 
 const BetNowModal = ({ isOpen, onClose, team1, team2, gameId,maxBetAmount }) => {
-  const [betAmount, setBetAmount] = useState(20);
+  const [betAmount, setBetAmount] = useState(60);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [walletBalance, setWalletBalance] = useState(0);
   const [selectedMultiplier, setSelectedMultiplier] = useState(2);
