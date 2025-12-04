@@ -244,7 +244,7 @@ const ManageGames = () => {
         }
 
         console.log(
-          `Updating bet ${betId}: Status -> ${betStatus}, Winnings -> ₹${winnings}`
+          `Updating bet ${betId}: Status -> ${betStatus}, Winnings -> 💵${winnings}`
         );
 
         await updateDoc(doc(db, "users", userId, "bets", betId), {
@@ -256,7 +256,7 @@ const ManageGames = () => {
           currentBalance += winnings;
           await updateDoc(userRef, { walletBalance: currentBalance });
           console.log(
-            `Updated wallet balance for user ${userId}: ₹${currentBalance}`
+            `Updated कॉइन बैलेंस for user ${userId}: 💵${currentBalance}`
           );
         }
       }

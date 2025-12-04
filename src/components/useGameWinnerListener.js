@@ -34,7 +34,7 @@ const updateBetsForTie = async (gameId) => {
       currentBalance += totalRefund;
       await updateDoc(userRef, { walletBalance: currentBalance });
 
-      console.log(`Refunded ₹${totalRefund} to user ${userId}. New balance: ₹${currentBalance}`);
+      console.log(`Refunded 💵${totalRefund} to user ${userId}. New balance: 💵${currentBalance}`);
     }
   });
 
@@ -101,7 +101,7 @@ const updateBetsForGame = async (gameId, winnerTeamName) => {
         winnings: winnings,
       });
 
-      console.log(`Updated bet ${betDoc.id}: Status -> ${betStatus}, Winnings -> ₹${winnings}`);
+      console.log(`Updated bet ${betDoc.id}: Status -> ${betStatus}, Winnings -> 💵${winnings}`);
     });
 
     await Promise.all(betUpdates);
@@ -114,7 +114,7 @@ const updateBetsForGame = async (gameId, winnerTeamName) => {
       currentBalance += totalWinnings;
       await updateDoc(userRef, { walletBalance: currentBalance });
 
-      console.log(`Updated wallet balance for user ${userId}: ₹${currentBalance}`);
+      console.log(`Updated कॉइन बैलेंस for user ${userId}: 💵${currentBalance}`);
     }
   });
 

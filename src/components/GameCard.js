@@ -124,7 +124,7 @@ const GameCard = ({ game }) => {
         onClick={handleBetNowClick}
         disabled={!betEnabled || isBeforeStart || isAfterEnd}
       >
-        {isBeforeStart ? "Betting Not Started" : isAfterEnd || !betEnabled ? "Betting Over (बेट खत्म)" : "Bet Now (बेट लगाये)"}
+        {isBeforeStart ? "Prediction Not Started" : isAfterEnd || !betEnabled ? "Prediction Over" : "Play Now (राय लगाये)"}
       </button>
 
       <BetNowModal

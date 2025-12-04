@@ -57,7 +57,7 @@ export const updateBetsForTie = async (gameId) => {
 
       await updateDoc(userRef, { walletBalance: currentBalance });
       console.log(
-        `Refunded ₹${totalRefund} to user ${userId}. New balance: ₹${currentBalance}`
+        `Refunded 💵${totalRefund} to user ${userId}. New balance: 💵${currentBalance}`
       );
     }
   }
@@ -120,7 +120,7 @@ export const updateBetsForGame = async (gameId, winnerTeamName) => {
 
       await updateDoc(userRef, { walletBalance: currentBalance });
       console.log(
-        `Updated wallet balance for user ${userId}: ₹${currentBalance}`
+        `Updated कॉइन बैलेंस for user ${userId}: 💵${currentBalance}`
       );
     }
   }

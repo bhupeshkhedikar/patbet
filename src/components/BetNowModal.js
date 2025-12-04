@@ -94,12 +94,12 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId,maxBetAmount }) => 
     }
 
     if (betAmount < 60) {
-      alert("न्यूनतम शर्त राशि ₹60 है!");
+      alert("न्यूनतम रायसिक्के💵60 है!");
       return;
     }
 
     if (betAmount > maxBetAmount) {
-      alert(`अधिकतम अनुमत शर्त राशि  ₹${maxBetAmount} है!`);
+      alert(`अधिकतम अनुमत रायसिक्के 💵${maxBetAmount} है!`);
       return;
     }
 
@@ -161,11 +161,11 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId,maxBetAmount }) => 
   const handleBetAmountChange = e => {
     const value = Number(e.target.value);
     if (value < 60) {
-      setBetWarning("न्यूनतम शर्त राशि ₹60 है!");
+      setBetWarning("न्यूनतम रायसिक्के💵60 है!");
     }
 
     else if (value > maxBetAmount) {
-      setBetWarning(`अधिकतम अनुमत शर्त राशि  ₹${maxBetAmount} है!`);
+      setBetWarning(`अधिकतम अनुमत रायसिक्के 💵${maxBetAmount} है!`);
     }
       
     else {
@@ -187,12 +187,12 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId,maxBetAmount }) => 
         ) : (
           <>
             <div className="modal-header">
-              <h2>Place Your Bet</h2>
+              <h2>Place Your Choice</h2>
             </div>
 
-            <p className="wallet-text">💰 Wallet Balance: ₹{walletBalance}</p>
+            <p className="wallet-text">💰 कॉइन बैलेंस: 💵{walletBalance}</p>
             <div className="bet-section">
-              <label className="bet-label">Bet Amount (₹)</label>
+              <label className="bet-label">Choice Amount (💵)</label>
               <input
                 type="number"
                 value={betAmount}
@@ -330,7 +330,7 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId,maxBetAmount }) => 
 
 
             <button className="bet-now-btn" onClick={handleBet}>
-               Bet Now (बेट लगाये)
+             Play Now
             </button>
             <button className="close-btn" onClick={onClose}>
               Close

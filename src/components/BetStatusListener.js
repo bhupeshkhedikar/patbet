@@ -59,11 +59,11 @@ const BetStatusListener = () => {
   return (
     <div className="bet-status-container">
       <AdBanner />
-      <h3 className="bet-title">Your Bets</h3>
+      <h3 className="bet-title">My Predictions</h3>
       {loading ? (
-        <p className="loading">Loading bets...</p>
+        <p className="loading">Loading Predictions...</p>
       ) : bets.length === 0 ? (
-        <p className="no-bets">No bets placed yet.</p>
+        <p className="no-bets">No Predictions placed yet.</p>
       ) : (
         <div className="bets-list">
           {bets.map(bet => {
@@ -79,7 +79,7 @@ const BetStatusListener = () => {
                     {bet.status === "won" && "विजयी"}
                     {bet.status === "lost" && "पराजित"}
                     {bet.status === "pending" &&
-                      "बेट लगी है - फैसला आना बाकी है"}
+                      "चुनाव लगी है - फैसला आना बाकी है"}
                     {bet.status === "returned" &&
                       "एकतरफा खेल / टाई - पैसे वापसी"}
                   </span>
@@ -107,9 +107,9 @@ const BetStatusListener = () => {
                   </div>
 
                   <div className="bet-info">
-                    <span className="label">बेट राशि:</span>
+                    <span className="label">राय राशि:</span>
                     <span className="value" style={{ color: "#ffcc00" }}>
-                      ₹{bet.betAmount || 0}
+                      💵{bet.betAmount || 0}
                     </span>
                   </div>
 
@@ -134,12 +134,12 @@ const BetStatusListener = () => {
                         fontSize: "15px",
                       }}
                     >
-                      ₹{bet.winnings}
+                      💵{bet.winnings}
                     </span>
                   </div>
 
                   <div className="bet-info">
-                    <span className="label">बेट तिथि:</span>
+                    <span className="label">राय तिथि:</span>
                     <span
                       className="value"
                       style={{ color: "#9c27b0", fontSize: "14px" }}
@@ -171,7 +171,7 @@ const BetStatusListener = () => {
                         }}
                       >
                         कुल जीत (बेट × मल्टिप्लायर):{" "}
-                        <b>₹{grossWinning.toFixed(2)}</b>
+                        <b>💵{grossWinning.toFixed(2)}</b>
                       </p>
 
                       <p
@@ -181,7 +181,7 @@ const BetStatusListener = () => {
                           margin: "3px 0",
                         }}
                       >
-                        कटौती (10%): <b>₹{deduction.toFixed(2)}</b>
+                        कटौती (10%): <b>💵{deduction.toFixed(2)}</b>
                       </p>
 
                       <p
@@ -191,7 +191,7 @@ const BetStatusListener = () => {
                           margin: "3px 0",
                         }}
                       >
-                        अंतिम राशि (आपको मिली): <b>₹{finalPayout.toFixed(2)}</b>
+                        अंतिम सिक्के(आपको मिली): <b>💵{finalPayout.toFixed(2)}</b>
                       </p>
                     </div>
                   )} */}

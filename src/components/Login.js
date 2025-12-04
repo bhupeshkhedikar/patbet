@@ -11,6 +11,7 @@ import { db } from "../firebase";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPass, setShowPass] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -55,7 +56,10 @@ const Login = () => {
       <ToastContainer />
 
       <div className="bonus-container">
-        <img src="https://i.ibb.co/LdL5xRp9/1741105411005.png" className="bonus-image" />
+        <img
+          src="https://i.ibb.co/LdL5xRp9/1741105411005.png"
+          className="bonus-image"
+        />
       </div>
 
       <div className="auth-box">
@@ -64,6 +68,7 @@ const Login = () => {
         {error && <p className="error">{error}</p>}
 
         <form onSubmit={handleLogin}>
+
           <input
             type="email"
             placeholder="ईमेल दर्ज करें"
@@ -72,13 +77,25 @@ const Login = () => {
             required
           />
 
-          <input
-            type="password"
-            placeholder="पासवर्ड दर्ज करें"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          {/* PASSWORD FIELD WITH SHOW/HIDE */}
+        <div style={{ position: "relative", width: "100%" }}>
+  <input
+    type={showPass ? "text" : "password"}
+    placeholder="पासवर्ड दर्ज करें"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    required
+    className="password-input"
+  />
+
+  <span
+    onClick={() => setShowPass(!showPass)}
+    className="show-hide-btn"
+  >
+    {showPass ? "Hide" : "Show"}
+  </span>
+</div>
+
 
           <button type="submit">लॉगिन</button>
         </form>

@@ -106,7 +106,7 @@ const Transactions = () => {
           const depositRef = doc(db, "addMoneyRequests", depositId);
           await updateDoc(depositRef, { status: "approved" });
     
-          // 2. Get the current wallet balance of the user
+          // 2. Get the current कॉइन बैलेंस of the user
           const userRef = doc(db, "users", userId);
           const userSnap = await getDoc(userRef);
     
@@ -117,7 +117,7 @@ const Transactions = () => {
     
           const currentBalance = userSnap.data().walletBalance || 0;
     
-          // 3. Update the user's wallet balance
+          // 3. Update the user's कॉइन बैलेंस
           await updateDoc(userRef, {
             walletBalance: currentBalance + amount,
           });
@@ -184,7 +184,7 @@ const Transactions = () => {
             reason
           });
     
-          // 2. User का current wallet balance fetch करो
+          // 2. User का current कॉइन बैलेंस fetch करो
           const userRef = doc(db, "users", userId);
           const userSnap = await getDoc(userRef);
     
@@ -236,7 +236,7 @@ const Transactions = () => {
               <tr key={deposit.id}>
                 <td>{deposit.userId}</td>
                 <td>{deposit.urn}</td>
-                <td>₹{deposit.amount}</td>
+                <td>💵{deposit.amount}</td>
                 <td>{deposit.status}</td>
                 <td>
                   {deposit.createdAt
@@ -297,7 +297,7 @@ const Transactions = () => {
             <tr key={request.id}>
               <td>{request.name || "N/A"}</td>
               <td>{request.userId}</td>
-              <td>₹{request.amount}</td>
+              <td>💵{request.amount}</td>
               <td>{request.paymentMethod || "N/A"}</td>
               <td>{request.upiId || "N/A"}</td>
               <td>{request.bankAccount || "N/A"}</td>
@@ -352,7 +352,7 @@ const Transactions = () => {
             {deposits.map(deposit => (
               <tr key={deposit.id}>
                 <td>{deposit.userEmail}</td>
-                <td>₹{deposit.amount}</td>
+                <td>💵{deposit.amount}</td>
                 <td>{deposit.timestamp}</td>
               </tr>
             ))}

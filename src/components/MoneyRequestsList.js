@@ -45,7 +45,7 @@ const MoneyRequestsList = () => {
           <tbody>
             {moneyRequests.map((request) => (
               <tr key={request.id}>
-                <td>₹{request.amount}</td>
+                <td>💵{request.amount}</td>
                 <td className={request.status.toLowerCase()}>{request.status}</td>
                 <td>{new Date(request.createdAt?.toDate()).toLocaleString()}</td>
               </tr>
