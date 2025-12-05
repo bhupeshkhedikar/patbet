@@ -184,27 +184,27 @@ const ManageGames = () => {
   //   }
   // };
 
- const handleSetWinner = async (gameId, winner) => {
-  if (!gameId || !winner) {
-    alert("Please select a game and a winner!");
-    return;
-  }
+  const handleSetWinner = async (gameId, winner) => {
+    if (!gameId || !winner) {
+      alert("Please select a game and a winner!");
+      return;
+    }
 
-  try {
-    console.log("Setting winner:", winner);
+    try {
+      console.log("Setting winner:", winner);
 
-    await updateDoc(doc(db, "games", gameId), {
-      winner: winner
-    });
+      await updateDoc(doc(db, "games", gameId), {
+        winner: winner, // can be team name OR "tie"
+        isBetEnabled: false, // ✅ optional but recommended to stop betting
+      });
 
-    alert("Winner updated! All bets will be updated automatically.");
-  } catch (error) {
-    console.error("Error setting winner:", error);
-    alert("Error setting winner: " + error.message);
-  }
-};
+      alert("Winner updated successfully! Bets & wallets will auto-update.");
+    } catch (error) {
+      console.error("Error setting winner:", error);
+      alert("Error setting winner: " + error.message);
+    }
+  };
 
- 
   const updateBetsForGame = async (gameId, winnerTeamName) => {
     console.log(
       `Updating bets for game: ${gameId} | Winner: ${winnerTeamName}`

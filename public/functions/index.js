@@ -17,13 +17,14 @@ exports.updateBetsInstant = functions.firestore
 
     const batch = admin.firestore().batch();
 
-    usersSnapshot.forEach(async userDoc => {
+    for (const userDoc of usersSnapshot.docs) {
       const userId = userDoc.id;
+
       const betsRef = admin.firestore()
         .collection("users")
         .doc(userId)
         .collection("bets");
-      
+
       const betsSnapshot = await betsRef
         .where("gameId", "==", gameId)
         .get();
@@ -32,22 +33,39 @@ exports.updateBetsInstant = functions.firestore
 
       betsSnapshot.forEach(betDoc => {
         const bet = betDoc.data();
-        let status = (bet.selectedTeam === winnerTeam) ? "won" : "lost";
-        let winnings = status === "won" ? bet.betAmount * bet.odds : 0;
 
-        if (winnings > 0) winnings -= winnings * commissionRate;
+        let status = "";
+        let winnings = 0;
 
+        // 🟧 CASE 1 → TIE → Return full bet amount
+        if (winnerTeam === "tie") {
+          status = "tie";
+          winnings = bet.betAmount; // return as-is
+        }
+        // 🟩 CASE 2 → Normal Win/Loss
+        else {
+          status = bet.selectedTeam === winnerTeam ? "won" : "lost";
+          winnings = status === "won" ? bet.betAmount * bet.odds : 0;
+
+          if (status === "won") {
+            winnings -= winnings * commissionRate; // deduct commission
+          }
+        }
+
+        // update bet document
         batch.update(betDoc.ref, { status, winnings });
 
-        if (status === "won") {
+        // update wallet
+        if (status === "won" || status === "tie") {
           walletBalance += winnings;
         }
       });
 
+      // update final wallet balance
       batch.update(admin.firestore().collection("users").doc(userId), {
         walletBalance
       });
-    });
+    }
 
     await batch.commit();
     return true;
