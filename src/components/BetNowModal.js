@@ -117,7 +117,7 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId, maxBetAmount }) =>
 
       const betsSnapshot = await getDoc(doc(betsCollectionRef, gameId));
       if (betsSnapshot.exists()) {
-        alert("You have already placed a bet on this game!");
+        alert("You have already placed a Prediction on this game!");
         setIsLoading(false);
         return;
       }
@@ -151,8 +151,8 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId, maxBetAmount }) =>
       navigate("/bets");
       onClose();
     } catch (error) {
-      console.error("Error placing bet:", error);
-      alert("Error placing bet: " + error.message);
+      console.error("Error placing Prediction:", error);
+      alert("Error placing Prediction: " + error.message);
     } finally {
       setIsLoading(false);
     }
