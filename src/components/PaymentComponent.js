@@ -42,7 +42,7 @@ const PaymentComponent = () => {
         createdAt: new Date(),
       });
 
-      alert("धन्यवाद, वेरीफाय करने के बाद पेमेंट आपके वालेट मे जमा किया जायेगा");
+      alert("धन्यवाद, वेरीफाय करने के बाद कॉईन्स आपके वालेट मे जमा किया जायेगा");
       setUrn("");
       setAmount("");
       navigate("/mydeposits");
