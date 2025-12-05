@@ -50,6 +50,7 @@ import { getFirestore, doc, setDoc, deleteDoc, serverTimestamp, updateDoc } from
 import { logEvent } from "firebase/analytics";
 import InstallPopup from "./components/InstallPopup";
 import AdminPanell from "./components/Admin/gameadmin/AdminPanell";
+import Footer from "./components/Footer";
 
 function App() {
   const [value, setValue] = useState(0);
@@ -176,7 +177,7 @@ const navItem = {
              <Route path="/radmin" element={<ProtectedRoute user={user}><AdminPanell /></ProtectedRoute>} />
         </Routes>
       </main>
-
+     <Footer />
       {/* ⭐ UPDATED BOTTOM NAV WITHOUT CHAT + NEW COLORS */}
       {/* ⭐ FIXED ALIGNMENT BOTTOM NAVIGATION */}
       <Box
