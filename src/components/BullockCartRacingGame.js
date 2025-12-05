@@ -213,7 +213,7 @@ const BullockCartRacingGame = () => {
           style={styles.betOpenButton}
           onClick={() => setShowBetModal(true)}
         >
-          बेट लगाएँ
+           Play Now
         </button>
       )}
 
@@ -238,7 +238,7 @@ const BullockCartRacingGame = () => {
             {/* Drag Handle */}
             <div style={bottomSheetStyles.dragHandle}></div>
 
-            <h2 style={{ color: "#FFD700" }}>बेट लगाएँ</h2>
+            <h2 style={{ color: "#FFD700" }}> Play Now</h2>
 
             <h3 style={{ color: "white", marginTop: "10px" }}>गाड़ी चुनें:</h3>
 
