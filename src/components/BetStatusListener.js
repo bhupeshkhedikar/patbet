@@ -108,7 +108,7 @@ const BetStatusListener = () => {
                   </div>
 
                   <div className="bet-info">
-                    <span className="label">राय राशि:</span>
+                    <span className="label">राय कॉईन्स :</span>
                     <span
                       className="value"
                       style={{ color: "#ffcc00" }}
@@ -131,8 +131,8 @@ const BetStatusListener = () => {
                   <div className="bet-info">
                     <span className="label">
                       {bet.status === "tie"
-                        ? "रिफंड राशि:"
-                        : "जीती हुई राशि:"}
+                        ? "रिफंड कॉईन्स :"
+                        : "जीती हुई कॉईन्स :"}
                     </span>
 
                     <span
