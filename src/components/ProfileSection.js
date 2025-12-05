@@ -168,30 +168,30 @@ const ProfileSection = () => {
 
         <div className="stats-container">
           <div className="stat-box">
-            <p className="highlight" style={{fontSize:'1.2em'}}>💵{userData?.walletBalance || "0"} </p>
+            <p className="highlight" style={{fontSize:'1.2em'}}>💵{userData?.walletBalance.toFixed(2) || "0"} </p>
             <p>Total Balance</p>
           </div>
           <div className="stat-box">
-            <p className="highlight">💵{totalWinnings.toLocaleString("en-IN")}</p>
+            <p className="highlight">💵{totalWinnings.toFixed(2)}</p>
             <p>Total Income</p>
           </div>
           <div className="stat-box">
-          <p className="highlight">💵{totalDeposits.toLocaleString("en-IN")}</p>
+          <p className="highlight">💵{totalDeposits.toFixed(2)}</p>
             <p>Total Recharge</p>
           </div>
           <div className="stat-box">
             <p className="highlight">
-              💵{totalWithdrawal.toLocaleString("en-IN")}
+              💵{totalWithdrawal.toFixed(2)}
             </p>
             <p>Total Withdraw</p>
           </div>
           <div className="stat-box">
-            <p className="highlight">{totalBets}</p>
+            <p className="highlight">{totalBets.toFixed(2)}</p>
             <p>Total Predictions</p>
           </div>
           <div className="stat-box">
             <p className="highlight">
-              💵{totalWinnings.toLocaleString("en-IN")}
+              💵{totalWinnings.toFixed(2)}
             </p>
             <p>All Winnings</p>
           </div>
