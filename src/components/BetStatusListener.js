@@ -28,12 +28,14 @@ const BetStatusListener = () => {
           ...doc.data(),
         }));
 
-        // Sort bets by createdAt (latest first)
+        // Sort latest first
         updatedBets.sort(
-          (a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)
+          (a, b) =>
+            (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)
         );
 
         setBets(updatedBets);
+        console.log("Updated bets:", updatedBets);
         setLoading(false);
       },
       error => {
@@ -45,14 +47,17 @@ const BetStatusListener = () => {
     return () => unsubscribe();
   }, []);
 
-  // Function to format timestamp to DD-MM-YYYY HH:mm
+  // Format timestamp
   const formatDate = timestamp => {
     if (!timestamp?.seconds) return "N/A";
     const date = new Date(timestamp.seconds * 1000);
     return (
       date.toLocaleDateString("en-GB") +
       " " +
-      date.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })
+      date.toLocaleTimeString("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
     );
   };
 
@@ -60,6 +65,7 @@ const BetStatusListener = () => {
     <div className="bet-status-container">
       <AdBanner />
       <h3 className="bet-title">My Predictions</h3>
+
       {loading ? (
         <p className="loading">Loading Predictions...</p>
       ) : bets.length === 0 ? (
@@ -67,11 +73,6 @@ const BetStatusListener = () => {
       ) : (
         <div className="bets-list">
           {bets.map(bet => {
-            // Calculate earnings
-            const grossWinning = bet.betAmount * bet.odds;
-            const deduction = grossWinning * 0.1;
-            const finalPayout = grossWinning - deduction;
-
             return (
               <div key={bet.id} className={`bet-card ${bet.status}`}>
                 <div className="bet-header">
@@ -79,9 +80,9 @@ const BetStatusListener = () => {
                     {bet.status === "won" && "विजयी"}
                     {bet.status === "lost" && "पराजित"}
                     {bet.status === "pending" &&
-                      "चुनाव लगी है - फैसला आना बाकी है"}
-                    {bet.status === "returned" &&
-                      "एकतरफा खेल / टाई - पैसे वापसी"}
+                      "राय लगी है - फैसला आना बाकी है"}
+                    {bet.status === "tie" &&
+                      "टाई - पूरी राशि वापस"}
                   </span>
                 </div>
 
@@ -108,20 +109,32 @@ const BetStatusListener = () => {
 
                   <div className="bet-info">
                     <span className="label">राय राशि:</span>
-                    <span className="value" style={{ color: "#ffcc00" }}>
+                    <span
+                      className="value"
+                      style={{ color: "#ffcc00" }}
+                    >
                       💵{bet.betAmount || 0}
                     </span>
                   </div>
 
                   <div className="bet-info">
                     <span className="label">मल्टिप्लायर:</span>
-                    <span className="value" style={{ color: "#00bcd4" }}>
+                    <span
+                      className="value"
+                      style={{ color: "#00bcd4" }}
+                    >
                       {bet.odds}x
                     </span>
                   </div>
 
+                  {/* ✅ WIN / LOST / PENDING / TIE AMOUNT */}
                   <div className="bet-info">
-                    <span className="label">जीती हुई राशि:</span>
+                    <span className="label">
+                      {bet.status === "tie"
+                        ? "रिफंड राशि:"
+                        : "जीती हुई राशि:"}
+                    </span>
+
                     <span
                       className="value"
                       style={{
@@ -130,11 +143,13 @@ const BetStatusListener = () => {
                             ? "#f44336"
                             : bet.status === "pending"
                             ? "#ffa500"
+                            : bet.status === "tie"
+                            ? "#03a9f4"
                             : "#4caf50",
                         fontSize: "15px",
                       }}
                     >
-                      💵{bet.winnings}
+                      💵{bet.winnings || 0}
                     </span>
                   </div>
 
@@ -147,56 +162,9 @@ const BetStatusListener = () => {
                       {formatDate(bet.createdAt)}
                     </span>
                   </div>
-
-                  {/* NEW SECTION — Earnings Breakdown */}
-                  {/* {bet.status === "won" && (
-                    <div
-                      style={{
-                        marginTop: "10px",
-                        background: "#0d0d0d",
-                        padding: "10px",
-                        borderRadius: "8px",
-                        border: "1px solid #333",
-                      }}
-                    >
-                      <p style={{ fontSize: "12px", color: "#76ff03" }}>
-                        🟢 <b>कमाई विवरण:</b>
-                      </p>
-
-                      <p
-                        style={{
-                          fontSize: "11px",
-                          color: "white",
-                          margin: "3px 0",
-                        }}
-                      >
-                        कुल जीत (बेट × मल्टिप्लायर):{" "}
-                        <b>💵{grossWinning.toFixed(2)}</b>
-                      </p>
-
-                      <p
-                        style={{
-                          fontSize: "11px",
-                          color: "orange",
-                          margin: "3px 0",
-                        }}
-                      >
-                        कटौती (10%): <b>💵{deduction.toFixed(2)}</b>
-                      </p>
-
-                      <p
-                        style={{
-                          fontSize: "12px",
-                          color: "#4caf50",
-                          margin: "3px 0",
-                        }}
-                      >
-                        अंतिम सिक्के(आपको मिली): <b>💵{finalPayout.toFixed(2)}</b>
-                      </p>
-                    </div>
-                  )} */}
                 </div>
 
+                {/* ✅ Commission shown ONLY for won */}
                 {bet.status === "won" && (
                   <p
                     className="commission-message"
