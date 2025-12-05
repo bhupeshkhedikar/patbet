@@ -183,10 +183,10 @@ const ProfileSection = () => {
             <p className="highlight">
               💵{totalWithdrawal.toFixed(2)}
             </p>
-            <p>Total Withdraw</p>
+            <p>Total Redemption</p>
           </div>
           <div className="stat-box">
-            <p className="highlight">{totalBets.toFixed(2)}</p>
+            <p className="highlight">{totalBets}</p>
             <p>Total Predictions</p>
           </div>
           <div className="stat-box">
