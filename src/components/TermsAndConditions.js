@@ -14,7 +14,7 @@ const TermsAndConditions = () => {
       <section className="terms-section">
         <h2>2. Betting Rules</h2>
         <ul>
-          <li>The <strong>minimum bet amount</strong> is <strong>₹60</strong>.</li>
+          <li>The <strong>minimum bet amount</strong> is <strong>💵0</strong>.</li>
           <li>All bets are final once placed and cannot be reversed.</li>
           <li>The platform reserves the right to modify or cancel bets in case of technical issues or fraudulent activity.</li>
           <li><strong>10% commission</strong> will be deducted from the winnings of a bet.</li>
@@ -25,8 +25,8 @@ const TermsAndConditions = () => {
         <h2>3. Withdrawal Policy</h2>
         <ul>
           <li>A <strong>10% transaction fee</strong> will be deducted from the withdrawal amount.</li>
-          <li>You must <strong>win at least ₹500 from bets</strong> before making a withdrawal.</li>
-          <li>The <strong>minimum withdrawal amount</strong> is <strong>₹1000</strong>.</li>
+          <li>You must <strong>win at least 💵00 from bets</strong> before making a withdrawal.</li>
+          <li>The <strong>minimum withdrawal amount</strong> is <strong>💵000</strong>.</li>
           <li>Bonus amounts provided by the platform <strong>cannot be withdrawn</strong>.</li>
           <li>Withdrawals are processed after admin approval.</li>
         </ul>

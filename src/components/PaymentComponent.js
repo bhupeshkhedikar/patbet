@@ -21,7 +21,7 @@ const PaymentComponent = () => {
 
   const handleAddMoney = async () => {
     if (!urn || !amount || parseFloat(amount) < 50) {
-      alert("Minimum amount to add is ₹50.");
+      alert("Minimum amount to add is 💵0.");
       return;
     }
 
@@ -94,7 +94,7 @@ const PaymentComponent = () => {
       )}
 
       <div className="add-money-container" style={{ marginBottom: "80px" }}>
-        <h2>Add Money</h2>
+        <h2>Load Credits</h2>
 
         {/* ⭐ QR Section with Zoom + Download */}
         <div className="qr-section">
@@ -133,7 +133,7 @@ const PaymentComponent = () => {
         {/* ⭐ AMOUNT INPUT */}
         <input
           type="number"
-          placeholder="Enter Amount (Min ₹50)"
+          placeholder="Enter Amount (Min 💵50)"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           className="input-field"
@@ -156,7 +156,7 @@ const PaymentComponent = () => {
             !urn || !amount || parseFloat(amount) < 50 ? "disabled" : ""
           }`}
         >
-          {loading ? "Processing..." : "Add Money"}
+          {loading ? "Processing..." : "Load Credits"}
         </button>
       </div>
 

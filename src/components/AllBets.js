@@ -104,16 +104,16 @@ const AllBets = () => {
             </div>
             <p><strong>Winner: {game.winner}</strong></p>
           </div>
-          <h4>Total Bet Amount: {game.totalBetsAmount}</h4>
+          <h4>Total Choice Amount: {game.totalBetsAmount}</h4>
           <div>
             {Object.keys(game.teamBetsData).map((team) => (
               <div key={team}>
                 <h5>Team: {team}</h5>
-                <p>Total Bet Amount: {game.teamBetsData[team].totalAmount}</p>
+                <p>Total Choice Amount: {game.teamBetsData[team].totalAmount}</p>
                 <ul>
                   {game.teamBetsData[team].bets.map((bet, index) => (
                     <li key={index}>
-                      Bet Amount: {bet.betAmount} | Selected Multiplier: {bet.selectedMultiplier}
+                      Choice Amount: {bet.betAmount} | Selected Multiplier: {bet.selectedMultiplier}
                     </li>
                   ))}
                 </ul>

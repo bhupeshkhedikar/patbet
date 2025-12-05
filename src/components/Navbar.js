@@ -27,7 +27,7 @@ const Navbar = () => {
   const subscribeToBalance = (userId) => {
     const userRef = doc(db, "users", userId);
     
-    // Real-time listener for wallet balance
+    // Real-time listener for कॉइन बैलेंस
     const unsubscribeBalance = onSnapshot(userRef, (docSnap) => {
       if (docSnap.exists()) {
         const newBalance = docSnap.data().walletBalance || 0;
@@ -43,7 +43,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar">
+    <nav className="navbar"style={{justifyContent: isLoggedIn ? "space-between" : "center",}}>
       <img
         src="https://i.ibb.co/5WPzx53W/patbet-logo.png"
         alt="Logo"
@@ -54,7 +54,7 @@ const Navbar = () => {
       {isLoggedIn && (
         <div className="wallet-section" onClick={() => navigate("/wallet")}>
           <FaWallet className="wallet-icon" />
-          <span className="balance-amount">₹{balance.toFixed(2)}</span>
+          <span className="balance-amount">{balance.toFixed(2)}</span>
         </div>
       )}
     </nav>

@@ -102,8 +102,8 @@ const BetsHistory = () => {
     <th>League</th>
     <th>Game</th>
     <th>User Name</th>
-    <th>Bet Amount (₹)</th>
-    <th>Selected Team</th>
+    <th>Prediction Amount (💵)</th>
+    <th>Predicted Team</th>
   </tr>
 </thead>
 <tbody>
@@ -120,7 +120,7 @@ const BetsHistory = () => {
           <td>{game.league}</td>
           <td>{`${game.team1.name} vs ${game.team2.name}`}</td>
           <td>{users[bet.userId] || "Unknown"}</td>
-          <td>₹{bet.betAmount}</td>
+          <td>💵{bet.betAmount}</td>
           <td>{bet.selectedTeam}</td>
         </tr>
       );
@@ -142,27 +142,27 @@ const BetsHistory = () => {
                   <tr>
                     <th>Team</th>
                     <th>Users Count</th>
-                    <th>Total Bet Amount (₹)</th>
+                    <th>Total Opinion Amount (💵)</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td>{game.team1.name}</td>
                     <td>{getTeamStatistics(game.id, game.team1.name).count}</td>
-                    <td>₹{getTeamStatistics(game.id, game.team1.name).totalBetAmount}</td>
+                    <td>💵{getTeamStatistics(game.id, game.team1.name).totalBetAmount}</td>
                   </tr>
                   <tr>
                     <td>{game.team2.name}</td>
                     <td>{getTeamStatistics(game.id, game.team2.name).count}</td>
-                    <td>₹{getTeamStatistics(game.id, game.team2.name).totalBetAmount}</td>
+                    <td>💵{getTeamStatistics(game.id, game.team2.name).totalBetAmount}</td>
                   </tr>
                   <tr className="total-bet-row">
                     <td colSpan="2">Total Bet Amount on Game</td>
-                    <td>₹{getTotalBetAmount(game.id)}</td>
+                    <td>💵{getTotalBetAmount(game.id)}</td>
                   </tr>
                   <tr className="most-betted-team">
                     <td colSpan="2">Most Betted Team</td>
-                    <td>{getMostBettedTeam(game.id).team} - ₹{getMostBettedTeam(game.id).total}</td>
+                    <td>{getMostBettedTeam(game.id).team} - 💵{getMostBettedTeam(game.id).total}</td>
                   </tr>
                 </tbody>
               </table>

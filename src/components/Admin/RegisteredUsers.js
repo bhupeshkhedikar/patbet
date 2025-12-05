@@ -64,7 +64,7 @@ const RegisteredUsers = () => {
       setEditingUserId(null);
       setNewWalletBalance("");
     } catch (error) {
-      console.error("Error updating wallet balance:", error);
+      console.error("Error updating कॉइन बैलेंस:", error);
     }
   };
 
@@ -95,7 +95,7 @@ const RegisteredUsers = () => {
                 <th>Name</th>
                 <th>User ID</th>
                 <th>Email</th>
-                <th>Wallet Balance</th>
+                <th>कॉइन बैलेंस</th>
                 <th>Actions</th>
                 <th>Bets</th>
                 <th>Registered On</th>
@@ -108,7 +108,7 @@ const RegisteredUsers = () => {
                   <td>{user.name}</td>
                   <td>{user.id}</td>
                   <td>{user.email}</td>
-                  <td>₹{user.walletBalance}</td>
+                  <td>💵{user.walletBalance}</td>
                   <td>
                     {editingUserId === user.id ? (
                       <>
@@ -133,12 +133,12 @@ const RegisteredUsers = () => {
                   </td>
                   <td>
                     <p className="total-bets">Total Bets: {user.bets.length}</p>
-                    <p className="total-winnings">Winnings: ₹{user.totalWinnings}</p>
+                    <p className="total-winnings">Winnings: 💵{user.totalWinnings}</p>
                     <div className="bets-container">
                       {user.bets.length > 0 ? (
                         user.bets.map((bet, idx) => (
                           <div key={idx}>
-                            Bet {idx + 1}: ₹{bet.betAmount} | {bet.selectedTeam} |{" "}
+                            Bet {idx + 1}: 💵{bet.betAmount} | {bet.selectedTeam} |{" "}
                             {editingBetId === bet.id ? (
                               <>
                                 <select

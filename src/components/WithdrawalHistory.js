@@ -41,7 +41,7 @@ const WithdrawalHistory = () => {
         withdrawals.map((withdrawal) => (
           <div key={withdrawal.id} className="withdrawal-item">
             <p>
-              Amount: <strong>₹{withdrawal.amount}</strong>
+              Amount: <strong>💵{withdrawal.amount}</strong>
             </p>
             <p>
               Status:{" "}

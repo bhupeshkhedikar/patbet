@@ -168,30 +168,30 @@ const ProfileSection = () => {
 
         <div className="stats-container">
           <div className="stat-box">
-            <p className="highlight" style={{fontSize:'1.2em'}}>₹{userData?.walletBalance || "0"} </p>
+            <p className="highlight" style={{fontSize:'1.2em'}}>💵{userData?.walletBalance || "0"} </p>
             <p>Total Balance</p>
           </div>
           <div className="stat-box">
-            <p className="highlight">₹{totalWinnings.toLocaleString("en-IN")}</p>
+            <p className="highlight">💵{totalWinnings.toLocaleString("en-IN")}</p>
             <p>Total Income</p>
           </div>
           <div className="stat-box">
-          <p className="highlight">₹{totalDeposits.toLocaleString("en-IN")}</p>
+          <p className="highlight">💵{totalDeposits.toLocaleString("en-IN")}</p>
             <p>Total Recharge</p>
           </div>
           <div className="stat-box">
             <p className="highlight">
-              ₹{totalWithdrawal.toLocaleString("en-IN")}
+              💵{totalWithdrawal.toLocaleString("en-IN")}
             </p>
             <p>Total Withdraw</p>
           </div>
           <div className="stat-box">
             <p className="highlight">{totalBets}</p>
-            <p>Total Bets</p>
+            <p>Total Predictions</p>
           </div>
           <div className="stat-box">
             <p className="highlight">
-              ₹{totalWinnings.toLocaleString("en-IN")}
+              💵{totalWinnings.toLocaleString("en-IN")}
             </p>
             <p>All Winnings</p>
           </div>
@@ -200,14 +200,14 @@ const ProfileSection = () => {
         {/* <div className="balance-section">
           <span>
             <span className="balance">
-              ₹.{userData?.walletBalance || "0"} <br />
+              💵.{userData?.walletBalance || "0"} <br />
               Recharge
             </span>
           </span>
           <span>
             <p>
               <span className="balance">
-                ₹.{userData?.walletBalance || "0.00"} <br />
+                💵.{userData?.walletBalance || "0.00"} <br />
                 Balance
               </span>
             </p>

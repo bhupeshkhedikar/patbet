@@ -49,6 +49,7 @@ import { analytics } from "./firebase";
 import { getFirestore, doc, setDoc, deleteDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { logEvent } from "firebase/analytics";
 import InstallPopup from "./components/InstallPopup";
+import AdminPanell from "./components/Admin/gameadmin/AdminPanell";
 
 function App() {
   const [value, setValue] = useState(0);
@@ -172,6 +173,7 @@ const navItem = {
           <Route path="/delete-video" element={<ProtectedRoute user={user}><DeleteVideo /></ProtectedRoute>} />
           <Route path="/race" element={<ProtectedRoute user={user}><BullockCartRacingGame /></ProtectedRoute>} />
           <Route path="/termsandconditions" element={<ProtectedRoute user={user}><TermsAndConditions /></ProtectedRoute>} />
+             <Route path="/radmin" element={<ProtectedRoute user={user}><AdminPanell /></ProtectedRoute>} />
         </Routes>
       </main>
 
@@ -230,13 +232,13 @@ const navItem = {
         >
           {/* ⭐ Hindi Titles */}
           <BottomNavigationAction
-            label="बेट्स"
+            label="मेरी राय"
             icon={<PaymentsIcon />}
             onClick={() => navigate("/bets")}
             sx={navItem} />
 
           <BottomNavigationAction
-            label="पैसा निकाले"
+            label="रिडीम करें"
             icon={<AccountBalanceIcon />}
             onClick={() => navigate("/withdrawal")}
             sx={navItem} />
@@ -245,7 +247,7 @@ const navItem = {
           <div style={{ width: "70px" }}></div>
 
           <BottomNavigationAction
-            label="पैसा डाले"
+            label="टॉप-अप करें"
             icon={<AccountBalanceWalletIcon />}
             onClick={() => navigate("/addmoney")}
             sx={navItem} />

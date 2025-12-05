@@ -111,7 +111,7 @@ const GameCard = ({ game }) => {
           <img src={game.team1.logo} alt={game.team1.name} className="team-logo" />
           <p className="team-name"><b>{game.team1.name}</b></p>
         </div>
-        <div className="score">Vs</div>
+        <div className="score"><img src="vs.gif" style={{width:'70px'}}/></div>
         <div className="team">
           <img src={game.team2.logo} alt={game.team2.name} className="team-logo" />
           <p className="team-name"><b>{game.team2.name}</b></p>
@@ -124,7 +124,7 @@ const GameCard = ({ game }) => {
         onClick={handleBetNowClick}
         disabled={!betEnabled || isBeforeStart || isAfterEnd}
       >
-        {isBeforeStart ? "Betting Not Started" : isAfterEnd || !betEnabled ? "Betting Over (बेट खत्म)" : "Bet Now (बेट लगाये)"}
+        {isBeforeStart ? "Prediction Not Started" : isAfterEnd || !betEnabled ? "Prediction Over" : "Play Now (राय लगाये)"}
       </button>
 
       <BetNowModal

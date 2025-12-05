@@ -14,7 +14,8 @@ const cartNames = [
   "महादेव और मयूरेश","शिवदास और सूर्यदास","जगत और जनार्दन","चंद्रहास और चंद्रशेखर"
 ];
 
-const getRandomNames = () => cartNames[Math.floor(Math.random() * cartNames.length)];
+const getRandomNames = () =>
+  cartNames[Math.floor(Math.random() * cartNames.length)];
 
 const BullockCartRacingGame = () => {
   const [tracks, setTracks] = useState([
@@ -26,12 +27,12 @@ const BullockCartRacingGame = () => {
   const [raceFinished, setRaceFinished] = useState(false);
 
   const [selectedCart, setSelectedCart] = useState(null);
-  const [selectedCartName, setSelectedCartName] = useState(null);
-
   const [betAmount, setBetAmount] = useState(10);
   const [walletBalance, setWalletBalance] = useState(0);
 
   const [showResultModal, setShowResultModal] = useState(false);
+  const [showBetModal, setShowBetModal] = useState(false);
+
   const [isWin, setIsWin] = useState(false);
   const [winAmount, setWinAmount] = useState(0);
 
@@ -52,7 +53,6 @@ const BullockCartRacingGame = () => {
 
   useEffect(() => {
     if (!user) return;
-
     const userRef = doc(db, "users", user.uid);
 
     const unsub = onSnapshot(userRef, (snap) => {
@@ -64,56 +64,59 @@ const BullockCartRacingGame = () => {
     return () => unsub();
   }, [user]);
 
-  /* ********** WINNER LOGIC + MODAL ********** */
+  /* -----------------------------------
+            WINNER LOGIC
+  ------------------------------------*/
   const decideWinner = async (currentTracks) => {
     const winner = currentTracks.reduce((a, b) =>
       a.cart.position > b.cart.position ? a : b
     );
 
     if (!user) return;
-
     const userRef = doc(db, "users", user.uid);
 
     if (selectedCart === winner.cart.id) {
       const winAmountCalc = betAmount * 2;
-      setWinAmount(winAmountCalc);
+
       setIsWin(true);
+      setWinAmount(winAmountCalc);
       setShowResultModal(true);
 
       const newBalance = walletBalance + winAmountCalc;
       await updateDoc(userRef, { walletBalance: newBalance });
+
       setWalletBalance(newBalance);
-
       winSound.current?.play();
-
-      setTimeout(() => setShowResultModal(false), 3000);
     } else {
       setIsWin(false);
-      setWinAmount(betAmount); // LOSS amount shown
+      setWinAmount(betAmount);
       setShowResultModal(true);
-
       lossSound.current?.play();
-
-      setTimeout(() => setShowResultModal(false), 3000);
     }
+
+    setTimeout(() => setShowResultModal(false), 3000);
   };
 
-  /* ********** START RACE ********** */
+  /* -----------------------------------
+            START RACE
+  ------------------------------------*/
   const startRace = async () => {
     if (!user) return alert("कृपया पहले लॉगिन करें!");
     if (!selectedCart) return alert("कृपया एक बैलगाड़ी चुनें!");
     if (betAmount <= 0) return alert("कृपया सही राशि दर्ज करें!");
-    if (betAmount > walletBalance) return alert("वॉलेट में पर्याप्त बैलेंस नहीं है!");
+    if (betAmount > walletBalance)
+      return alert("वॉलेट में पर्याप्त बैलेंस नहीं है!");
 
     const userRef = doc(db, "users", user.uid);
-
     const newBal = walletBalance - betAmount;
+
     await updateDoc(userRef, { walletBalance: newBal });
     setWalletBalance(newBal);
 
     startSound.current?.play();
     setTimeout(() => runningSound.current?.play(), 300);
 
+    setShowBetModal(false);
     setRaceStarted(true);
     setRaceFinished(false);
 
@@ -125,7 +128,9 @@ const BullockCartRacingGame = () => {
     );
   };
 
-  /* ********** RACING ANIMATION ********** */
+  /* -----------------------------------
+         RACE MOVEMENT ANIMATION
+  ------------------------------------*/
   useEffect(() => {
     if (raceStarted && !raceFinished) {
       const interval = setInterval(() => {
@@ -139,28 +144,31 @@ const BullockCartRacingGame = () => {
           }))
         );
       }, 90);
-
       return () => clearInterval(interval);
     }
   }, [raceStarted, raceFinished]);
 
-  /* ********** CHECK FINISH ********** */
+  /* -----------------------------------
+            CHECK FINISH
+  ------------------------------------*/
   useEffect(() => {
     const finished = tracks.some((t) => t.cart.position >= 500);
+
     if (finished) {
+      runningSound.current?.pause();
       setRaceFinished(true);
       setRaceStarted(false);
-      runningSound.current?.pause();
       decideWinner(tracks);
     }
   }, [tracks]);
 
-  /* ********** RESET ********** */
+  /* -----------------------------------
+             RESET GAME
+  ------------------------------------*/
   const resetGame = () => {
     setRaceStarted(false);
     setRaceFinished(false);
     setSelectedCart(null);
-    setSelectedCartName(null);
     setBetAmount(10);
 
     setTracks([
@@ -169,13 +177,11 @@ const BullockCartRacingGame = () => {
     ]);
   };
 
-  /* ********** UI ********** */
   return (
     <div style={styles.container}>
-      <h1 style={styles.title}>ऑनलाइन बैलगाड़ी रेस</h1>
-      <div style={styles.balance}>वॉलेट बैलेंस: ₹{walletBalance}</div>
-
-      {/* RACE TRACKS */}
+      {/* -----------------------
+            TRACK SECTION
+      ------------------------- */}
       <div style={styles.trackContainer}>
         {tracks.map((track) => (
           <div key={track.id} style={styles.trackWrapper}>
@@ -187,58 +193,28 @@ const BullockCartRacingGame = () => {
                 }}
               >
                 <img
-                  src="https://i.ibb.co/01y6FtM/image-2-removebg-preview.png"
+                  src={
+                    raceStarted
+                      ? "/racee.gif"
+                      : "https://i.ibb.co/01y6FtM/image-2-removebg-preview.png"
+                  }
                   style={styles.cartImage}
                 />
               </div>
             </div>
-
             <div style={styles.cartName}>{track.cart.name}</div>
           </div>
         ))}
       </div>
 
-      {/* BETTING SECTION */}
+      {/* BET BUTTON */}
       {!raceStarted && !raceFinished && (
-        <>
-          <h2>बेट लगाएँ</h2>
-
-          <div style={styles.cartSelection}>
-            {tracks.map((track) => (
-              <button
-                key={track.cart.id}
-                style={{
-                  ...styles.cartButton,
-                  backgroundColor:
-                    selectedCart === track.cart.id ? "green" : "chocolate",
-                }}
-                onClick={() => {
-                  setSelectedCart(track.cart.id);
-                  setSelectedCartName(track.cart.name);
-                }}
-              >
-                {track.cart.name}
-              </button>
-            ))}
-          </div>
-
-          <div style={styles.betBox}>
-            <label style={styles.label}>राशि:</label>
-
-            <input
-              type="number"
-              min="10"
-              value={betAmount}
-              placeholder="न्यूनतम राशि ₹10"
-              onChange={(e) => setBetAmount(Number(e.target.value))}
-              style={styles.input}
-            />
-          </div>
-
-          <button style={styles.startButton} onClick={startRace}>
-            रेस शुरू करें
-          </button>
-        </>
+        <button
+          style={styles.betOpenButton}
+          onClick={() => setShowBetModal(true)}
+        >
+          बेट लगाएँ
+        </button>
       )}
 
       {raceFinished && (
@@ -247,16 +223,93 @@ const BullockCartRacingGame = () => {
         </button>
       )}
 
-      {/* ********** RESULT MODAL ********** */}
+      {/* ---------------------------
+          MODERN BOTTOM SHEET MODAL
+      --------------------------- */}
+      {showBetModal && (
+        <div
+          style={bottomSheetStyles.backdrop}
+          onClick={() => setShowBetModal(false)}
+        >
+          <div
+            style={bottomSheetStyles.sheet}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Drag Handle */}
+            <div style={bottomSheetStyles.dragHandle}></div>
+
+            <h2 style={{ color: "#FFD700" }}>बेट लगाएँ</h2>
+
+            <h3 style={{ color: "white", marginTop: "10px" }}>गाड़ी चुनें:</h3>
+
+            <div
+              style={{ display: "flex", justifyContent: "center", gap: "10px" }}
+            >
+              {tracks.map((track) => (
+                <button
+                  key={track.cart.id}
+                  onClick={() => setSelectedCart(track.cart.id)}
+                  style={{
+                    padding: "10px",
+                    background:
+                      selectedCart === track.cart.id ? "green" : "chocolate",
+                    borderRadius: "5px",
+                    border: "none",
+                    color: "white",
+                  }}
+                >
+                  {track.cart.name}
+                </button>
+              ))}
+            </div>
+
+            <label
+              style={{
+                color: "white",
+                marginTop: "15px",
+                display: "block",
+                textAlign: "left",
+              }}
+            >
+              राशि दर्ज करें:
+            </label>
+
+            <input
+              type="number"
+              min="10"
+              value={betAmount}
+              onChange={(e) => setBetAmount(Number(e.target.value))}
+              placeholder="न्यूनतम राशि ₹10"
+              style={styles.input}
+            />
+
+            <button
+              style={styles.sheetSubmitBtn}
+              onClick={startRace}
+            >
+              Place Bet
+            </button>
+
+            <button
+              style={styles.sheetCancelBtn}
+              onClick={() => setShowBetModal(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ---------------------------
+           RESULT MODAL
+      ---------------------------- */}
       {showResultModal && (
         <div style={modalStyles.overlay}>
           <div style={modalStyles.modal}>
             {isWin ? (
               <>
-                <div style={modalStyles.emoji}>🎉🎉🎉</div>
+                <div style={modalStyles.emoji}>🎉</div>
                 <h2 style={{ color: "#00ff99" }}>आप जीते! 🏆</h2>
-
-                <p style={{ fontSize: "18px" }}>जीत की राशि:</p>
                 <h1 style={{ color: "#FFD700", fontSize: "38px" }}>
                   ₹{winAmount}
                 </h1>
@@ -265,19 +318,11 @@ const BullockCartRacingGame = () => {
               <>
                 <div style={modalStyles.emoji}>😔</div>
                 <h2 style={{ color: "red" }}>आप हार गए</h2>
-
-                <p style={{ fontSize: "17px", marginTop: "10px" }}>
-                  आपने हारी राशि:
-                </p>
                 <h1 style={{ color: "orange", fontSize: "35px" }}>
                   ₹{winAmount}
                 </h1>
               </>
             )}
-
-            <p style={{ marginTop: "18px", fontSize: "13px", opacity: 0.7 }}>
-              बंद हो रहा है...
-            </p>
           </div>
         </div>
       )}
@@ -285,26 +330,23 @@ const BullockCartRacingGame = () => {
   );
 };
 
-/* ***************************************
-   STYLES
-**************************************** */
+/* ------------------- STYLES ------------------- */
+
 const styles = {
   container: { textAlign: "center", marginBottom: "90px" },
-  title: { color: "white", fontSize: "22px" },
-  balance: { color: "yellow", marginBottom: "10px" },
 
   trackContainer: {
     display: "flex",
     justifyContent: "center",
+    flexWrap: "wrap",
     gap: "20px",
-    margin: "20px 0",
   },
 
-  trackWrapper: { textAlign: "center" },
+  trackWrapper: { textAlign: "center", width: "160px" },
 
   track: {
     width: "150px",
-    height: "500px",
+    height: window.innerWidth < 450 ? "400px" : "500px",
     background: "#a0522d",
     borderRadius: "10px",
     position: "relative",
@@ -320,62 +362,101 @@ const styles = {
 
   cartImage: { width: "70px" },
 
-  cartName: {
-    marginTop: "8px",
-    color: "white",
-    fontWeight: "600",
-  },
+  cartName: { marginTop: "8px", color: "white" },
 
-  cartSelection: { display: "flex", justifyContent: "center", gap: "10px" },
-
-  cartButton: {
-    padding: "10px",
+  betOpenButton: {
+    marginTop: "15px",
+    background: "#ff9800",
     color: "white",
-    borderRadius: "5px",
+    padding: "12px 25px",
+    fontWeight: "700",
+    borderRadius: "8px",
     border: "none",
-    cursor: "pointer",
-    fontWeight: "600",
   },
-
-  betBox: {
-    width: "90%",
-    margin: "12px auto",
-    padding: "12px",
-    background: "rgba(255,255,255,0.1)",
-    borderRadius: "10px",
-  },
-
-  label: { color: "white", marginBottom: "5px", display: "block" },
 
   input: {
     width: "100%",
     padding: "10px",
-    borderRadius: "8px",
-    background: "rgba(0,0,0,0.3)",
+    borderRadius: "10px",
+    background: "rgba(255,255,255,0.15)",
     color: "white",
     border: "1px solid #ff4081",
+    marginTop: "8px",
   },
 
-  startButton: {
+  sheetSubmitBtn: {
+    width: "100%",
+    marginTop: "20px",
+    padding: "12px",
     background: "green",
+    borderRadius: "10px",
     color: "white",
-    padding: "10px 20px",
-    borderRadius: "5px",
+    fontWeight: "700",
+    border: "none",
+    fontSize: "17px",
+  },
+
+  sheetCancelBtn: {
+    width: "100%",
     marginTop: "10px",
+    padding: "10px",
+    background: "#e91e63",
+    borderRadius: "10px",
+    color: "white",
+    border: "none",
+    fontWeight: "600",
   },
 
   resetButton: {
+    marginTop: "15px",
     background: "#e91e63",
     color: "white",
-    padding: "10px 20px",
-    borderRadius: "5px",
-    marginTop: "10px",
+    padding: "10px 25px",
+    borderRadius: "8px",
+    border: "none",
   },
 };
 
-/* ***************************************
-   MODAL STYLES
-**************************************** */
+/* ------------------ BOTTOM SHEET STYLE ------------------ */
+
+const bottomSheetStyles = {
+  backdrop: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "90vh",
+    background: "rgba(0,0,0,0.6)",
+    backdropFilter: "blur(3px)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "flex-end",
+    zIndex: 999999,
+    animation: "fadeIn 0.3s ease",
+  },
+
+  sheet: {
+    width: "100%",
+    maxWidth: "480px",
+    background: "rgba(30,30,30,0.95)",
+    borderTopLeftRadius: "25px",
+    borderTopRightRadius: "25px",
+    padding: "20px",
+    animation: "slideUp 0.35s ease",
+    boxShadow: "0 -5px 25px rgba(0,0,0,0.45)",
+  },
+
+  dragHandle: {
+    width: "50px",
+    height: "6px",
+    background: "#666",
+    borderRadius: "3px",
+    margin: "0 auto 12px",
+  },
+};
+
+/* ------------------ RESULT MODAL ------------------ */
+
 const modalStyles = {
   overlay: {
     position: "fixed",
@@ -387,25 +468,36 @@ const modalStyles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    backdropFilter: "blur(5px)",
-    zIndex: 999999,
+    zIndex: 99999,
   },
+
   modal: {
-    width: "85%",
-    maxWidth: "350px",
     background: "rgba(25,25,25,0.95)",
     borderRadius: "18px",
-    padding: "20px",
+    padding: "25px",
     textAlign: "center",
     color: "white",
+    width: "80%",
+    maxWidth: "350px",
     boxShadow: "0 0 25px #00ff99",
-    animation: "popup 0.5s ease-out",
   },
-  emoji: {
-    fontSize: "50px",
-    marginBottom: "10px",
-    animation: "bounce 1s infinite",
-  },
+
+  emoji: { fontSize: "50px", marginBottom: "10px" },
 };
+
+/* ------------------ GLOBAL ANIMATIONS ------------------ */
+const globalStyles = document.createElement("style");
+globalStyles.innerHTML = `
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+`;
+document.head.appendChild(globalStyles);
 
 export default BullockCartRacingGame;

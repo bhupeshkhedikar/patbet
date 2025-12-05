@@ -10,11 +10,11 @@ const AddGame = () => {
     league: "दक्षिणदान <----> उत्तरदान",
     team1: {
       name: "",
-      logo: "https://i.ibb.co/DDD7g2CP/bailjodi.png",
+      logo: "bullcart.png",
     },
     team2: {
       name: "",
-      logo: "https://i.ibb.co/DDD7g2CP/bailjodi.png",
+      logo: "bullcart.png",
     },
     time: "",
     winner: "",
@@ -163,10 +163,10 @@ const AddGame = () => {
           setNewGame({ ...newGame, maxBetAmount: Number(e.target.value) })
         }
       >
-        <option value="">Select Max Bet Amount</option>
+        <option value="">Select Max Opinion Amount</option>
         {maxBetOptions.map(amount => (
           <option key={amount} value={amount}>
-            ₹{amount}
+            💵{amount}
           </option>
         ))}
       </select>
