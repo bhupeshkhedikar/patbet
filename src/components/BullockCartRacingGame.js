@@ -103,9 +103,9 @@ const BullockCartRacingGame = () => {
   const startRace = async () => {
     if (!user) return alert("कृपया पहले लॉगिन करें!");
     if (!selectedCart) return alert("कृपया एक बैलगाड़ी चुनें!");
-    if (betAmount <= 0) return alert("कृपया सही राशि दर्ज करें!");
+    if (betAmount <= 0) return alert("कृपया सही क्रेडिट दर्ज करें!");
     if (betAmount > walletBalance)
-      return alert("वॉलेट में पर्याप्त बैलेंस नहीं है!");
+      return alert("वॉलेट में पर्याप्त कॉईन्स नहीं है!");
 
     const userRef = doc(db, "users", user.uid);
     const newBal = walletBalance - betAmount;
@@ -271,7 +271,7 @@ const BullockCartRacingGame = () => {
                 textAlign: "left",
               }}
             >
-              राशि दर्ज करें:
+              कॉईन्स दर्ज करें:
             </label>
 
             <input
@@ -279,7 +279,7 @@ const BullockCartRacingGame = () => {
               min="10"
               value={betAmount}
               onChange={(e) => setBetAmount(Number(e.target.value))}
-              placeholder="न्यूनतम राशि ₹10"
+              placeholder="न्यूनतम कॉईन्स 10"
               style={styles.input}
             />
 
@@ -287,7 +287,7 @@ const BullockCartRacingGame = () => {
               style={styles.sheetSubmitBtn}
               onClick={startRace}
             >
-              Place Bet
+              Play Now
             </button>
 
             <button

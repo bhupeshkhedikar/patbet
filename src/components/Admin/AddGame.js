@@ -163,7 +163,7 @@ const AddGame = () => {
           setNewGame({ ...newGame, maxBetAmount: Number(e.target.value) })
         }
       >
-        <option value="">Select Max Opinion Amount</option>
+        <option value="">Select Max Opinion Coins</option>
         {maxBetOptions.map(amount => (
           <option key={amount} value={amount}>
             💵{amount}

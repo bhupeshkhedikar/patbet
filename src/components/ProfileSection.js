@@ -233,11 +233,11 @@ const ProfileSection = () => {
        <div className="menu-list">
         <div className="menu-item" onClick={() => navigate("/mydeposits")}>
           <img src="https://cdn-icons-png.flaticon.com/512/5776/5776487.png" alt="Product" />
-          <span>My Deposites</span>
+          <span>My Top-ups</span>
         </div>
         <div className="menu-item" onClick={() => navigate("/mywithdrawals")}>
           <img src="https://cdn-icons-png.flaticon.com/512/8813/8813844.png" alt="Transactions" />
-          <span>My Withdrawals</span>
+          <span>My Redemptions</span>
           </div>
           <div className="menu-item" onClick={() => navigate("/termsandconditions")}>
           <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjEHla3jGSCPLhR1UjGKruLlDiCk3xd2MwLg&s" alt="tc" />

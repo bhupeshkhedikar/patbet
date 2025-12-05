@@ -192,7 +192,7 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId, maxBetAmount }) =>
 
             <p className="wallet-text">💰 कॉइन बैलेंस: 💵{walletBalance}</p>
             <div className="bet-section">
-              <label className="bet-label">Choice Amount (💵)</label>
+              <label className="bet-label">Choice Coins (💵)</label>
               <input
                 type="number"
                 value={betAmount}

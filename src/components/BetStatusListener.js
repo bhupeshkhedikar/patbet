@@ -82,7 +82,7 @@ const BetStatusListener = () => {
                     {bet.status === "pending" &&
                       "राय लगी है - फैसला आना बाकी है"}
                     {bet.status === "tie" &&
-                      "टाई - पूरी राशि वापस"}
+                      "टाई - पूरी कॉईन्स वापस"}
                   </span>
                 </div>
 

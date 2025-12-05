@@ -133,7 +133,7 @@ const PaymentComponent = () => {
         {/* ⭐ AMOUNT INPUT */}
         <input
           type="number"
-          placeholder="Enter Amount (Min 💵50)"
+          placeholder="Enter Coins (Min 💵50)"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           className="input-field"
