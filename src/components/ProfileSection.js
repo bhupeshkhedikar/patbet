@@ -177,7 +177,7 @@ const ProfileSection = () => {
           </div>
           <div className="stat-box">
           <p className="highlight">💵{totalDeposits.toFixed(2)}</p>
-            <p>Total Recharge</p>
+            <p>Total TopUp</p>
           </div>
           <div className="stat-box">
             <p className="highlight">
@@ -220,13 +220,13 @@ const ProfileSection = () => {
           <AdBanner/>
         <div className="action-buttons" style={{marginTop:'15px'}}>
           <button className="action-btn" onClick={() => navigate("/addmoney")}>
-            Recharge
+            Top-up
           </button>
           <button
             className="action-btn withdrawal-btn"
             onClick={() => navigate("/withdrawal")}
           >
-            Withdrawal
+            Redemption
           </button>
         </div>
 
