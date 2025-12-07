@@ -190,7 +190,7 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId, maxBetAmount }) =>
               <h2>Place Your Choice</h2>
             </div>
 
-            <p className="wallet-text">💰 कॉइन बैलेंस: 💵{walletBalance}</p>
+            <p className="wallet-text">💰 कॉइन बैलेंस: 💵{walletBalance.toFixed(2)}</p>
             <div className="bet-section">
               <label className="bet-label">Choice Coins (💵)</label>
               <input
