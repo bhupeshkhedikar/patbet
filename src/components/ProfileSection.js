@@ -169,11 +169,11 @@ const ProfileSection = () => {
         <div className="stats-container">
           <div className="stat-box">
             <p className="highlight" style={{fontSize:'1.2em'}}>💵{userData?.walletBalance.toFixed(2) || "0"} </p>
-            <p>Total Balance</p>
+            <p>Total Coins</p>
           </div>
           <div className="stat-box">
             <p className="highlight">💵{totalWinnings.toFixed(2)}</p>
-            <p>Total Income</p>
+            <p>Earned Coins</p>
           </div>
           <div className="stat-box">
           <p className="highlight">💵{totalDeposits.toFixed(2)}</p>
