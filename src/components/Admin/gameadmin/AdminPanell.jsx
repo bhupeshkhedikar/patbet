@@ -20,6 +20,8 @@ const AdminPanel = () => {
   const [team1Total, setTeam1Total] = useState(0);
   const [team2Total, setTeam2Total] = useState(0);
 
+  const [secondsLeft, setSecondsLeft] = useState("--");
+
   /* --------------------------------------------------
      LIVE MATCH LISTENER
   -------------------------------------------------- */
@@ -32,7 +34,30 @@ const AdminPanel = () => {
   }, []);
 
   /* --------------------------------------------------
-     LIVE BETS LISTENER (fixes refresh issue)
+     LIVE TIMER (SECONDS LEFT)
+  -------------------------------------------------- */
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (!currentMatch) return setSecondsLeft("--");
+
+      const now = Date.now();
+      const start = currentMatch.startsAt;
+      const end = currentMatch.endsAt;
+
+      if (now < start) {
+        setSecondsLeft(Math.ceil((start - now) / 1000) + " sec (Betting)");
+      } else if (now >= start && now <= end) {
+        setSecondsLeft(Math.ceil((end - now) / 1000) + " sec (Race)");
+      } else {
+        setSecondsLeft("Result Phase");
+      }
+    }, 500);
+
+    return () => clearInterval(timer);
+  }, [currentMatch]);
+
+  /* --------------------------------------------------
+     LIVE BETS LISTENER
   -------------------------------------------------- */
   useEffect(() => {
     const betsRef = collection(db, "game", "currentMatch", "bets");
@@ -86,13 +111,25 @@ const AdminPanel = () => {
           startsAt,
           endsAt,
           winner: null,
+          mode: "balanced", // default
         });
       });
 
       alert("New match started!");
     } catch (e) {
-      console.error(e);
       alert("Error starting new match");
+    }
+  };
+
+  /* --------------------------------------------------
+     CHANGE MODE
+  -------------------------------------------------- */
+  const updateMode = async (mode) => {
+    try {
+      await updateDoc(doc(db, "game", "currentMatch"), { mode });
+      alert(`Mode changed to "${mode}"`);
+    } catch (e) {
+      alert("Error updating mode");
     }
   };
 
@@ -103,9 +140,7 @@ const AdminPanel = () => {
     try {
       await updateDoc(doc(db, "game", "currentMatch"), { bettingOpen: false });
       alert("Betting Closed!");
-    } catch (e) {
-      alert("Error closing betting");
-    }
+    } catch (e) {}
   };
 
   /* --------------------------------------------------
@@ -132,16 +167,57 @@ const AdminPanel = () => {
   if (!currentMatch)
     return <div style={{ color: "white", padding: 20 }}>Loading Match…</div>;
 
+  const m = currentMatch.mode;
+
   return (
     <div style={styles.container}>
       <h1 style={styles.header}>Admin Panel</h1>
 
-      {/* Current Match */}
+      {/* Current Match Info */}
       <div style={styles.box}>
         <h2>Current Match</h2>
         <p>Match ID: {currentMatch.matchId}</p>
         <p>Betting: {currentMatch.bettingOpen ? "OPEN" : "CLOSED"}</p>
         <p>Winner: {currentMatch.winner ?? "Not decided"}</p>
+        <p>Mode: <b style={{ color: "yellow" }}>{m}</b></p>
+        <p style={{ fontSize: 18, marginTop: 10 }}>
+          ⏳ <b>{secondsLeft}</b>
+        </p>
+      </div>
+
+      {/* Mode Selector */}
+      <div style={styles.box}>
+        <h2>Mode Selector</h2>
+
+        <button
+          style={{
+            ...styles.modeBtn,
+            ...(m === "balanced" ? styles.activeMode : {})
+          }}
+          onClick={() => updateMode("balanced")}
+        >
+          Balanced Mode
+        </button>
+
+        <button
+          style={{
+            ...styles.modeBtn,
+            ...(m === "highProfit" ? styles.activeMode : {})
+          }}
+          onClick={() => updateMode("highProfit")}
+        >
+          High Profit Mode
+        </button>
+
+        <button
+          style={{
+            ...styles.modeBtn,
+            ...(m === "manual" ? styles.activeMode : {})
+          }}
+          onClick={() => updateMode("manual")}
+        >
+          Manual Mode
+        </button>
       </div>
 
       {/* Bets */}
@@ -149,38 +225,29 @@ const AdminPanel = () => {
         <div style={styles.teamBox}>
           <h3 style={{ color: "gold" }}>Team 1</h3>
           <h2>Total ₹{team1Total}</h2>
-
-          {team1Bets.length === 0 && <p>No bets yet</p>}
-
-          {team1Bets.map((b) => (
-            <div key={b.id} style={styles.betRow}>
-              <span>{b.userId}</span>
-              <span>₹{b.amount}</span>
-            </div>
-          ))}
         </div>
 
         <div style={styles.teamBox}>
           <h3 style={{ color: "cyan" }}>Team 2</h3>
           <h2>Total ₹{team2Total}</h2>
-
-          {team2Bets.length === 0 && <p>No bets yet</p>}
-
-          {team2Bets.map((b) => (
-            <div key={b.id} style={styles.betRow}>
-              <span>{b.userId}</span>
-              <span>₹{b.amount}</span>
-            </div>
-          ))}
         </div>
       </div>
 
       {/* Buttons */}
       <div style={styles.btnContainer}>
-        <button style={styles.btnStart} onClick={startNewMatch}>Start New Match</button>
-        <button style={styles.btnClose} onClick={closeBetting}>Close Betting</button>
-        <button style={styles.btnWinner1} onClick={() => setWinnerManual(1)}>Set Winner → Team 1</button>
-        <button style={styles.btnWinner2} onClick={() => setWinnerManual(2)}>Set Winner → Team 2</button>
+        <button style={styles.btnStart} onClick={startNewMatch}>
+          Start New Match
+        </button>
+        <button style={styles.btnClose} onClick={closeBetting}>
+          Close Betting
+        </button>
+
+        <button style={styles.btnWinner1} onClick={() => setWinnerManual(1)}>
+          Set Winner → Team 1
+        </button>
+        <button style={styles.btnWinner2} onClick={() => setWinnerManual(2)}>
+          Set Winner → Team 2
+        </button>
       </div>
     </div>
   );
@@ -192,16 +259,37 @@ const AdminPanel = () => {
 const styles = {
   container: { padding: 20, color: "white", textAlign: "center" },
   header: { fontSize: 28, marginBottom: 15 },
-  box: { background: "#222", padding: 15, borderRadius: 10, marginBottom: 20 },
+  box: {
+    background: "#222",
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 20,
+  },
   betsContainer: { display: "flex", gap: 10, marginBottom: 20 },
   teamBox: { flex: 1, background: "#333", padding: 15, borderRadius: 10 },
-  betRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    padding: "4px 0",
-    borderBottom: "1px solid #555",
+
+  modeBtn: {
+    padding: 12,
+    width: "90%",
+    margin: "6px auto",
+    borderRadius: 8,
+    border: "2px solid #444",
+    background: "#333",
+    color: "white",
+    fontSize: 15,
+    fontWeight: 600,
+    cursor: "pointer",
   },
+
+  activeMode: {
+    borderColor: "orange",
+    background: "#553300",
+    color: "yellow",
+    boxShadow: "0 0 10px orange",
+  },
+
   btnContainer: { display: "flex", flexDirection: "column", gap: 10 },
+
   btnStart: { padding: 12, background: "blue", borderRadius: 8, color: "white" },
   btnClose: { padding: 12, background: "red", borderRadius: 8, color: "white" },
   btnWinner1: { padding: 12, background: "green", borderRadius: 8, color: "white" },

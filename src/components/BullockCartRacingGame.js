@@ -1,8 +1,5 @@
 // UserPanel.jsx (सभी UI और कमेंट्स हिन्दी में)
 
-/* --------------------------------------------------
-   आवश्यक आयात
--------------------------------------------------- */
 import React, { useState, useEffect, useRef } from "react";
 import {
   doc,
@@ -34,7 +31,6 @@ const cartNames = [
 ];
 
 const getRandomNames = () => cartNames[Math.floor(Math.random() * cartNames.length)];
-
 const toEpochMs = (v) => (v?.toMillis ? v.toMillis() : Number(v || 0));
 const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
 
@@ -48,8 +44,10 @@ const UserPanel = () => {
   const [walletBalance, setWalletBalance] = useState(0);
   const [myEntries, setMyEntries] = useState([]);
   const [entriesLoaded, setEntriesLoaded] = useState(false);
+
+  // per-match generated stable values (do not change during race)
   const [trackSpeeds, setTrackSpeeds] = useState({});
-  const [loserGap, setLoserGap] = useState(160);
+  const [fixedLoserGap, setFixedLoserGap] = useState({ 1: 180, 2: 180 });
 
   const [selectedCart, setSelectedCart] = useState(null);
   const [participationAmount, setParticipationAmount] = useState(20);
@@ -58,7 +56,7 @@ const UserPanel = () => {
   const [showResultModal, setShowResultModal] = useState(false);
   const [isWin, setIsWin] = useState(false);
   const [winAmount, setWinAmount] = useState(0);
-  const [noEntry, setNoEntry] = useState(false);  // ⭐ NEW FLAG
+  const [noEntry, setNoEntry] = useState(false);
 
   const resultShownRef = useRef(false);
 
@@ -69,10 +67,9 @@ const UserPanel = () => {
 
   const user = auth.currentUser;
 
-
   /* --------------------------------------------------
      ध्वनियाँ लोड करें
--------------------------------------------------- */
+  -------------------------------------------------- */
   useEffect(() => {
     startSound.current = new Audio("/sounds/start.wav");
     runningSound.current = new Audio("/sounds/cart_moving.wav");
@@ -82,8 +79,8 @@ const UserPanel = () => {
   }, []);
 
   /* --------------------------------------------------
-     चालू मैच सुनें
--------------------------------------------------- */
+     चालू मैच सुनें (Realtime)
+  -------------------------------------------------- */
   useEffect(() => {
     const ref = doc(db, "game", "currentMatch");
 
@@ -100,6 +97,7 @@ const UserPanel = () => {
         ]);
       }
 
+      // reset flags for the new/updated match snapshot
       resultShownRef.current = false;
       setShowResultModal(false);
       setNoEntry(false);
@@ -107,8 +105,8 @@ const UserPanel = () => {
   }, []);
 
   /* --------------------------------------------------
-     वॉलेट Listener
--------------------------------------------------- */
+     वॉलेट Listener (Realtime)
+  -------------------------------------------------- */
   useEffect(() => {
     if (!user) return;
 
@@ -119,8 +117,8 @@ const UserPanel = () => {
   }, [user]);
 
   /* --------------------------------------------------
-     Bets Listener
--------------------------------------------------- */
+     मेरी प्रविष्टियाँ लोड करें (Realtime)
+  -------------------------------------------------- */
   useEffect(() => {
     if (!user) return;
 
@@ -135,27 +133,36 @@ const UserPanel = () => {
     });
   }, [user]);
 
-  const trackHeight = window.innerWidth < 450 ? 400 : 500;
-
+  /* --------------------------------------------------
+     Per-match stable values: trackSpeeds and fixedLoserGap
+     (generate once per matchId so they don't change mid-race)
+  -------------------------------------------------- */
   useEffect(() => {
-    if (!currentMatch) return;
+    if (!currentMatch?.matchId) return;
+
+    // stable base speeds (0.75-1.05)
     setTrackSpeeds({
       1: 0.75 + Math.random() * 0.3,
       2: 0.75 + Math.random() * 0.3
     });
-  }, [currentMatch?.matchId]);
 
-  useEffect(() => {
-    if (!currentMatch) return;
-
-    setLoserGap({
-      1: 120 + Math.random() * 180,  // 120–300px behind
-      2: 120 + Math.random() * 180
+    // stable fixed gap for losers (140-230)
+    setFixedLoserGap({
+      1: 140 + Math.random() * 90,
+      2: 140 + Math.random() * 90
     });
+
+    // reset resultShownRef and modal for new match
+    resultShownRef.current = false;
+    setShowResultModal(false);
+    setNoEntry(false);
+
   }, [currentMatch?.matchId]);
+
   /* --------------------------------------------------
-     गाड़ी एनिमेशन
--------------------------------------------------- */
+     गाड़ी एनिमेशन — smooth, deterministic (no shaking)
+     Winner is pre-declared at race start (Auto Match Manager handles that).
+  -------------------------------------------------- */
   useEffect(() => {
     const iv = setInterval(() => {
       if (!currentMatch || tracks.length === 0) return;
@@ -164,7 +171,7 @@ const UserPanel = () => {
       const startsAt = toEpochMs(currentMatch.startsAt);
       const endsAt = toEpochMs(currentMatch.endsAt);
 
-      /* BEFORE RACE */
+      /* BEFORE RACE — reset positions */
       if (now < startsAt) {
         setTracks(prev =>
           prev.map(t => ({
@@ -177,9 +184,8 @@ const UserPanel = () => {
       }
 
       /* DURING RACE */
-
       if (now >= startsAt && now <= endsAt) {
-        const frac = clamp((now - startsAt) / (endsAt - startsAt)); // 0 → 1
+        const frac = clamp((now - startsAt) / Math.max(1, (endsAt - startsAt))); // 0..1
 
         if (runningSound.current.paused)
           runningSound.current.play().catch(() => { });
@@ -188,27 +194,26 @@ const UserPanel = () => {
 
         setTracks(prev =>
           prev.map(t => {
-            let maxSpeed;
+            let maxPos;
 
-            if (currentMatch.winner) {
-              /* ⭐ WINNER / LOSER FINAL POSITION LOGIC */
-
+            // If winner declared, use fixed final positions (winner top, loser behind)
+            if (currentMatch?.winner) {
               if (t.id === currentMatch.winner) {
-                maxSpeed = trackHeight - 20; // Winner almost reaches top
+                maxPos = trackHeight - 20; // winner finishes near top
               } else {
-                // ⭐ Loser gap is random: sometimes near, sometimes far
-                const gap = loserGap[t.id] ?? 180; // random: 120–300 set earlier
-                maxSpeed = trackHeight - gap;
+                // use stable fixed gap to ensure no per-frame jitter
+                const gap = fixedLoserGap[t.id] ?? 180;
+                maxPos = Math.max(60, trackHeight - gap); // ensure reasonable min pos
               }
-
             } else {
-              /* ⭐ NORMAL RACE (NO WINNER YET) — SMOOTH MEDIUM SPEED */
+              // no winner yet -> normal running progression (smooth)
               const base = trackSpeeds[t.id] ?? 0.95;
-              maxSpeed = (trackHeight - 80) * (base + 0.35);
+              const speedFactor = base + 0.35; // tuned factor
+              maxPos = (trackHeight - 80) * speedFactor;
             }
 
-            // ⭐ Smooth motion
-            const newPos = frac * maxSpeed;
+            // final position based on race completion fraction
+            const newPos = frac * maxPos;
 
             return {
               ...t,
@@ -225,19 +230,13 @@ const UserPanel = () => {
     }, 80);
 
     return () => clearInterval(iv);
-  }, [currentMatch, trackSpeeds, loserGap]);
-
-
-
-  // 🚀 NO tracks dependency → FIXED!
-
-
-
+  }, [currentMatch, trackSpeeds, fixedLoserGap, tracks.length]);
 
 
   /* --------------------------------------------------
-     RESULT LOGIC — FIXED (NO DUPLICATE MODAL)
--------------------------------------------------- */
+     RESULT LOGIC — show modal and credit winner safely
+     (only runs once per match because of resultShownRef)
+  -------------------------------------------------- */
   useEffect(() => {
     if (!currentMatch) return;
     if (!entriesLoaded) return;
@@ -248,22 +247,24 @@ const UserPanel = () => {
 
       const now = Date.now();
       const endsAt = toEpochMs(currentMatch.endsAt);
-      if (now < endsAt) return;
+      if (now < endsAt) return; // wait until race end
 
       resultShownRef.current = true;
 
-      // ⭐ यदि entry नहीं लगाई
+      // if user didn't play
       if (myEntries.length === 0) {
         setNoEntry(true);
+        setIsWin(false);
+        setWinAmount(0);
         setShowResultModal(true);
-        return; // STOP HERE ❗
+        return;
       }
 
       const winner = currentMatch.winner;
 
       const winEntries = myEntries.filter(e => e.cartId === winner);
-      const totalEntry = myEntries.reduce((s, e) => s + e.amount, 0);
-      const winTotal = winEntries.reduce((s, e) => s + e.amount, 0);
+      const totalEntry = myEntries.reduce((s, e) => s + (e.amount || 0), 0);
+      const winTotal = winEntries.reduce((s, e) => s + (e.amount || 0), 0);
 
       if (winTotal > 0) {
         const winAmt = winTotal * 2;
@@ -271,9 +272,18 @@ const UserPanel = () => {
         setWinAmount(winAmt);
         winSound.current.play().catch(() => { });
 
-        await updateDoc(doc(db, "users", user.uid), {
-          walletBalance: walletBalance + winAmt
-        });
+        // credit user's wallet in a transaction to avoid race/stale issues
+        try {
+          await runTransaction(db, async (tx) => {
+            const userRef = doc(db, "users", user.uid);
+            const uSnap = await tx.get(userRef);
+            const curBal = (uSnap.exists() && uSnap.data().walletBalance) || 0;
+            tx.update(userRef, { walletBalance: curBal + winAmt });
+          });
+        } catch (e) {
+          console.error("Wallet credit error", e);
+        }
+
       } else {
         setIsWin(false);
         setWinAmount(totalEntry);
@@ -283,17 +293,23 @@ const UserPanel = () => {
       setShowResultModal(true);
     };
 
-    const iv = setInterval(check, 300);
+    // check once immediately (and if race end already passed)
+    check();
+
+    // fallback interval guard (rare)
+    const iv = setInterval(check, 500);
     return () => clearInterval(iv);
 
-  }, [currentMatch, myEntries, entriesLoaded]);
+  }, [currentMatch, myEntries, entriesLoaded, user]);
+
+
   /* --------------------------------------------------
-     PARTICIPATE — राय लगाना (same as before with success message)
+     PARTICIPATE — राय लगाना (single bet per match, success msg)
   -------------------------------------------------- */
   const participate = async () => {
     if (!user) return alert("कृपया लॉगिन करें!");
 
-    // ⭐ Prevent double bet (IMPORTANT)
+    // Prevent double bet
     if (myEntries.length > 0) {
       return alert("आप पहले ही इस दौड़ में राय लगा चुके हैं!");
     }
@@ -311,18 +327,16 @@ const UserPanel = () => {
     try {
       await runTransaction(db, async (tx) => {
         const userRef = doc(db, "users", user.uid);
-        const snap = await tx.get(userRef);
-        const bal = snap.exists() ? snap.data().walletBalance : 0;
+        const uSnap = await tx.get(userRef);
+        const bal = (uSnap.exists() && uSnap.data().walletBalance) || 0;
 
         if (bal < Number(participationAmount))
-          throw new Error("पर्याप्त राशि नहीं!");
+          throw new Error("बटुए में पर्याप्त शेष राशि नहीं है");
 
         // Deduct balance
-        tx.update(userRef, {
-          walletBalance: bal - Number(participationAmount),
-        });
+        tx.update(userRef, { walletBalance: bal - Number(participationAmount) });
 
-        // Add entry
+        // Add entry doc
         const entryRef = doc(collection(db, "game", "currentMatch", "bets"));
         tx.set(entryRef, {
           userId: user.uid,
@@ -345,13 +359,13 @@ const UserPanel = () => {
       setShowEntryModal(false);
     } catch (e) {
       console.error(e);
-      alert(e.message);
+      alert(e.message || "प्रविष्टि असफल रही");
     }
   };
 
 
   /* --------------------------------------------------
-     नया मैच बनाना (team names Firebase में सेव होंगे)
+     नया मैच बनाना (admin-like fallback / clears old bets)
   -------------------------------------------------- */
   const createMatchIfMissing = async () => {
     try {
@@ -365,7 +379,7 @@ const UserPanel = () => {
           if (now < toEpochMs(m.endsAt)) return;
         }
 
-        // Generate team names and ensure they are not identical
+        // Generate unique team names
         let newTeam1 = getRandomNames();
         let newTeam2 = getRandomNames();
         while (newTeam2 === newTeam1) {
@@ -381,8 +395,8 @@ const UserPanel = () => {
         setNoEntry(false);
         setShowResultModal(false);
 
-        const entryWindow = 20000; // 20s for bets
-        const raceWindow = 25000; // 25s race
+        const entryWindow = 20000; // 20s
+        const raceWindow = 25000; // 25s
         const startsAt = now + entryWindow;
         const endsAt = startsAt + raceWindow;
 
@@ -405,47 +419,168 @@ const UserPanel = () => {
       console.error("Match Create Error", e);
     }
   };
+// 🔥 SUPER RANDOM UNPREDICTABLE WINNER SELECTOR
+const chooseSuperRandomWinner = async () => {
+  const betsSnap = await getDocs(collection(db, "game", "currentMatch", "bets"));
+
+  let team1Amount = 0;
+  let team2Amount = 0;
+
+  betsSnap.forEach(b => {
+    const bet = b.data();
+    if (bet.cartId === 1) team1Amount += bet.amount || 0;
+    if (bet.cartId === 2) team2Amount += bet.amount || 0;
+  });
+
+  // Entropy sources
+  const sysRnd = crypto.getRandomValues(new Uint32Array(1))[0];
+  const timeRnd = Date.now() % 9973;
+  const seed = (sysRnd ^ timeRnd ^ (team1Amount * 31) ^ (team2Amount * 17)) >>> 0;
+
+  // Hidden behavior mode (0,1,2)
+  const mode = seed % 3;
+
+  let winner;
+
+  if (mode === 0) {
+    // Pure random
+    winner = (seed % 2) + 1;
+
+  } else if (mode === 1) {
+    // Sometimes pick underdog (less bet team)
+    if (team1Amount === team2Amount) {
+      winner = (seed % 2) + 1;
+    } else {
+      winner = team1Amount < team2Amount ? 1 : 2;
+    }
+
+  } else {
+    // Sometimes pick overloaded team (more bets)
+    if (team1Amount === team2Amount) {
+      winner = (seed % 2) + 1;
+    } else {
+      winner = team1Amount > team2Amount ? 1 : 2;
+    }
+  }
+
+  return winner;
+};
+
+// SUPER ADVANCED WINNER SELECTOR BASED ON MODE
+const chooseWinnerByMode = async (mode) => {
+  // Load current bets
+  const betsSnap = await getDocs(collection(db, "game", "currentMatch", "bets"));
+
+  let team1Amount = 0;
+  let team2Amount = 0;
+
+  betsSnap.forEach((b) => {
+    const data = b.data();
+    if (data.cartId === 1) team1Amount += data.amount || 0;
+    if (data.cartId === 2) team2Amount += data.amount || 0;
+  });
+
+  // entropy seed
+  const sys = crypto.getRandomValues(new Uint32Array(1))[0];
+  const time = Date.now() % 99991;
+  const seed = (sys ^ time ^ (team1Amount * 29) ^ (team2Amount * 37)) >>> 0;
+
+  const randomTeam = seed % 2 === 0 ? 1 : 2;
+
+  /* ----------------------------
+        1️⃣ BALANCED MODE  
+     ---------------------------- */
+  if (mode === "balanced") {
+    const diff = Math.abs(team1Amount - team2Amount);
+
+    if (diff < 50) {
+      return randomTeam;
+    }
+
+    if (team1Amount > team2Amount) {
+      return seed % 3 === 0 ? 1 : 2;
+    } else {
+      return seed % 3 === 0 ? 2 : 1;
+    }
+  }
+
+  /* ----------------------------
+        2️⃣ HIGH PROFIT MODE  
+     ---------------------------- */
+  if (mode === "highProfit") {
+    if (team1Amount > team2Amount) {
+      return seed % 5 === 0 ? 1 : 2;
+    } else if (team2Amount > team1Amount) {
+      return seed % 5 === 0 ? 2 : 1;
+    } else {
+      return randomTeam;
+    }
+  }
+
+  /* ----------------------------
+        3️⃣ MANUAL MODE  
+        → USE SUPER RANDOM LOGIC
+     ---------------------------- */
+  if (mode === "manual") {
+    return await chooseSuperRandomWinner();  // ⭐ YOUR FULL unpredictable logic
+  }
+
+  // fallback
+  return randomTeam;
+};
+
+
 
   /* --------------------------------------------------
-     Auto Match Manager
+     Auto Match Manager (decide winner at race start)
+     — ensures visual finish always matches declared winner
   -------------------------------------------------- */
-  useEffect(() => {
-    const timer = setInterval(async () => {
-      if (!currentMatch) return;
+useEffect(() => {
+  const timer = setInterval(async () => {
+    if (!currentMatch) return;
 
-      const now = Date.now();
-      const startsAt = toEpochMs(currentMatch.startsAt);
-      const endsAt = toEpochMs(currentMatch.endsAt);
+    const now = Date.now();
+    const startsAt = toEpochMs(currentMatch.startsAt);
+    const endsAt = toEpochMs(currentMatch.endsAt);
 
-      // Close betting when match starts
-      if (currentMatch.bettingOpen && now >= startsAt) {
-        try {
-          await updateDoc(doc(db, "game", "currentMatch"), { bettingOpen: false });
-        } catch (e) {
-          // ignore
-        }
+    /* --------------------------------------------------
+        CLOSE BETTING WHEN RACE STARTS
+    -------------------------------------------------- */
+    if (currentMatch.bettingOpen && now >= startsAt) {
+      try {
+        await updateDoc(doc(db, "game", "currentMatch"), { bettingOpen: false });
+      } catch (e) {
+        // ignore
       }
+    }
 
-      // If admin didn't set winner, choose random at end
-      if (currentMatch.winner == null && now > endsAt) {
-
-        const rnd = crypto.getRandomValues(new Uint32Array(1))[0];
-        const winner = rnd % 2 === 0 ? 1 : 2;
-
-        try {
-          await updateDoc(doc(db, "game", "currentMatch"), { winner });
-        } catch (e) { }
+    /* --------------------------------------------------
+        DECIDE WINNER EXACTLY WHEN RACE STARTS
+        (So animation follows correct winner)
+    -------------------------------------------------- */
+    if (currentMatch.winner == null && now >= startsAt) {
+      try {
+       const winner = await chooseWinnerByMode(currentMatch.mode);
+  // ⭐ NEW MODE-BASED WINNER LOGIC
+        await updateDoc(doc(db, "game", "currentMatch"), { winner });
+      } catch (e) {
+        console.error("Winner Set Error", e);
       }
+    }
+
+    /* --------------------------------------------------
+        CREATE NEXT MATCH AFTER RACE ENDS + 3 sec
+    -------------------------------------------------- */
+    if (currentMatch.winner != null && now > endsAt + 3000) {
+      await createMatchIfMissing();
+    }
+
+  }, 300);
+
+  return () => clearInterval(timer);
+}, [currentMatch]);
 
 
-      // After short delay, create next match
-      if (currentMatch.winner != null && now > endsAt + 3000) {
-        await createMatchIfMissing();
-      }
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [currentMatch]);
 
   /* --------------------------------------------------
      UI START
@@ -477,18 +612,17 @@ const UserPanel = () => {
   return (
     <div style={styles.container}>
       {/* ट्रैक */}
-      {/* ट्रैक और गाड़ियाँ (replace your existing tracks.map block with this) */}
       <div style={styles.trackContainer}>
         {tracks.map((t) => {
           // compute render-time progress (0..1)
-          const startsAt = currentMatch ? toEpochMs(currentMatch.startsAt) : 0;
-          const endsAt = currentMatch ? toEpochMs(currentMatch.endsAt) : 0;
+          const startsAtR = currentMatch ? toEpochMs(currentMatch.startsAt) : 0;
+          const endsAtR = currentMatch ? toEpochMs(currentMatch.endsAt) : 0;
           const nowTimeRender = Date.now();
           let fracRender = 0;
-          if (currentMatch && endsAt > startsAt) {
-            if (nowTimeRender < startsAt) fracRender = 0;
-            else if (nowTimeRender > endsAt) fracRender = 1;
-            else fracRender = clamp((nowTimeRender - startsAt) / (endsAt - startsAt));
+          if (currentMatch && endsAtR > startsAtR) {
+            if (nowTimeRender < startsAtR) fracRender = 0;
+            else if (nowTimeRender > endsAtR) fracRender = 1;
+            else fracRender = clamp((nowTimeRender - startsAtR) / (endsAtR - startsAtR));
           }
 
           // glow when this track is declared winner and race is near finish (or finished)
@@ -497,7 +631,7 @@ const UserPanel = () => {
           return (
             <div key={t.id} style={styles.trackWrapper}>
               <div style={styles.track}>
-                {/* FINISH LINE (optional) */}
+                {/* FINISH LINE */}
                 <div style={styles.finishLine}></div>
 
                 {/* cart with conditional glow */}
@@ -505,7 +639,6 @@ const UserPanel = () => {
                   style={{
                     ...styles.cart,
                     bottom: `${t.cart.position}px`,
-                    // apply glow visually: drop-shadow + subtle scale
                     filter: glow ? "drop-shadow(0 0 14px rgba(255,215,0,0.95))" : "none",
                     transform: glow ? "translateX(-50%) scale(1.06)" : "translateX(-50%)",
                     transition: "filter 220ms ease, transform 220ms ease, bottom 120ms linear",
@@ -528,7 +661,6 @@ const UserPanel = () => {
                 gap: 4
               }}>
                 <div>{t.cart.name}</div>
-                {/* small winner badge during glow */}
                 {glow && (
                   <div style={{ fontSize: 12, color: "#FFD700", fontWeight: 800 }}>
                     🏆 विजेता
@@ -539,7 +671,6 @@ const UserPanel = () => {
           );
         })}
       </div>
-
 
       {/* Play + Info Bar */}
       <div style={styles.hudBar}>
@@ -586,7 +717,7 @@ const UserPanel = () => {
             {racePhase && `🏁 दौड़ समाप्त: ${secondsLeft()} बाकी`}
             {resultPhase && "🎉 परिणाम घोषित"}
           </div>
-          {/* ⚡ Animated Progress Bar */}
+
           <div
             style={{
               marginTop: 8,
@@ -600,36 +731,33 @@ const UserPanel = () => {
             <div
               style={{
                 height: "100%",
-
-                /* WIDTH BASED ON GAME TIME */
                 width: entryPhase
                   ? `${(secondsLeft().replace(" सेकंड", "") / 20) * 100}%`
                   : racePhase
                     ? `${(secondsLeft().replace(" सेकंड", "") / 25) * 100}%`
                     : "0%",
-
                 background: entryPhase
                   ? "linear-gradient(90deg,#00ff95,#00c853)"
                   : racePhase
                     ? "linear-gradient(90deg,#ffb300,#ff6f00)"
                     : "red",
-
                 transition: "width 0.4s linear",
                 boxShadow: "0 0 10pxrgba(255,255,255,0.6)",
               }}
             ></div>
           </div>
 
-          {/* display team names */}
+          {/* display selected team or not participated */}
           <div style={{ marginTop: 10, textAlign: "center" }}>
             {selectedTeamName ? (
               <div style={{ color: "#00ff95", fontWeight: "700", fontSize: 10 }}>
                 ✔ चुनी हुई बैलगाडी: {selectedTeamName}
               </div>
             ) : (
-              <><div style={{ color: "yellow", fontWeight: "700", fontSize: 10 }}>
-                ⚠ आपने इस दौड़ में भाग नहीं लिया
-              </div>
+              <>
+                <div style={{ color: "yellow", fontWeight: "700", fontSize: 10 }}>
+                  ⚠ आपने इस दौड़ में भाग नहीं लिया
+                </div>
                 {winnerTeamName && (
                   <div style={{ color: "#00ff00ff", fontWeight: "700", fontSize: 10 }}>
                     🏆 विजेता जोडी: {winnerTeamName}
@@ -647,8 +775,9 @@ const UserPanel = () => {
           <div style={bottomSheetStyles.sheet} onClick={(e) => e.stopPropagation()}>
             <div style={bottomSheetStyles.dragHandle}></div>
 
-            <h2 style={{ color: "#FFD700" }}>प्रवेश</h2>
-            <h3 style={{ color: "white" }}>गाड़ी चुनें:</h3>
+            <h2 style={{ color: "#FFD700",margin: 2 }}>प्रवेश</h2>
+             <p style={{ color: "#48ff00ff",margin: 2,fontWeight:'bold' }}>{entryPhase && `⏳ राय लगाना बंद होने में: ${secondsLeft()} बाकी`} {!entryPhase ?'समय समाप्त ':'' }</p> 
+            <h3 style={{ color: "white",margin: 4 }}>बैलगाडी चुनें:</h3>
 
             <div style={{ display: "flex", justifyContent: "center", gap: 10 }}>
               {tracks.map((track) => (
@@ -661,6 +790,7 @@ const UserPanel = () => {
                     color: "white",
                     borderRadius: 5,
                     border: "none",
+                    marginBottom: 10,
                   }}
                 >
                   {track.cart.name}
@@ -668,7 +798,7 @@ const UserPanel = () => {
               ))}
             </div>
 
-            <label style={{ color: "white" }}>राशि:</label>
+            <label style={{ color: "white" ,}}>राशि:</label>
             <input
               type="number"
               value={participationAmount}
@@ -677,7 +807,7 @@ const UserPanel = () => {
             />
 
             <button style={styles.sheetSubmitBtn} onClick={participate}>
-              जमा करें
+              राय लगाये
             </button>
             <button style={styles.sheetCancelBtn} onClick={() => setShowEntryModal(false)}>
               रद्द करें
@@ -733,7 +863,7 @@ const styles = {
   trackContainer: { display: "flex", justifyContent: "center", gap: 20 },
   finishLine: {
     position: "absolute",
-    top: "10px",        // finish line position (can adjust)
+    top: "10px",
     left: 0,
     width: "100%",
     height: "6px",
@@ -757,7 +887,7 @@ const styles = {
     position: "absolute",
     left: "80%",
     transform: "translateX(-50%)",
-    transition: "bottom 0.08s linear",
+    transition: "bottom 0.12s linear",
   },
   cartImage: { width: 70 },
   cartName: { marginTop: 8, color: "yellow", fontSize: 13, fontWeight: "700", },
@@ -874,6 +1004,5 @@ const modalStyles = {
   emoji: { fontSize: 50, marginBottom: 10 },
 
 };
-
 
 export default UserPanel;
