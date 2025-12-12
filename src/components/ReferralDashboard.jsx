@@ -77,7 +77,7 @@ const ReferralDashboard = () => {
           boxShadow: "0px 5px 15px rgba(0,0,0,0.25)",
         }}
       >
-        🎉 दोस्तों को Invite करें और हर रजिस्ट्रेशन पर ₹100 कमाएं!
+        🎉 दोस्तों को PatWin पर Invite करें और हर रजिस्ट्रेशन पर ₹100 कमाएं!
       </div>
 
       {/* ⭐ MAIN CARD */}
@@ -93,7 +93,7 @@ const ReferralDashboard = () => {
         }}
       >
         {/* ⭐ Reward Coin Animation */}
-       <div style={{ fontSize: 60, marginBottom: 10 }}>🎁</div>
+        <div style={{ fontSize: 60, marginBottom: 10 }}>🎁</div>
 
         <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 10 }}>
           दोस्तों को रेफ़र करें और कमाएँ
@@ -147,111 +147,111 @@ const ReferralDashboard = () => {
         </div>
 
         {/* ⭐ SHARE SECTION */}
-{/* ⭐ SHARE SECTION */}
-<p style={{ fontSize: 14, marginBottom: 12 }}>अपना कोड शेयर करें</p>
+        {/* ⭐ SHARE SECTION */}
+        <p style={{ fontSize: 14, marginBottom: 12 }}>अपना कोड शेयर करें</p>
 
-<div style={{ display: "flex", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
-  <button
-    style={{
-      background: "#2AABEE",
-      padding: "10px 18px",
-      borderRadius: 20,
-      color: "white",
-      border: "none",
-      fontWeight: 600,
-      width: "30%",
-      minWidth: 100,
-      fontSize: 12,
-    }}
-  >
-    Telegram
-  </button>
+        <div style={{ display: "flex", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
+          <button
+            style={{
+              background: "#2AABEE",
+              padding: "10px 18px",
+              borderRadius: 20,
+              color: "white",
+              border: "none",
+              fontWeight: 600,
+              width: "30%",
+              minWidth: 100,
+              fontSize: 12,
+            }}
+          >
+            Telegram
+          </button>
 
-  <button
-    style={{
-      background: "#1877F2",
-      padding: "10px 18px",
-      borderRadius: 20,
-      color: "white",
-      border: "none",
-      fontWeight: 600,
-      width: "30%",
-      minWidth: 100,
-      fontSize: 12,
-    }}
-  >
-    Facebook
-  </button>
+          <button
+            style={{
+              background: "#1877F2",
+              padding: "10px 18px",
+              borderRadius: 20,
+              color: "white",
+              border: "none",
+              fontWeight: 600,
+              width: "30%",
+              minWidth: 100,
+              fontSize: 12,
+            }}
+          >
+            Facebook
+          </button>
 
-  <button
-    onClick={() =>
-      (window.location.href = `https://wa.me/?text=PatBet से जुड़ें और मेरा कोड इस्तेमाल करें: ${referralLink}`)
-    }
-    style={{
-      background: "#25D366",
-      padding: "10px 18px",
-      borderRadius: 20,
-      color: "white",
-      border: "none",
-      fontWeight: 600,
-      width: "30%",
-      minWidth: 100,
-      fontSize: 12,
-    }}
-  >
-    WhatsApp
-  </button>
-</div>
+          <button
+            onClick={() =>
+              (window.location.href = `https://wa.me/?text=PatWin से जुड़ें और मेरा कोड इस्तेमाल करें: ${referralLink}`)
+            }
+            style={{
+              background: "#25D366",
+              padding: "10px 18px",
+              borderRadius: 20,
+              color: "white",
+              border: "none",
+              fontWeight: 600,
+              width: "30%",
+              minWidth: 100,
+              fontSize: 12,
+            }}
+          >
+            WhatsApp
+          </button>
+        </div>
 
-{/* ⭐ COPY REFERRAL LINK BUTTON */}
-{/* ⭐ SHOW REFERRAL LINK IN INPUT + COPY BUTTON */}
-<div
-  style={{
-    marginTop: 20,
-    background: "white",
-    padding: "12px",
-    borderRadius: 14,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    border: "1px solid #ddd",
-  }}
->
+        {/* ⭐ COPY REFERRAL LINK BUTTON */}
+        {/* ⭐ SHOW REFERRAL LINK IN INPUT + COPY BUTTON */}
+        <div
+          style={{
+            marginTop: 20,
+            background: "white",
+            padding: "12px",
+            borderRadius: 14,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            border: "1px solid #ddd",
+          }}
+        >
 
-  {/* REFERRAL LINK INPUT */}
-  <input
-    type="text"
-    value={referralLink}
-    readOnly
-    style={{
-      width: "70%",
-      padding: "10px",
-      borderRadius: 10,
-      border: "1px solid #ccc",
-      fontSize: 12,
-      outline: "none",
-    }}
-  />
+          {/* REFERRAL LINK INPUT */}
+          <input
+            type="text"
+            value={referralLink}
+            readOnly
+            style={{
+              width: "70%",
+              padding: "10px",
+              borderRadius: 10,
+              border: "1px solid #ccc",
+              fontSize: 12,
+              outline: "none",
+            }}
+          />
 
-  {/* COPY BUTTON */}
-  <button
-    onClick={() => copyText(referralLink)}
-    style={{
-      background: "linear-gradient(90deg,#6a11cb,#2575fc)",
-      padding: "10px 15px",
-      borderRadius: 12,
-      color: "white",
-      border: "none",
-      fontWeight: 600,
-      marginLeft: 10,
-      width: "28%",
-      fontSize: 12,
-      boxShadow: "0px 5px 10px rgba(0,0,0,0.15)",
-    }}
-  >
-    कॉपी लिंक
-  </button>
-</div>
+          {/* COPY BUTTON */}
+          <button
+            onClick={() => copyText(referralLink)}
+            style={{
+              background: "linear-gradient(90deg,#6a11cb,#2575fc)",
+              padding: "10px 15px",
+              borderRadius: 12,
+              color: "white",
+              border: "none",
+              fontWeight: 600,
+              marginLeft: 10,
+              width: "28%",
+              fontSize: 12,
+              boxShadow: "0px 5px 10px rgba(0,0,0,0.15)",
+            }}
+          >
+            कॉपी लिंक
+          </button>
+        </div>
 
 
 
