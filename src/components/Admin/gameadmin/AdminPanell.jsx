@@ -1,370 +1,211 @@
 // AdminPanel.jsx
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   doc,
   onSnapshot,
-  collection,
-  query,
-  where,
-  orderBy,
   updateDoc,
+  collection,
   getDocs,
+  runTransaction,
+  serverTimestamp,
+  setDoc,
 } from "firebase/firestore";
 import { db } from "../../../firebase";
-/*
-  ADMIN FEATURES:
-  - Reads live data from game/current
-  - Auto-cycle game viewer (Betting → Race → Result → Betting…)
-  - Shows live countdown
-  - Shows live bets for current match only
-  - Summary (fixed)
-  - Manual winner override (only during betting)
-*/
-const AdminPanell = () => {
-  const [matchData, setMatchData] = useState(null);
-  const [bets, setBets] = useState([]);
-  const [loadingBets, setLoadingBets] = useState(true);
-  const [countdown, setCountdown] = useState(0);
-  const countdownIntervalRef = useRef(null);
-  /* ----------------------------------------
-     SUBSCRIBE: Live game/current doc
-  ---------------------------------------- */
+
+const AdminPanel = () => {
+  const [currentMatch, setCurrentMatch] = useState(null);
+
+  const [team1Bets, setTeam1Bets] = useState([]);
+  const [team2Bets, setTeam2Bets] = useState([]);
+  const [team1Total, setTeam1Total] = useState(0);
+  const [team2Total, setTeam2Total] = useState(0);
+
+  /* --------------------------------------------------
+     LIVE MATCH LISTENER
+  -------------------------------------------------- */
   useEffect(() => {
-    const ref = doc(db, "game", "current");
-    const unsub = onSnapshot(ref, (snap) => {
-      if (snap.exists()) {
-        const data = snap.data();
-        setMatchData(data);
-        // countdown (initial calc)
-        if (data.bettingEndAt && data.status === "betting") {
-          const millis =
-            data.bettingEndAt.toMillis?.() || data.bettingEndAt;
-          const secsLeft = Math.max(
-            0,
-            Math.floor((millis - Date.now()) / 1000)
-          );
-          setCountdown(secsLeft);
-        } else {
-          setCountdown(0);
-        }
-      } else {
-        setMatchData(null);
-        setCountdown(0);
-      }
+    const unsubscribe = onSnapshot(doc(db, "game", "currentMatch"), (snap) => {
+      if (snap.exists()) setCurrentMatch(snap.data());
     });
-    return () => unsub();
+
+    return () => unsubscribe();
   }, []);
-  /* ----------------------------------------
-     LIVE COUNTDOWN TICKER (client-side)
-  ---------------------------------------- */
+
+  /* --------------------------------------------------
+     LIVE BETS LISTENER (fixes refresh issue)
+  -------------------------------------------------- */
   useEffect(() => {
-    if (!matchData?.bettingEndAt || matchData.status !== "betting") {
-      if (countdownIntervalRef.current) {
-        clearInterval(countdownIntervalRef.current);
-        countdownIntervalRef.current = null;
-      }
-      return;
-    }
-    // Start ticking down every second
-    countdownIntervalRef.current = setInterval(() => {
-      const millis = matchData.bettingEndAt.toMillis?.() || matchData.bettingEndAt;
-      const secsLeft = Math.max(0, Math.floor((millis - Date.now()) / 1000));
-      setCountdown(secsLeft);
-      if (secsLeft <= 0) {
-        clearInterval(countdownIntervalRef.current);
-        countdownIntervalRef.current = null;
-      }
-    }, 1000);
-    return () => {
-      if (countdownIntervalRef.current) {
-        clearInterval(countdownIntervalRef.current);
-      }
-    };
-  }, [matchData?.bettingEndAt, matchData?.status]);
-  /* ----------------------------------------
-     SUBSCRIBE: Live bets for current matchId
-     FIXED: Depend only on matchId to avoid re-sub on other matchData changes
-     HOTFIX: Removed orderBy to avoid needing composite index; bets will not be sorted by time
-  ---------------------------------------- */
-  useEffect(() => {
-    const currentMatchId = matchData?.matchId;
-    if (!currentMatchId) {
-      setBets([]);
-      setLoadingBets(false);
-      return;
-    }
-    setLoadingBets(true);
-    const q = query(
-      collection(db, "bets"),
-      where("matchId", "==", currentMatchId)
-      // orderBy("createdAt", "desc") // Commented out to avoid index requirement
-    );
-    const unsub = onSnapshot(q, (snap) => {
-      const arr = [];
-      snap.forEach((d) => arr.push({ id: d.id, ...d.data() }));
-      setBets(arr);
-      setLoadingBets(false);
-    }, (error) => {
-      console.error("Bets snapshot error:", error);
-      setLoadingBets(false);
-    });
-    return () => unsub();
-  }, [matchData?.matchId]); // Key fix: depend on matchId only
-  /* ----------------------------------------
-     MANUAL WINNER OVERRIDE
-  ---------------------------------------- */
-  const setWinnerManually = async (cartId) => {
-    if (!matchData) return;
-    if (matchData.status !== "betting") {
-      alert("❌ Betting window is closed. Cannot set winner now.");
-      return;
-    }
-    try {
-      await updateDoc(doc(db, "game", "current"), {
-        manualWinner: cartId,
+    const betsRef = collection(db, "game", "currentMatch", "bets");
+
+    const unsubscribe = onSnapshot(betsRef, (snap) => {
+      let t1 = [];
+      let t2 = [];
+      let total1 = 0;
+      let total2 = 0;
+
+      snap.forEach((d) => {
+        const bet = { id: d.id, ...d.data() };
+
+        if (bet.cartId === 1) {
+          t1.push(bet);
+          total1 += bet.amount || 0;
+        } else if (bet.cartId === 2) {
+          t2.push(bet);
+          total2 += bet.amount || 0;
+        }
       });
-      alert("✔ Manual winner set: Cart " + cartId);
-    } catch (err) {
-      console.error(err);
+
+      setTeam1Bets(t1);
+      setTeam2Bets(t2);
+      setTeam1Total(total1);
+      setTeam2Total(total2);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  /* --------------------------------------------------
+     START NEW MATCH
+  -------------------------------------------------- */
+  const startNewMatch = async () => {
+    try {
+      await runTransaction(db, async (tx) => {
+        const now = Date.now();
+
+        // delete old bets
+        const betsSnap = await getDocs(collection(db, "game", "currentMatch", "bets"));
+        betsSnap.forEach((d) => tx.delete(d.ref));
+
+        const startsAt = now + 20000;
+        const endsAt = startsAt + 25000;
+
+        tx.set(doc(db, "game", "currentMatch"), {
+          matchId: `m_${Math.floor(now / 1000)}`,
+          createdAt: serverTimestamp(),
+          bettingOpen: true,
+          startsAt,
+          endsAt,
+          winner: null,
+        });
+      });
+
+      alert("New match started!");
+    } catch (e) {
+      console.error(e);
+      alert("Error starting new match");
+    }
+  };
+
+  /* --------------------------------------------------
+     CLOSE BETTING
+  -------------------------------------------------- */
+  const closeBetting = async () => {
+    try {
+      await updateDoc(doc(db, "game", "currentMatch"), { bettingOpen: false });
+      alert("Betting Closed!");
+    } catch (e) {
+      alert("Error closing betting");
+    }
+  };
+
+  /* --------------------------------------------------
+     MANUAL WINNER SET
+  -------------------------------------------------- */
+  const setWinnerManual = async (team) => {
+    if (!window.confirm(`Set Winner as Team ${team}?`)) return;
+
+    try {
+      await updateDoc(doc(db, "game", "currentMatch"), {
+        winner: team,
+        finishedAt: serverTimestamp(),
+      });
+
+      alert(`Winner set to Team ${team}`);
+    } catch (e) {
       alert("Error setting winner");
     }
   };
-  /* ----------------------------------------
-     SUMMARY (FIXED)
-  ---------------------------------------- */
-  const stats = (() => {
-    const s = {
-      1: { count: 0, amount: 0 },
-      2: { count: 0, amount: 0 },
-    };
-    bets.forEach((b) => {
-      const cart = Number(b.cartId); // force to number
-      if (cart === 1 || cart === 2) {
-        s[cart].count += 1;
-        s[cart].amount += Number(b.amount || 0);
-      }
-    });
-    return s;
-  })();
-  /* ----------------------------------------
-     TIME FORMAT
-  ---------------------------------------- */
-  const formatTime = (s) => {
-    const mm = Math.floor(s / 60)
-      .toString()
-      .padStart(2, "0");
-    const ss = Math.floor(s % 60)
-      .toString()
-      .padStart(2, "0");
-    return `${mm}:${ss}`;
-  };
-  /* ----------------------------------------
+
+  /* --------------------------------------------------
      UI
-  ---------------------------------------- */
+  -------------------------------------------------- */
+  if (!currentMatch)
+    return <div style={{ color: "white", padding: 20 }}>Loading Match…</div>;
+
   return (
     <div style={styles.container}>
-      <h2 style={styles.header}>⚙️ PatBet Admin Panel</h2>
-      {/* MATCH INFO */}
-      <div style={styles.card}>
-        <h3 style={styles.title}>🎮 Live Match Info</h3>
-        {matchData ? (
-          <>
-            <div style={styles.infoRow}>
-              <span>Match ID:</span>
-              <strong>{matchData.matchId}</strong>
-            </div>
-            <div style={styles.infoRow}>
-              <span>Status:</span>
-              <strong style={{ color: "#00ffaa" }}>
-                {matchData.status?.toUpperCase()}
-              </strong>
-            </div>
-            <div style={styles.infoRow}>
-              <span>Last Winner:</span>
-              <strong>{matchData.lastWinner || "-"}</strong>
-            </div>
-            {matchData.status === "betting" ? (
-              <div style={styles.countdownBox}>
-                Betting ends in:{" "}
-                <span style={{ color: "#FFD700" }}>
-                  {formatTime(countdown)}
-                </span>
-              </div>
-            ) : (
-              <div style={{ color: "#999" }}>Betting Closed</div>
-            )}
-          </>
-        ) : (
-          <p style={{ color: "#ccc" }}>Waiting for match…</p>
-        )}
+      <h1 style={styles.header}>Admin Panel</h1>
+
+      {/* Current Match */}
+      <div style={styles.box}>
+        <h2>Current Match</h2>
+        <p>Match ID: {currentMatch.matchId}</p>
+        <p>Betting: {currentMatch.bettingOpen ? "OPEN" : "CLOSED"}</p>
+        <p>Winner: {currentMatch.winner ?? "Not decided"}</p>
       </div>
-      {/* MANUAL WINNER PICK */}
-      <div style={styles.card}>
-        <h3 style={styles.title}>🏆 Manual Winner Override</h3>
-        <p style={{ color: "#aaa" }}>Allowed only during betting</p>
-        <div style={styles.btnRow}>
-          <button
-            style={styles.greenBtn}
-            onClick={() => setWinnerManually(1)}
-          >
-            Set Winner: Cart 1
-          </button>
-          <button
-            style={styles.greenBtn}
-            onClick={() => setWinnerManually(2)}
-          >
-            Set Winner: Cart 2
-          </button>
+
+      {/* Bets */}
+      <div style={styles.betsContainer}>
+        <div style={styles.teamBox}>
+          <h3 style={{ color: "gold" }}>Team 1</h3>
+          <h2>Total ₹{team1Total}</h2>
+
+          {team1Bets.length === 0 && <p>No bets yet</p>}
+
+          {team1Bets.map((b) => (
+            <div key={b.id} style={styles.betRow}>
+              <span>{b.userId}</span>
+              <span>₹{b.amount}</span>
+            </div>
+          ))}
+        </div>
+
+        <div style={styles.teamBox}>
+          <h3 style={{ color: "cyan" }}>Team 2</h3>
+          <h2>Total ₹{team2Total}</h2>
+
+          {team2Bets.length === 0 && <p>No bets yet</p>}
+
+          {team2Bets.map((b) => (
+            <div key={b.id} style={styles.betRow}>
+              <span>{b.userId}</span>
+              <span>₹{b.amount}</span>
+            </div>
+          ))}
         </div>
       </div>
-      {/* SUMMARY (Current Match) */}
-      <div style={styles.card}>
-        <h3 style={styles.title}>📊 Summary (Current Match)</h3>
-        <div style={styles.summaryGrid}>
-          <div style={styles.summaryBox}>
-            <span style={styles.summaryLabel}>Cart 1</span>
-            <span>Bets: {stats[1].count}</span>
-            <span>💵{stats[1].amount}</span>
-          </div>
-          <div style={styles.summaryBox}>
-            <span style={styles.summaryLabel}>Cart 2</span>
-            <span>Bets: {stats[2].count}</span>
-            <span>💵{stats[2].amount}</span>
-          </div>
-        </div>
-      </div>
-      {/* LIVE BETS */}
-      <div style={styles.card}>
-        <h3 style={styles.title}>📜 All Bets</h3>
-        <div style={styles.betList}>
-          {loadingBets ? (
-            <p style={{ color: "#aaa" }}>Loading…</p>
-          ) : bets.length === 0 ? (
-            <p style={{ color: "#aaa" }}>No bets yet.</p>
-          ) : (
-            bets.map((b) => (
-              <div key={b.id} style={styles.betItem}>
-                <div style={styles.betUser}>
-                  {b.userEmail || b.userId}
-                </div>
-                <div style={styles.betDetail}>Cart: {b.cartId}</div>
-                <div style={styles.betAmount}>💵{b.amount}</div>
-                <div style={styles.betTime}>
-                  {b.createdAt?.toDate
-                    ? b.createdAt.toDate().toLocaleTimeString()
-                    : "-"}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
+
+      {/* Buttons */}
+      <div style={styles.btnContainer}>
+        <button style={styles.btnStart} onClick={startNewMatch}>Start New Match</button>
+        <button style={styles.btnClose} onClick={closeBetting}>Close Betting</button>
+        <button style={styles.btnWinner1} onClick={() => setWinnerManual(1)}>Set Winner → Team 1</button>
+        <button style={styles.btnWinner2} onClick={() => setWinnerManual(2)}>Set Winner → Team 2</button>
       </div>
     </div>
   );
 };
-/* ----------------------------------------
-   STYLES — PatBet Dark Theme
----------------------------------------- */
+
+/* --------------------------------------------------
+   STYLES
+-------------------------------------------------- */
 const styles = {
-  container: {
-    background: "#0D0D0D",
-    color: "white",
-    minHeight: "100vh",
-    marginBottom:'100px',
-    padding: 15,
-  },
-  header: {
-    textAlign: "center",
-    fontSize: 24,
-    fontWeight: 700,
-    marginBottom: 15,
-    color: "#00ffaa",
-  },
-  card: {
-    background: "#151515",
-    border: "1px solid #222",
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 15,
-  },
-  title: {
-    color: "#FFD700",
-    marginBottom: 10,
-    fontWeight: 600,
-  },
-  infoRow: {
+  container: { padding: 20, color: "white", textAlign: "center" },
+  header: { fontSize: 28, marginBottom: 15 },
+  box: { background: "#222", padding: 15, borderRadius: 10, marginBottom: 20 },
+  betsContainer: { display: "flex", gap: 10, marginBottom: 20 },
+  teamBox: { flex: 1, background: "#333", padding: 15, borderRadius: 10 },
+  betRow: {
     display: "flex",
     justifyContent: "space-between",
     padding: "4px 0",
-    color: "#ccc",
+    borderBottom: "1px solid #555",
   },
-  countdownBox: {
-    marginTop: 10,
-    padding: 8,
-    background: "#111",
-    borderRadius: 8,
-    textAlign: "center",
-    fontWeight: 700,
-  },
-  btnRow: {
-    display: "flex",
-    gap: 10,
-    marginTop: 10,
-    flexWrap: "wrap",
-  },
-  greenBtn: {
-    flex: 1,
-    padding: "10px",
-    background: "green",
-    color: "white",
-    borderRadius: 8,
-    border: "none",
-    fontWeight: 700,
-  },
-  /* SUMMARY */
-  summaryGrid: {
-    display: "flex",
-    gap: 10,
-    flexWrap: "wrap",
-  },
-  summaryBox: {
-    flex: 1,
-    background: "#111",
-    padding: 12,
-    borderRadius: 10,
-    border: "1px solid #222",
-    display: "flex",
-    flexDirection: "column",
-    gap: 3,
-  },
-  summaryLabel: {
-    color: "#00ffcc",
-    fontWeight: 600,
-  },
-  /* BETS */
-  betList: {
-    maxHeight: 320,
-    overflowY: "auto",
-  },
-  betItem: {
-    padding: 12,
-    background: "#111",
-    borderBottom: "1px solid #222",
-  },
-  betUser: {
-    fontWeight: 600,
-    color: "#00ffaa",
-  },
-  betDetail: {
-    color: "#ccc",
-  },
-  betAmount: {
-    color: "#FFD700",
-    fontWeight: 700,
-  },
-  betTime: {
-    color: "#777",
-    fontSize: 12,
-  },
+  btnContainer: { display: "flex", flexDirection: "column", gap: 10 },
+  btnStart: { padding: 12, background: "blue", borderRadius: 8, color: "white" },
+  btnClose: { padding: 12, background: "red", borderRadius: 8, color: "white" },
+  btnWinner1: { padding: 12, background: "green", borderRadius: 8, color: "white" },
+  btnWinner2: { padding: 12, background: "orange", borderRadius: 8, color: "white" },
 };
-export default AdminPanell;
+
+export default AdminPanel;

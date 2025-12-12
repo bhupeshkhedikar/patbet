@@ -51,6 +51,8 @@ import { logEvent } from "firebase/analytics";
 import InstallPopup from "./components/InstallPopup";
 import AdminPanell from "./components/Admin/gameadmin/AdminPanell";
 import Footer from "./components/Footer";
+import ReferralDashboard from "./components/ReferralDashboard";
+import ReferralAdmin from "./components/ReferralAdmin";
 
 function App() {
   const [value, setValue] = useState(0);
@@ -143,7 +145,7 @@ const navItem = {
       <InstallPopup /><div className="app-container">
 
       <Navbar />
-      <main style={{ height: "600px", overflow: "scroll" }}>
+     <main className="main-layout">
         <Routes>
           <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
           <Route path="/register" element={user ? <Navigate to="/" /> : <Register />} />
@@ -158,6 +160,14 @@ const navItem = {
           <Route path="/mydeposits" element={<ProtectedRoute user={user}><MoneyRequestsList /></ProtectedRoute>} />
           <Route path="/mywithdrawals" element={<ProtectedRoute user={user}><WithdrawalHistory /></ProtectedRoute>} />
           <Route path="/chat" element={<ProtectedRoute user={user}><ChatRoom /></ProtectedRoute>} />
+            <Route
+              path="/referral"
+              element={
+                <ProtectedRoute user={user}>
+                  <ReferralDashboard />
+                </ProtectedRoute>
+              }
+            />
 
           {/* ADMIN ROUTES */}
           <Route path="/apna/*" element={<ProtectedRoute user={user}><AdminNavbar /><AdminPanel /></ProtectedRoute>} />
@@ -175,6 +185,7 @@ const navItem = {
           <Route path="/race" element={<ProtectedRoute user={user}><BullockCartRacingGame /></ProtectedRoute>} />
           <Route path="/termsandconditions" element={<ProtectedRoute user={user}><TermsAndConditions /></ProtectedRoute>} />
              <Route path="/radmin" element={<ProtectedRoute user={user}><AdminPanell /></ProtectedRoute>} />
+          <Route path="/referral-admin" element={<ReferralAdmin />} />
         </Routes>
       </main>
      <Footer />
