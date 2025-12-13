@@ -57,7 +57,7 @@ const Login = () => {
 
       <div className="bonus-container">
         <img
-          src="https://i.ibb.co/LdL5xRp9/1741105411005.png"
+          src="/bonus.jpeg"
           className="bonus-image"
         />
       </div>

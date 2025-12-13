@@ -185,7 +185,7 @@ const ReferralDashboard = () => {
 
           <button
             onClick={() =>
-              (window.location.href = `https://wa.me/?text=PatWin से जुड़ें और मेरा कोड इस्तेमाल करें: ${referralLink}`)
+              (window.location.href = `https://wa.me/?text=PatWin से जुड़ें और मेरा कोड इस्तेमाल करें और रजिस्टर करते ही १०० कॉईन्स पाये: ${referralLink}`)
             }
             style={{
               background: "#25D366",

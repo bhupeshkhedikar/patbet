@@ -83,7 +83,7 @@ const Register = () => {
         name,
         mobile,
         password,
-        walletBalance: 100,
+        walletBalance: 50,
         isAdmin: false,
         bets: [],
         referralCode: myReferralCode,
@@ -127,8 +127,13 @@ const Register = () => {
   return (
     <>
       <div className="auth-container" style={{ display: "flex", flexDirection: "column" }}>
-        <ToastContainer />
-
+        <ToastContainer /> <br/>
+{/* <div className="bonus-container">
+        <img
+          src="/bonus.jpeg"
+          className="bonus-image"
+        />
+      </div> */}
         <div className="auth-box">
           <h2>पंजीकरण करें</h2>
 
