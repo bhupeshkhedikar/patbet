@@ -313,6 +313,7 @@ const ReferralDashboard = () => {
           padding: 20,
           borderRadius: 20,
           color: "#222",
+          marginBottom: 20,
           boxShadow: "0 5px 15px rgba(0,0,0,0.15)",
         }}
       >

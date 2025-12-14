@@ -70,7 +70,7 @@ const InstallPopup = () => {
 
         {/* Install Button */}
 
-        <a style={styles.installBtn} href="/PatBet.apk">
+        <a style={styles.installBtn} href="/PatWin.apk">
           Install
         </a>
       </div>
