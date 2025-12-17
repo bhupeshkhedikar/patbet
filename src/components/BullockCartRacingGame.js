@@ -758,11 +758,11 @@ useEffect(() => {
                 <div style={{ color: "yellow", fontWeight: "700", fontSize: 10 }}>
                   ⚠ आपने इस दौड़ में भाग नहीं लिया
                 </div>
-                {winnerTeamName && (
+                {/* {glow && (
                   <div style={{ color: "#00ff00ff", fontWeight: "700", fontSize: 10 }}>
                     🏆 विजेता जोडी: {winnerTeamName}
                   </div>
-                )}
+                )} */}
               </>
             )}
           </div>
