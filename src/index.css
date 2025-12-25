@@ -26,3 +26,29 @@ code {
   50% { opacity: 1; }
   100% { opacity: 0.4; }
 }
+@keyframes blinkColor {
+  0% {
+    opacity: 1;
+    color: #ffd700; /* yellow */
+  }
+  25% {
+    opacity: 0.7;
+    color: #00ffea; /* cyan */
+  }
+  50% {
+    opacity: 1;
+    color: #ff4d4d; /* red */
+  }
+  75% {
+    opacity: 0.7;
+    color: #7cff00; /* green */
+  }
+  100% {
+    opacity: 1;
+    color: #ffd700;
+  }
+}
+
+.blink-color {
+  animation: blinkColor 1.2s infinite;
+}
