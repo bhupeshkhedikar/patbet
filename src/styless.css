@@ -732,3 +732,9 @@ body {
 .show-hide-btn:hover {
   text-decoration: underline;
 }
+/* Main content should scroll, navbar should NOT move */
+.main-layout {
+  position: relative;
+  height: calc(100vh - 78px); /* subtract bottom nav height */
+  overflow-y: auto;
+}

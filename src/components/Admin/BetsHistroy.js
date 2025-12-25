@@ -102,7 +102,7 @@ const BetsHistory = () => {
     <th>League</th>
     <th>Game</th>
     <th>User Name</th>
-    <th>Prediction Amount (💵)</th>
+    <th>Prediction Coins (💵)</th>
     <th>Predicted Team</th>
   </tr>
 </thead>
@@ -142,7 +142,7 @@ const BetsHistory = () => {
                   <tr>
                     <th>Team</th>
                     <th>Users Count</th>
-                    <th>Total Opinion Amount (💵)</th>
+                    <th>Total Opinion Coins (💵)</th>
                   </tr>
                 </thead>
                 <tbody>

@@ -30,7 +30,7 @@ const MoneyRequestsList = () => {
 
   return (
     <div  className="withdrawals-section">
-      <h3 style={{textAlign:'cente'}}>Deposite History</h3>
+      <h3 style={{textAlign:'cente'}}>Top-up History</h3>
       {moneyRequests.length === 0 ? (
         <p>No requests found.</p>
       ) : (

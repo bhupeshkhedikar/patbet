@@ -60,17 +60,17 @@ const InstallPopup = () => {
 
         {/* Left Section */}
         <div style={styles.left}>
-          <img src="patbet.png" alt="PatBet" style={styles.icon} />
+          <img src="icon-144x144.png" alt="PatBet" style={styles.icon} />
 
           <div>
-            <p style={styles.title}>Install PatBet App</p>
+            <p style={styles.title}>Install PatWin App</p>
             <p style={styles.subtitle}>Download Our App Now</p>
           </div>
         </div>
 
         {/* Install Button */}
 
-        <a style={styles.installBtn} href="/PatBet.apk">
+        <a style={styles.installBtn} href="/PatWin.apk">
           Install
         </a>
       </div>

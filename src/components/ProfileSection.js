@@ -20,7 +20,7 @@ const ProfileSection = () => {
   const [userData, setUserData] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [totalWithdrawal, setTotalWithdrawal] = useState(0);
-  const [withdrawals, setWithdrawals] = useState([]); // New State for Withdrawals
+  const [withdrawals, setWithdrawals] = useState([]);
   const [totalWinnings, setTotalWinnings] = useState(0);
   const [totalBets, setTotalBets] = useState(0);
   const [totalDeposits, setTotalDeposits] = useState(0);
@@ -41,9 +41,7 @@ const ProfileSection = () => {
 
           if (userSnap.exists()) {
             setUserData(userSnap.data());
-            fetchWithdrawals(userId); // Fetch Withdrawals
-          } else {
-            console.error("User document not found");
+            fetchWithdrawals(userId);
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -51,20 +49,21 @@ const ProfileSection = () => {
       }
     };
 
-    const fetchWithdrawals = async userId => {
+    const fetchWithdrawals = async (userId) => {
       try {
         const withdrawalsRef = collection(db, "withdrawalRequests");
         const q = query(withdrawalsRef, where("userId", "==", userId));
         const querySnapshot = await getDocs(q);
 
-        const withdrawalData = querySnapshot.docs.map(doc => ({
+        const withdrawalData = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
 
         setWithdrawals(withdrawalData);
+
         const totalWithdrawn = withdrawalData.reduce(
-          (total, withdrawal) => total + Number(withdrawal.amount || 0),
+          (total, w) => total + Number(w.amount || 0),
           0
         );
 
@@ -96,13 +95,13 @@ const ProfileSection = () => {
         betsSnapshot.forEach((betDoc) => {
           const betData = betDoc.data();
           winnings += Number(betData.winnings) || 0;
-          betsCount += 1;
+          betsCount++;
         });
 
         setTotalWinnings(winnings);
         setTotalBets(betsCount);
 
-        // Fetch user's deposits
+        // Fetch user's approved deposits
         const depositsRef = query(
           collection(db, "addMoneyRequests"),
           where("userId", "==", userId),
@@ -111,15 +110,13 @@ const ProfileSection = () => {
         const depositsSnapshot = await getDocs(depositsRef);
 
         let depositsAmount = 0;
-
-        depositsSnapshot.forEach((depositDoc) => {
-          const depositData = depositDoc.data();
-          depositsAmount += Number(depositData.amount) || 0;
+        depositsSnapshot.forEach((doc) => {
+          depositsAmount += Number(doc.data().amount) || 0;
         });
 
         setTotalDeposits(depositsAmount);
       } catch (error) {
-        console.error("Error fetching user details:", error);
+        console.error("Error fetching details:", error);
       }
     };
 
@@ -130,6 +127,7 @@ const ProfileSection = () => {
     try {
       await signOut(auth);
       localStorage.removeItem("userUID");
+
       toast.success("Logged out successfully!", {
         autoClose: 1000,
         onClose: () => navigate("/login"),
@@ -137,15 +135,14 @@ const ProfileSection = () => {
 
       setIsLoggedIn(false);
     } catch (error) {
-      console.error("Error logging out:", error);
-      toast.error("Error logging out, please try again!");
+      toast.error("Logout failed!");
     }
   };
 
   return (
     <>
       <ToastContainer />
-      <div className="profile-container" style={{marginBottom:'80px'}}>
+      <div className="profile-container" style={{ marginBottom: "80px" }}>
         <div className="profile-header">
           <img
             src={
@@ -154,11 +151,12 @@ const ProfileSection = () => {
             }
             className="avatar"
           />
+
           <div className="user-info">
             <h2>{userData?.name || "Guest User"}</h2>
             <p>Email: {userData?.email || "No email available"}</p>
           </div>
-          <br />
+
           {isLoggedIn && (
             <button className="action-btn" onClick={handleLogout}>
               Logout
@@ -166,95 +164,115 @@ const ProfileSection = () => {
           )}
         </div>
 
+        {/* ⭐ USER STATS */}
         <div className="stats-container">
           <div className="stat-box">
-            <p className="highlight" style={{fontSize:'1.2em'}}>💵{userData?.walletBalance || "0"} </p>
-            <p>Total Balance</p>
-          </div>
-          <div className="stat-box">
-            <p className="highlight">💵{totalWinnings.toLocaleString("en-IN")}</p>
-            <p>Total Income</p>
-          </div>
-          <div className="stat-box">
-          <p className="highlight">💵{totalDeposits.toLocaleString("en-IN")}</p>
-            <p>Total Recharge</p>
-          </div>
-          <div className="stat-box">
-            <p className="highlight">
-              💵{totalWithdrawal.toLocaleString("en-IN")}
+            <p className="highlight" style={{ fontSize: "1.2em" }}>
+              💵{userData?.walletBalance.toFixed(2) || "0"}
             </p>
-            <p>Total Withdraw</p>
+            <p>Total Coins</p>
           </div>
+
+          <div className="stat-box">
+            <p className="highlight">💵{totalWinnings.toFixed(2)}</p>
+            <p>Earned Coins</p>
+          </div>
+
+          <div className="stat-box">
+            <p className="highlight">💵{totalDeposits.toFixed(2)}</p>
+            <p>Total TopUp</p>
+          </div>
+
+          <div className="stat-box">
+            <p className="highlight">💵{totalWithdrawal.toFixed(2)}</p>
+            <p>Total Redemption</p>
+          </div>
+
           <div className="stat-box">
             <p className="highlight">{totalBets}</p>
             <p>Total Predictions</p>
           </div>
+
           <div className="stat-box">
-            <p className="highlight">
-              💵{totalWinnings.toLocaleString("en-IN")}
-            </p>
+            <p className="highlight">💵{totalWinnings.toFixed(2)}</p>
             <p>All Winnings</p>
           </div>
         </div>
 
-        {/* <div className="balance-section">
-          <span>
-            <span className="balance">
-              💵.{userData?.walletBalance || "0"} <br />
-              Recharge
-            </span>
-          </span>
-          <span>
-            <p>
-              <span className="balance">
-                💵.{userData?.walletBalance || "0.00"} <br />
-                Balance
-              </span>
-            </p>
-          </span>
-        </div> */}
-        {/* <GoogleAd 
-    client="ca-pub-9925801540177456" 
-    slot="4077906455" 
-      /> */}
-          <AdBanner/>
-        <div className="action-buttons" style={{marginTop:'15px'}}>
+        {/* ⭐ REFER & EARN BANNER */}
+        <div
+          onClick={() => navigate("/referral")}
+          style={{
+            marginTop: 20,
+            background: "linear-gradient(90deg,#ff9a00,#ff3d00)",
+            padding: "18px 15px",
+            borderRadius: 18,
+            color: "white",
+            fontWeight: 700,
+            fontSize: 17,
+            textAlign: "center",
+            boxShadow: "0 5px 15px rgba(0,0,0,0.25)",
+            cursor: "pointer",
+          }}
+        >
+          🎁 दोस्तों को Invite करें और हर सफल रेफ़रल पर ₹100 कमाएँ!
+        </div>
+
+        <div style={{ textAlign: "center", marginTop: 10 }}>
+          <button
+            onClick={() => navigate("/referral")}
+            style={{
+              background: "linear-gradient(90deg,#6a11cb,#2575fc)",
+              border: "none",
+              padding: "12px 25px",
+              color: "white",
+              borderRadius: 25,
+              fontSize: 16,
+              fontWeight: 600,
+              cursor: "pointer",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+            }}
+          >
+            🚀 Refer Now
+          </button>
+        </div>
+
+        {/* ⭐ ADS */}
+        <AdBanner />
+
+        {/* ⭐ ACTION BUTTONS */}
+        <div className="action-buttons" style={{ marginTop: "15px" }}>
           <button className="action-btn" onClick={() => navigate("/addmoney")}>
-            Recharge
+            Top-up
           </button>
           <button
             className="action-btn withdrawal-btn"
             onClick={() => navigate("/withdrawal")}
           >
-            Withdrawal
+            Redemption
           </button>
         </div>
 
-       <div className="menu-list">
-        <div className="menu-item" onClick={() => navigate("/mydeposits")}>
-          <img src="https://cdn-icons-png.flaticon.com/512/5776/5776487.png" alt="Product" />
-          <span>My Deposites</span>
-        </div>
-        <div className="menu-item" onClick={() => navigate("/mywithdrawals")}>
-          <img src="https://cdn-icons-png.flaticon.com/512/8813/8813844.png" alt="Transactions" />
-          <span>My Withdrawals</span>
+        {/* ⭐ MENU LIST */}
+        <div className="menu-list">
+          <div className="menu-item" onClick={() => navigate("/mydeposits")}>
+            <img src="https://cdn-icons-png.flaticon.com/512/5776/5776487.png" />
+            <span>My Top-ups</span>
           </div>
-          <div className="menu-item" onClick={() => navigate("/termsandconditions")}>
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjEHla3jGSCPLhR1UjGKruLlDiCk3xd2MwLg&s" alt="tc" />
-          <span>Terms and Conditions </span>
-        </div>
-        {/* <div className="menu-item">
-          <img src="https://cdn-icons-png.flaticon.com/512/709/709682.png" alt="Bonus" />
-          <span>Redemption Bonus</span>
-        </div> */}
-      </div> 
 
-        {/* <div className="bottom-nav">
-        <div className="bottom-nav-item">Home</div>
-        <div className="bottom-nav-item">Products</div>
-        <div className="bottom-nav-item">Team</div>
-        <div className="bottom-nav-item active">Personal</div>
-    </div> */}
+          <div className="menu-item" onClick={() => navigate("/mywithdrawals")}>
+            <img src="https://cdn-icons-png.flaticon.com/512/8813/8813844.png" />
+            <span>My Redemptions</span>
+          </div>
+
+          <div
+            className="menu-item"
+            onClick={() => navigate("/termsandconditions")}
+          >
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjEHla3jGSCPLhR1UjGKruLlDiCk3xd2MwLg&s" />
+            <span>Terms and Conditions</span>
+          </div>
+        </div>
       </div>
     </>
   );

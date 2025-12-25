@@ -159,7 +159,7 @@ const WithdrawalRequest = () => {
             5 से 30 मिनट के अंदर इंस्टेंट रिडीम
           </p>
           <br />
-          <p className="wallet-text">वॉलेट बैलेंस: 💵{walletBalance}</p>
+          <p className="wallet-text">वॉलेट बैलेंस: 💵{walletBalance.toFixed(2)}</p>
 
           {errorMessage && <p className="error">{errorMessage}</p>}
           {successMessage && <p className="success">{successMessage}</p>}
@@ -169,7 +169,7 @@ const WithdrawalRequest = () => {
             min="1001"
             value={amount}
             onChange={e => setAmount(Number(e.target.value))}
-            placeholder="न्यूनतम राशि: 💵1000 से अधिक"
+            placeholder="न्यूनतम कॉईन्स : 💵1000 से अधिक"
           />
 
           <input
@@ -249,7 +249,7 @@ const WithdrawalRequest = () => {
 
           <p style={{ fontSize: "10px", color: "grey", marginTop: "20px" }}>
             रिडीम सिक्केपर 5% शुल्क लागू होगा। <br />
-            न्यूनतम रिडीम राशि: 💵000।
+            न्यूनतम रिडीम कॉईन्स : 💵1000।
           </p>
         </div>
       </div>

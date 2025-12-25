@@ -42,7 +42,7 @@ const PaymentComponent = () => {
         createdAt: new Date(),
       });
 
-      alert("धन्यवाद, वेरीफाय करने के बाद पेमेंट आपके वालेट मे जमा किया जायेगा");
+      alert("धन्यवाद, वेरीफाय करने के बाद कॉईन्स आपके वालेट मे जमा किया जायेगा");
       setUrn("");
       setAmount("");
       navigate("/mydeposits");
@@ -133,7 +133,7 @@ const PaymentComponent = () => {
         {/* ⭐ AMOUNT INPUT */}
         <input
           type="number"
-          placeholder="Enter Amount (Min 💵50)"
+          placeholder="Enter Coins (Min 💵50)"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           className="input-field"

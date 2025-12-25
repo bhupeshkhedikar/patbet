@@ -45,7 +45,7 @@ const Navbar = () => {
   return (
     <nav className="navbar"style={{justifyContent: isLoggedIn ? "space-between" : "center",}}>
       <img
-        src="https://i.ibb.co/5WPzx53W/patbet-logo.png"
+        src="patwin.gif"
         alt="Logo"
         className="logo"
         onClick={() => navigate("/")}

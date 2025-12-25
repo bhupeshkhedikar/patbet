@@ -13,7 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { increment } from "firebase/firestore";
 
-const BetNowModal = ({ isOpen, onClose, team1, team2, gameId,maxBetAmount }) => {
+const BetNowModal = ({ isOpen, onClose, team1, team2, gameId, maxBetAmount }) => {
   const [betAmount, setBetAmount] = useState(60);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [walletBalance, setWalletBalance] = useState(0);
@@ -67,25 +67,25 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId,maxBetAmount }) => 
 
   useEffect(() => {
     const gameRef = doc(db, "games", gameId);
-  
+
     // Real-time listener
     const unsubscribe = onSnapshot(gameRef, (gameSnapshot) => {
       if (gameSnapshot.exists()) {
         const data = gameSnapshot.data();
         const totalBetsTeam1 = data.totalBetsTeam1 || 0;
         const totalBetsTeam2 = data.totalBetsTeam2 || 0;
-  
+
         const { team1Odds, team2Odds } = calculateOdds(totalBetsTeam1, totalBetsTeam2);
-  
+
         setTeam1Odds(team1Odds);
         setTeam2Odds(team2Odds);
       }
     });
-  
+
     // Clean up the listener on component unmount
     return () => unsubscribe();
   }, [gameId]);
-  
+
 
   const handleBet = async () => {
     if (!selectedTeam) {
@@ -117,7 +117,7 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId,maxBetAmount }) => 
 
       const betsSnapshot = await getDoc(doc(betsCollectionRef, gameId));
       if (betsSnapshot.exists()) {
-        alert("You have already placed a bet on this game!");
+        alert("You have already placed a Prediction on this game!");
         setIsLoading(false);
         return;
       }
@@ -133,7 +133,7 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId,maxBetAmount }) => 
         betAmount: Number(betAmount),
         gameId,
         selectedTeam,
-        matchName: `${team1} vs ${team2}`, 
+        matchName: `${team1} vs ${team2}`,
         status: "pending",
         winnings: 0,
         odds: boundedOdds,
@@ -151,8 +151,8 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId,maxBetAmount }) => 
       navigate("/bets");
       onClose();
     } catch (error) {
-      console.error("Error placing bet:", error);
-      alert("Error placing bet: " + error.message);
+      console.error("Error placing Prediction:", error);
+      alert("Error placing Prediction: " + error.message);
     } finally {
       setIsLoading(false);
     }
@@ -167,7 +167,7 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId,maxBetAmount }) => 
     else if (value > maxBetAmount) {
       setBetWarning(`अधिकतम अनुमत रायसिक्के 💵${maxBetAmount} है!`);
     }
-      
+
     else {
       setBetWarning("");
     }
@@ -182,7 +182,7 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId,maxBetAmount }) => 
         {isLoading ? (
           <div className="loader-container">
             <div className="loader"></div>
-            <p>Placing your bet...</p>
+            <p>Placing your Prediction...</p>
           </div>
         ) : (
           <>
@@ -190,15 +190,15 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId,maxBetAmount }) => 
               <h2>Place Your Choice</h2>
             </div>
 
-            <p className="wallet-text">💰 कॉइन बैलेंस: 💵{walletBalance}</p>
+            <p className="wallet-text">💰 कॉइन बैलेंस: 💵{walletBalance.toFixed(2)}</p>
             <div className="bet-section">
-              <label className="bet-label">Choice Amount (💵)</label>
+              <label className="bet-label">Choice Coins (💵)</label>
               <input
                 type="number"
                 value={betAmount}
                 min="60"
                 onChange={handleBetAmountChange}
-                  max={maxBetAmount}
+                max={maxBetAmount}
                 className="bet-input"
               />
               {betWarning && (
@@ -207,130 +207,130 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId,maxBetAmount }) => 
                 </p>
               )}
             </div>
-<div
-  style={{
-    display: "flex",
-    gap: "12px",
-    marginTop: "22px",
-    padding: "0 5px",
-  }}
->
-  {/* ⭐ TEAM 1 CARD */}
-  <div
-    onClick={() => setSelectedTeam(team1)}
-    style={{
-      flex: 1,
-      padding: "18px 10px",
-      borderRadius: "18px",
-      cursor: "pointer",
-      textAlign: "center",
-      transition: "0.25s",
-      background: selectedTeam === team1
-        ? "linear-gradient(135deg, #00ff95, #00cc6f)"
-        : "rgba(255,255,255,0.15)",
-      backdropFilter: "blur(10px)",
-      border: selectedTeam === team1
-        ? "2px solid #00ff95"
-        : "1px solid rgba(255,255,255,0.25)",
-      boxShadow: selectedTeam === team1
-        ? "0 0 15px rgba(0,255,149,0.7)"
-        : "0 3px 10px rgba(0,0,0,0.15)",
-      transform: selectedTeam === team1 ? "scale(1.03)" : "scale(1)",
-    }}
-  >
-    <div
-      style={{
-        fontSize: "16px",
-        fontWeight: "700",
-        color: selectedTeam === team1 ? "#003b1f" : "#f1f1f1",
-      }}
-    >
-      {team1}
-    </div>
+            <div
+              style={{
+                display: "flex",
+                gap: "12px",
+                marginTop: "22px",
+                padding: "0 5px",
+              }}
+            >
+              {/* ⭐ TEAM 1 CARD */}
+              <div
+                onClick={() => setSelectedTeam(team1)}
+                style={{
+                  flex: 1,
+                  padding: "18px 10px",
+                  borderRadius: "18px",
+                  cursor: "pointer",
+                  textAlign: "center",
+                  transition: "0.25s",
+                  background: selectedTeam === team1
+                    ? "linear-gradient(135deg, #00ff95, #00cc6f)"
+                    : "rgba(255,255,255,0.15)",
+                  backdropFilter: "blur(10px)",
+                  border: selectedTeam === team1
+                    ? "2px solid #00ff95"
+                    : "1px solid rgba(255,255,255,0.25)",
+                  boxShadow: selectedTeam === team1
+                    ? "0 0 15px rgba(0,255,149,0.7)"
+                    : "0 3px 10px rgba(0,0,0,0.15)",
+                  transform: selectedTeam === team1 ? "scale(1.03)" : "scale(1)",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: "700",
+                    color: selectedTeam === team1 ? "#003b1f" : "#f1f1f1",
+                  }}
+                >
+                  {team1}
+                </div>
 
-    {/* Odds with Shine Effect */}
-<div
-  style={{
-    marginTop: "8px",
-    fontSize: "28px",
-    fontWeight: "900",
-    color: selectedTeam === team1 ? "#003b1f" : "#00ffea",
-    textShadow:
-      selectedTeam === team1
-        ? "0 0 12px rgba(255,255,255,0.9)"
-        : "0 0 12px rgba(0,255,234,0.8)",
-    background: selectedTeam === team1
-      ? "none"
-      : "linear-gradient(135deg, #00ffe0, #00b3ff)",
-    WebkitBackgroundClip: selectedTeam === team1 ? "none" : "text",
-    WebkitTextFillColor: selectedTeam === team1 ? "#003b1f" : "transparent",
-  }}
->
-  {team1Odds}x
-</div>
+                {/* Odds with Shine Effect */}
+                <div
+                  style={{
+                    marginTop: "8px",
+                    fontSize: "28px",
+                    fontWeight: "900",
+                    color: selectedTeam === team1 ? "#003b1f" : "#00ffea",
+                    textShadow:
+                      selectedTeam === team1
+                        ? "0 0 12px rgba(255,255,255,0.9)"
+                        : "0 0 12px rgba(0,255,234,0.8)",
+                    background: selectedTeam === team1
+                      ? "none"
+                      : "linear-gradient(135deg, #00ffe0, #00b3ff)",
+                    WebkitBackgroundClip: selectedTeam === team1 ? "none" : "text",
+                    WebkitTextFillColor: selectedTeam === team1 ? "#003b1f" : "transparent",
+                  }}
+                >
+                  {team1Odds}x
+                </div>
 
-  </div>
+              </div>
 
-  {/* ⭐ TEAM 2 CARD */}
-  <div
-    onClick={() => setSelectedTeam(team2)}
-    style={{
-      flex: 1,
-      padding: "18px 10px",
-      borderRadius: "18px",
-      cursor: "pointer",
-      textAlign: "center",
-      transition: "0.25s",
-      background: selectedTeam === team2
-        ? "linear-gradient(135deg, #ff7c7c, #ff4141)"
-        : "rgba(255,255,255,0.15)",
-      backdropFilter: "blur(10px)",
-      border: selectedTeam === team2
-        ? "2px solid #ff4d4d"
-        : "1px solid rgba(255,255,255,0.25)",
-      boxShadow: selectedTeam === team2
-        ? "0 0 15px rgba(255,77,77,0.6)"
-        : "0 3px 10px rgba(0,0,0,0.15)",
-      transform: selectedTeam === team2 ? "scale(1.03)" : "scale(1)",
-    }}
-  >
-    <div
-      style={{
-        fontSize: "16px",
-        fontWeight: "700",
-        color: selectedTeam === team2 ? "#4a0000" : "#f1f1f1",
-      }}
-    >
-      {team2}
-    </div>
+              {/* ⭐ TEAM 2 CARD */}
+              <div
+                onClick={() => setSelectedTeam(team2)}
+                style={{
+                  flex: 1,
+                  padding: "18px 10px",
+                  borderRadius: "18px",
+                  cursor: "pointer",
+                  textAlign: "center",
+                  transition: "0.25s",
+                  background: selectedTeam === team2
+                    ? "linear-gradient(135deg, #ff7c7c, #ff4141)"
+                    : "rgba(255,255,255,0.15)",
+                  backdropFilter: "blur(10px)",
+                  border: selectedTeam === team2
+                    ? "2px solid #ff4d4d"
+                    : "1px solid rgba(255,255,255,0.25)",
+                  boxShadow: selectedTeam === team2
+                    ? "0 0 15px rgba(255,77,77,0.6)"
+                    : "0 3px 10px rgba(0,0,0,0.15)",
+                  transform: selectedTeam === team2 ? "scale(1.03)" : "scale(1)",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: "700",
+                    color: selectedTeam === team2 ? "#4a0000" : "#f1f1f1",
+                  }}
+                >
+                  {team2}
+                </div>
 
-<div
-  style={{
-    marginTop: "8px",
-    fontSize: "28px",
-    fontWeight: "900",
-    color: selectedTeam === team2 ? "#4a0000" : "#ff7aff",
-    textShadow:
-      selectedTeam === team2
-        ? "0 0 12px rgba(255,255,255,0.9)"
-        : "0 0 12px rgba(255,122,255,0.8)",
-    background: selectedTeam === team2
-      ? "none"
-      : "linear-gradient(135deg, #ff9dff, #ff4d79)",
-    WebkitBackgroundClip: selectedTeam === team2 ? "none" : "text",
-    WebkitTextFillColor: selectedTeam === team2 ? "#4a0000" : "transparent",
-  }}
->
-  {team2Odds}x
-</div>
+                <div
+                  style={{
+                    marginTop: "8px",
+                    fontSize: "28px",
+                    fontWeight: "900",
+                    color: selectedTeam === team2 ? "#4a0000" : "#ff7aff",
+                    textShadow:
+                      selectedTeam === team2
+                        ? "0 0 12px rgba(255,255,255,0.9)"
+                        : "0 0 12px rgba(255,122,255,0.8)",
+                    background: selectedTeam === team2
+                      ? "none"
+                      : "linear-gradient(135deg, #ff9dff, #ff4d79)",
+                    WebkitBackgroundClip: selectedTeam === team2 ? "none" : "text",
+                    WebkitTextFillColor: selectedTeam === team2 ? "#4a0000" : "transparent",
+                  }}
+                >
+                  {team2Odds}x
+                </div>
 
-  </div>
-</div>
+              </div>
+            </div>
 
 
 
             <button className="bet-now-btn" onClick={handleBet}>
-             Play Now
+              Play Now
             </button>
             <button className="close-btn" onClick={onClose}>
               Close

@@ -71,7 +71,7 @@
   background: rgba(244, 67, 54, 0.2);
 }
 
-.bet-status.returned {
+.bet-status.tie {
   color: magenta;
   background: rgba(85, 53, 6, 0.2);
 }

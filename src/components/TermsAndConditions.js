@@ -5,54 +5,92 @@ const TermsAndConditions = () => {
   return (
     <div className="terms-container">
       <h1 className="terms-title">Terms and Conditions</h1>
-      
+
       <section className="terms-section">
         <h2>1. Introduction</h2>
-        <p>Welcome to <strong>PatBet</strong>! By using our platform, you agree to comply with the following terms and conditions. Please read them carefully before placing any bets or making transactions.</p>
+        <p>
+          Welcome to <strong>PatWin</strong>! This platform is an
+          <strong> entertainment and prediction-based game</strong>. By using
+          this app, you agree to comply with the following terms and conditions.
+          Please read them carefully before participating.
+        </p>
       </section>
-      
+
       <section className="terms-section">
-        <h2>2. Betting Rules</h2>
+        <h2>2. Participation Rules</h2>
         <ul>
-          <li>The <strong>minimum bet amount</strong> is <strong>💵0</strong>.</li>
-          <li>All bets are final once placed and cannot be reversed.</li>
-          <li>The platform reserves the right to modify or cancel bets in case of technical issues or fraudulent activity.</li>
-          <li><strong>10% commission</strong> will be deducted from the winnings of a bet.</li>
+          <li>The minimum participation value is <strong>10 Coins</strong>.</li>
+          <li>All predictions are final once submitted and cannot be changed.</li>
+          <li>The platform reserves the right to modify or cancel any game in
+              case of technical issues or suspicious activity.</li>
+          <li>A <strong>10% service charge</strong> may be deducted from reward
+              coins.</li>
         </ul>
       </section>
-      
+
       <section className="terms-section">
-        <h2>3. Withdrawal Policy</h2>
+        <h2>3. Reward Redemption Policy</h2>
         <ul>
-          <li>A <strong>10% transaction fee</strong> will be deducted from the withdrawal amount.</li>
-          <li>You must <strong>win at least 💵00 from bets</strong> before making a withdrawal.</li>
-          <li>The <strong>minimum withdrawal amount</strong> is <strong>💵000</strong>.</li>
-          <li>Bonus amounts provided by the platform <strong>cannot be withdrawn</strong>.</li>
-          <li>Withdrawals are processed after admin approval.</li>
+          <li>A <strong>10% processing charge</strong> will be deducted while
+              redeeming reward coins.</li>
+          <li>You must earn a minimum number of <strong>reward coins</strong>
+              before placing a redemption request.</li>
+          <li>The <strong>minimum redeemable coins</strong> limit is decided by
+              the platform.</li>
+          <li>Bonus coins provided by the platform <strong>cannot be redeemed</strong>.</li>
+          <li>All redemption requests are processed only after
+              <strong> admin approval</strong>.</li>
         </ul>
       </section>
-      
+
       <section className="terms-section">
         <h2>4. Fair Play & Security</h2>
-        <p>Users engaging in fraudulent activities, multiple accounts, or unfair practices will be permanently banned. The platform ensures a fair betting experience and takes necessary actions against suspicious behavior.</p>
+        <p>
+          Users involved in unfair practices, multiple accounts, misuse of the
+          platform, or any fraudulent activity will be permanently blocked.
+          PatWin ensures fair gameplay and takes strict action against
+          suspicious behavior.
+        </p>
       </section>
-      
+
       <section className="terms-section">
         <h2>5. Account Responsibilities</h2>
-        <p>Users must provide accurate information during registration. Any misuse of accounts or violations of our terms will lead to suspension.</p>
+        <p>
+          Users must provide accurate registration details. Sharing accounts,
+          providing false information, or attempting to manipulate the system
+          may result in suspension or permanent ban.
+        </p>
       </section>
-      
+
       <section className="terms-section">
         <h2>6. Modifications & Updates</h2>
-        <p>PatBet reserves the right to update these terms at any time. Continued use of the platform implies acceptance of any revised terms.</p>
+        <p>
+          PatWin reserves the right to update these terms at any time. Continued
+          use of the app after updates means you accept the revised terms.
+        </p>
       </section>
-      
+
       <section className="terms-section">
-        <h2>7. Contact & Support</h2>
-        <p>For any queries or support, please reach out to our customer service through the app.</p>
+        <h2>7. Legal Disclaimer</h2>
+        <p>
+          This app is strictly for <strong>entertainment and prediction
+          purposes only</strong>. It does not promote or support gambling,
+          betting, or real money trading in any form. All in-app coins are
+          virtual and used solely for gameplay.
+        </p>
       </section>
-      
-      <p className="terms-footer">&mdash; <strong>PatBet Team</strong> &mdash;</p>
+
+      <section className="terms-section">
+        <h2>8. Contact & Support</h2>
+        <p>
+          For any issues, questions, or support, please contact us through the
+          in-app support section.
+        </p>
+      </section>
+
+      <p className="terms-footer">
+        &mdash; <strong>PatWin Team</strong> &mdash;
+      </p>
     </div>
   );
 };

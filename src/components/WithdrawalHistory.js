@@ -25,7 +25,7 @@ const WithdrawalHistory = () => {
 
         setWithdrawals(withdrawalData);
       } catch (error) {
-        console.error("Error fetching withdrawals:", error);
+        console.error("Error fetching Redemption:", error);
       }
     };
 
@@ -34,9 +34,9 @@ const WithdrawalHistory = () => {
 
   return (
     <div className="withdrawals-section">
-      <h3>Withdrawals History</h3>
+      <h3>Redemption History</h3>
       {withdrawals.length === 0 ? (
-        <p>No withdrawals found.</p>
+        <p>No Redemption found.</p>
       ) : (
         withdrawals.map((withdrawal) => (
           <div key={withdrawal.id} className="withdrawal-item">
