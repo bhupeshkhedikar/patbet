@@ -168,7 +168,7 @@ const GameList = () => {
             {games.length > 0 ? (
               games.map((game) => <GameCard key={game.id} game={game} />)
             ) : (
-              <p>No upcoming games</p>
+                <p style={{ textAlign:'center'}}>नये गेम्स जल्द हि शुरू होंगे! </p>
             )}
             <AdBanner />
           </div>
