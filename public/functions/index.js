@@ -1,13 +1,12 @@
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
-admin.initializeApp();
-
 exports.updateBetsInstant = functions.firestore
   .document("games/{gameId}")
   .onUpdate(async (change, context) => {
     const gameId = context.params.gameId;
     const newData = change.after.data();
+    const oldData = change.before.data();
 
+    // ✅ Only run when winner actually changes
+    if (newData.winner === oldData.winner) return null;
     if (!newData.winner) return null;
 
     const winnerTeam = newData.winner;
@@ -31,40 +30,35 @@ exports.updateBetsInstant = functions.firestore
 
       let walletBalance = userDoc.data().walletBalance || 0;
 
-      betsSnapshot.forEach(betDoc => {
+      for (const betDoc of betsSnapshot.docs) {
         const bet = betDoc.data();
 
-        let status = "";
+        let status = "lost";
         let winnings = 0;
 
-        // 🟧 CASE 1 → TIE → Return full bet amount
+        // ✅ TIE CASE (FULL REFUND)
         if (winnerTeam === "tie") {
           status = "tie";
-          winnings = bet.betAmount; // return as-is
-        }
-        // 🟩 CASE 2 → Normal Win/Loss
-        else {
-          status = bet.selectedTeam === winnerTeam ? "won" : "lost";
-          winnings = status === "won" ? bet.betAmount * bet.odds : 0;
-
-          if (status === "won") {
-            winnings -= winnings * commissionRate; // deduct commission
-          }
+          winnings = Number(bet.betAmount);
+        } 
+        // ✅ WIN CASE
+        else if (bet.selectedTeam === winnerTeam) {
+          status = "won";
+          winnings = Number(bet.betAmount) * Number(bet.odds);
+          winnings -= winnings * commissionRate;
         }
 
-        // update bet document
         batch.update(betDoc.ref, { status, winnings });
 
-        // update wallet
         if (status === "won" || status === "tie") {
           walletBalance += winnings;
         }
-      });
+      }
 
-      // update final wallet balance
-      batch.update(admin.firestore().collection("users").doc(userId), {
-        walletBalance
-      });
+      batch.update(
+        admin.firestore().collection("users").doc(userId),
+        { walletBalance }
+      );
     }
 
     await batch.commit();

@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { db, auth } from "../firebase";
-import { doc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -36,16 +43,16 @@ const ReferralDashboard = () => {
     loadData();
   }, []);
 
-  const fetchReferrals = async (code) => {
+  const fetchReferrals = async code => {
     const q = query(collection(db, "users"), where("referredBy", "==", code));
     const refUsers = await getDocs(q);
 
-    const list = refUsers.docs.map((d) => ({ id: d.id, ...d.data() }));
+    const list = refUsers.docs.map(d => ({ id: d.id, ...d.data() }));
     setReferredUsers(list);
     setTotalEarnings(list.length * 100);
   };
 
-  const copyText = (text) => {
+  const copyText = text => {
     navigator.clipboard.writeText(text);
     toast.success("कॉपी हो गया!");
   };
@@ -111,7 +118,8 @@ const ReferralDashboard = () => {
         </p>
 
         <p style={{ fontSize: 14, opacity: 0.9, marginBottom: 20 }}>
-          आपका दोस्त साइनअप पर ₹100 पॉइंट्स पाएगा और आपको भी ₹100 पॉइंट्स तुरंत मिलेंगे।
+          आपका दोस्त साइनअप पर ₹100 पॉइंट्स पाएगा और आपको भी ₹100 पॉइंट्स तुरंत
+          मिलेंगे।
         </p>
 
         {/* ⭐ REFERRAL CODE BOX */}
@@ -150,7 +158,14 @@ const ReferralDashboard = () => {
         {/* ⭐ SHARE SECTION */}
         <p style={{ fontSize: 14, marginBottom: 12 }}>अपना कोड शेयर करें</p>
 
-        <div style={{ display: "flex", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: 10,
+            flexWrap: "wrap",
+          }}
+        >
           <button
             style={{
               background: "#2AABEE",
@@ -185,7 +200,16 @@ const ReferralDashboard = () => {
 
           <button
             onClick={() =>
-              (window.location.href = `https://wa.me/?text=PatWin से जुड़ें और मेरा कोड इस्तेमाल करें और रजिस्टर करते ही १०० कॉईन्स पाये: ${referralLink}`)
+              (window.location.href = `https://wa.me/?text=*🔥 PatWin से जुड़ें और ऑनलाइन पट गेम खेलें, जीत की शुरुआत करें! 🔥*
+
+🎯 *मेरा रेफरल कोड इस्तेमाल करें*
+💰 *रजिस्टर करते ही पाएं 100 कॉइन्स बिल्कुल FREE!*
+
+👇 अभी जॉइन करें:
+👉 ${referralLink}
+
+⚡ *Play • Refer • Earn* ⚡
+`)
             }
             style={{
               background: "#25D366",
@@ -217,7 +241,6 @@ const ReferralDashboard = () => {
             border: "1px solid #ddd",
           }}
         >
-
           {/* REFERRAL LINK INPUT */}
           <input
             type="text"
@@ -252,9 +275,6 @@ const ReferralDashboard = () => {
             कॉपी लिंक
           </button>
         </div>
-
-
-
       </div>
 
       {/* ⭐ REFERRAL STATS */}
@@ -322,7 +342,7 @@ const ReferralDashboard = () => {
         {referredUsers.length === 0 ? (
           <p style={{ color: "#666" }}>अभी तक कोई रेफ़रल नहीं मिला।</p>
         ) : (
-          referredUsers.map((u) => (
+          referredUsers.map(u => (
             <div
               key={u.id}
               style={{
@@ -333,7 +353,9 @@ const ReferralDashboard = () => {
                 border: "1px solid #ddd",
               }}
             >
-              <p><b>नाम:</b> {u.name}</p>
+              <p>
+                <b>नाम:</b> {u.name}
+              </p>
               {/* <p><b>मोबाइल:</b> {u.mobile}</p>
               <p><b>ईमेल:</b> {u.email}</p> */}
               <p>

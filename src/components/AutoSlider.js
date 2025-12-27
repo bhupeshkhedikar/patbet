@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./AutoSlider.css";
 
 const images = [
+  'newyear.jpg',
   'bonus.jpeg',
   'banner1.jpeg',
   'banner2.jpeg',
