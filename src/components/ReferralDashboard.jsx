@@ -207,8 +207,7 @@ const ReferralDashboard = () => {
 
 👇 अभी जॉइन करें:
 👉 ${referralLink}
-
-⚡ *Play • Refer • Earn* ⚡
+ *Play • Refer • Earn* ⚡
 `)
             }
             style={{
