@@ -109,10 +109,68 @@ function App() {
 
   if (user === undefined) {
     return (
-      <div className="loader-container">
-        <div className="loader"></div>
-        <p>Loading Games...</p>
-      </div>
+    <div
+  style={{
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100vh",
+    background: "#0e0e0e",
+  }}
+>
+  {/* Logo */}
+  <img
+    src="/logonew.png"   // keep logo in public folder
+    alt="Loading Logo"
+    style={{
+      width: 80,
+      marginBottom: 16,
+      animation: "pulse 1.5s ease-in-out infinite",
+    }}
+  />
+
+  {/* Loader */}
+  <div
+    style={{
+      width: 40,
+      height: 40,
+      border: "4px solid rgba(255,255,255,0.2)",
+      borderTop: "4px solid #ff9800",
+      borderRadius: "50%",
+      animation: "spin 1s linear infinite",
+    }}
+  />
+
+  {/* Text */}
+  <p
+    style={{
+      marginTop: 14,
+      fontSize: 14,
+      color: "#ccc",
+      letterSpacing: 1,
+    }}
+  >
+    Loading Games...
+  </p>
+
+  {/* Inline Animations */}
+  <style>
+    {`
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      @keyframes pulse {
+        0% { transform: scale(1); opacity: 0.6; }
+        50% { transform: scale(1.05); opacity: 1; }
+        100% { transform: scale(1); opacity: 0.6; }
+      }
+    `}
+  </style>
+</div>
+
     );
   }
 
