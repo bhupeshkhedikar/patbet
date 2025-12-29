@@ -232,13 +232,16 @@ const GameList = () => {
             <AdBanner />
           </div>
         ) : activeTab === 1 ? (
-          <Lots />
+              <BullockCartRacingGame />
+        
         ) : activeTab === 2 ? (
-          <Result />
+            <Lots />
+      
         ) : activeTab === 3 ? (
-          <VideoFeed />
+              <Result />
+
         ) : (
-          <BullockCartRacingGame />
+                <VideoFeed />
         )}
       </Box>
     </Box>
