@@ -44,6 +44,8 @@ const UserPanel = () => {
   const [walletBalance, setWalletBalance] = useState(0);
   const [myEntries, setMyEntries] = useState([]);
   const [entriesLoaded, setEntriesLoaded] = useState(false);
+  const [nextRoundSec, setNextRoundSec] = useState(null);
+
 
   // per-match generated stable values (do not change during race)
   const [trackSpeeds, setTrackSpeeds] = useState({});
@@ -257,6 +259,19 @@ const UserPanel = () => {
         setIsWin(false);
         setWinAmount(0);
         setShowResultModal(true);
+        // अगला राउंड 3 सेकंड में
+        let sec = 3;
+        setNextRoundSec(sec);
+
+        const countdown = setInterval(() => {
+          sec -= 1;
+          setNextRoundSec(sec);
+
+          if (sec <= 0) {
+            clearInterval(countdown);
+          }
+        }, 1000);
+
         return;
       }
 
@@ -291,6 +306,19 @@ const UserPanel = () => {
       }
 
       setShowResultModal(true);
+      // अगला राउंड 3 सेकंड में
+      let sec = 3;
+      setNextRoundSec(sec);
+
+      const countdown = setInterval(() => {
+        sec -= 1;
+        setNextRoundSec(sec);
+
+        if (sec <= 0) {
+          clearInterval(countdown);
+        }
+      }, 1000);
+
     };
 
     // check once immediately (and if race end already passed)
@@ -419,115 +447,115 @@ const UserPanel = () => {
       console.error("Match Create Error", e);
     }
   };
-// 🔥 SUPER RANDOM UNPREDICTABLE WINNER SELECTOR
-const chooseSuperRandomWinner = async () => {
-  const betsSnap = await getDocs(collection(db, "game", "currentMatch", "bets"));
+  // 🔥 SUPER RANDOM UNPREDICTABLE WINNER SELECTOR
+  const chooseSuperRandomWinner = async () => {
+    const betsSnap = await getDocs(collection(db, "game", "currentMatch", "bets"));
 
-  let team1Amount = 0;
-  let team2Amount = 0;
+    let team1Amount = 0;
+    let team2Amount = 0;
 
-  betsSnap.forEach(b => {
-    const bet = b.data();
-    if (bet.cartId === 1) team1Amount += bet.amount || 0;
-    if (bet.cartId === 2) team2Amount += bet.amount || 0;
-  });
+    betsSnap.forEach(b => {
+      const bet = b.data();
+      if (bet.cartId === 1) team1Amount += bet.amount || 0;
+      if (bet.cartId === 2) team2Amount += bet.amount || 0;
+    });
 
-  // Entropy sources
-  const sysRnd = crypto.getRandomValues(new Uint32Array(1))[0];
-  const timeRnd = Date.now() % 9973;
-  const seed = (sysRnd ^ timeRnd ^ (team1Amount * 31) ^ (team2Amount * 17)) >>> 0;
+    // Entropy sources
+    const sysRnd = crypto.getRandomValues(new Uint32Array(1))[0];
+    const timeRnd = Date.now() % 9973;
+    const seed = (sysRnd ^ timeRnd ^ (team1Amount * 31) ^ (team2Amount * 17)) >>> 0;
 
-  // Hidden behavior mode (0,1,2)
-  const mode = seed % 3;
+    // Hidden behavior mode (0,1,2)
+    const mode = seed % 3;
 
-  let winner;
+    let winner;
 
-  if (mode === 0) {
-    // Pure random
-    winner = (seed % 2) + 1;
-
-  } else if (mode === 1) {
-    // Sometimes pick underdog (less bet team)
-    if (team1Amount === team2Amount) {
+    if (mode === 0) {
+      // Pure random
       winner = (seed % 2) + 1;
+
+    } else if (mode === 1) {
+      // Sometimes pick underdog (less bet team)
+      if (team1Amount === team2Amount) {
+        winner = (seed % 2) + 1;
+      } else {
+        winner = team1Amount < team2Amount ? 1 : 2;
+      }
+
     } else {
-      winner = team1Amount < team2Amount ? 1 : 2;
+      // Sometimes pick overloaded team (more bets)
+      if (team1Amount === team2Amount) {
+        winner = (seed % 2) + 1;
+      } else {
+        winner = team1Amount > team2Amount ? 1 : 2;
+      }
     }
 
-  } else {
-    // Sometimes pick overloaded team (more bets)
-    if (team1Amount === team2Amount) {
-      winner = (seed % 2) + 1;
-    } else {
-      winner = team1Amount > team2Amount ? 1 : 2;
-    }
-  }
+    return winner;
+  };
 
-  return winner;
-};
+  // SUPER ADVANCED WINNER SELECTOR BASED ON MODE
+  const chooseWinnerByMode = async (mode) => {
+    // Load current bets
+    const betsSnap = await getDocs(collection(db, "game", "currentMatch", "bets"));
 
-// SUPER ADVANCED WINNER SELECTOR BASED ON MODE
-const chooseWinnerByMode = async (mode) => {
-  // Load current bets
-  const betsSnap = await getDocs(collection(db, "game", "currentMatch", "bets"));
+    let team1Amount = 0;
+    let team2Amount = 0;
 
-  let team1Amount = 0;
-  let team2Amount = 0;
+    betsSnap.forEach((b) => {
+      const data = b.data();
+      if (data.cartId === 1) team1Amount += data.amount || 0;
+      if (data.cartId === 2) team2Amount += data.amount || 0;
+    });
 
-  betsSnap.forEach((b) => {
-    const data = b.data();
-    if (data.cartId === 1) team1Amount += data.amount || 0;
-    if (data.cartId === 2) team2Amount += data.amount || 0;
-  });
+    // entropy seed
+    const sys = crypto.getRandomValues(new Uint32Array(1))[0];
+    const time = Date.now() % 99991;
+    const seed = (sys ^ time ^ (team1Amount * 29) ^ (team2Amount * 37)) >>> 0;
 
-  // entropy seed
-  const sys = crypto.getRandomValues(new Uint32Array(1))[0];
-  const time = Date.now() % 99991;
-  const seed = (sys ^ time ^ (team1Amount * 29) ^ (team2Amount * 37)) >>> 0;
+    const randomTeam = seed % 2 === 0 ? 1 : 2;
 
-  const randomTeam = seed % 2 === 0 ? 1 : 2;
+    /* ----------------------------
+          1️⃣ BALANCED MODE  
+       ---------------------------- */
+    if (mode === "balanced") {
+      const diff = Math.abs(team1Amount - team2Amount);
 
-  /* ----------------------------
-        1️⃣ BALANCED MODE  
-     ---------------------------- */
-  if (mode === "balanced") {
-    const diff = Math.abs(team1Amount - team2Amount);
+      if (diff < 50) {
+        return randomTeam;
+      }
 
-    if (diff < 50) {
-      return randomTeam;
+      if (team1Amount > team2Amount) {
+        return seed % 3 === 0 ? 1 : 2;
+      } else {
+        return seed % 3 === 0 ? 2 : 1;
+      }
     }
 
-    if (team1Amount > team2Amount) {
-      return seed % 3 === 0 ? 1 : 2;
-    } else {
-      return seed % 3 === 0 ? 2 : 1;
+    /* ----------------------------
+          2️⃣ HIGH PROFIT MODE  
+       ---------------------------- */
+    if (mode === "highProfit") {
+      if (team1Amount > team2Amount) {
+        return seed % 5 === 0 ? 1 : 2;
+      } else if (team2Amount > team1Amount) {
+        return seed % 5 === 0 ? 2 : 1;
+      } else {
+        return randomTeam;
+      }
     }
-  }
 
-  /* ----------------------------
-        2️⃣ HIGH PROFIT MODE  
-     ---------------------------- */
-  if (mode === "highProfit") {
-    if (team1Amount > team2Amount) {
-      return seed % 5 === 0 ? 1 : 2;
-    } else if (team2Amount > team1Amount) {
-      return seed % 5 === 0 ? 2 : 1;
-    } else {
-      return randomTeam;
+    /* ----------------------------
+          3️⃣ MANUAL MODE  
+          → USE SUPER RANDOM LOGIC
+       ---------------------------- */
+    if (mode === "manual") {
+      return await chooseSuperRandomWinner();  // ⭐ YOUR FULL unpredictable logic
     }
-  }
 
-  /* ----------------------------
-        3️⃣ MANUAL MODE  
-        → USE SUPER RANDOM LOGIC
-     ---------------------------- */
-  if (mode === "manual") {
-    return await chooseSuperRandomWinner();  // ⭐ YOUR FULL unpredictable logic
-  }
-
-  // fallback
-  return randomTeam;
-};
+    // fallback
+    return randomTeam;
+  };
 
 
 
@@ -535,50 +563,50 @@ const chooseWinnerByMode = async (mode) => {
      Auto Match Manager (decide winner at race start)
      — ensures visual finish always matches declared winner
   -------------------------------------------------- */
-useEffect(() => {
-  const timer = setInterval(async () => {
-    if (!currentMatch) return;
+  useEffect(() => {
+    const timer = setInterval(async () => {
+      if (!currentMatch) return;
 
-    const now = Date.now();
-    const startsAt = toEpochMs(currentMatch.startsAt);
-    const endsAt = toEpochMs(currentMatch.endsAt);
+      const now = Date.now();
+      const startsAt = toEpochMs(currentMatch.startsAt);
+      const endsAt = toEpochMs(currentMatch.endsAt);
 
-    /* --------------------------------------------------
-        CLOSE BETTING WHEN RACE STARTS
-    -------------------------------------------------- */
-    if (currentMatch.bettingOpen && now >= startsAt) {
-      try {
-        await updateDoc(doc(db, "game", "currentMatch"), { bettingOpen: false });
-      } catch (e) {
-        // ignore
+      /* --------------------------------------------------
+          CLOSE BETTING WHEN RACE STARTS
+      -------------------------------------------------- */
+      if (currentMatch.bettingOpen && now >= startsAt) {
+        try {
+          await updateDoc(doc(db, "game", "currentMatch"), { bettingOpen: false });
+        } catch (e) {
+          // ignore
+        }
       }
-    }
 
-    /* --------------------------------------------------
-        DECIDE WINNER EXACTLY WHEN RACE STARTS
-        (So animation follows correct winner)
-    -------------------------------------------------- */
-    if (currentMatch.winner == null && now >= startsAt) {
-      try {
-       const winner = await chooseWinnerByMode(currentMatch.mode);
-  // ⭐ NEW MODE-BASED WINNER LOGIC
-        await updateDoc(doc(db, "game", "currentMatch"), { winner });
-      } catch (e) {
-        console.error("Winner Set Error", e);
+      /* --------------------------------------------------
+          DECIDE WINNER EXACTLY WHEN RACE STARTS
+          (So animation follows correct winner)
+      -------------------------------------------------- */
+      if (currentMatch.winner == null && now >= startsAt) {
+        try {
+          const winner = await chooseWinnerByMode(currentMatch.mode);
+          // ⭐ NEW MODE-BASED WINNER LOGIC
+          await updateDoc(doc(db, "game", "currentMatch"), { winner });
+        } catch (e) {
+          console.error("Winner Set Error", e);
+        }
       }
-    }
 
-    /* --------------------------------------------------
-        CREATE NEXT MATCH AFTER RACE ENDS + 3 sec
-    -------------------------------------------------- */
-    if (currentMatch.winner != null && now > endsAt + 3000) {
-      await createMatchIfMissing();
-    }
+      /* --------------------------------------------------
+          CREATE NEXT MATCH AFTER RACE ENDS + 3 sec
+      -------------------------------------------------- */
+      if (currentMatch.winner != null && now > endsAt + 3000) {
+        await createMatchIfMissing();
+      }
 
-  }, 300);
+    }, 300);
 
-  return () => clearInterval(timer);
-}, [currentMatch]);
+    return () => clearInterval(timer);
+  }, [currentMatch]);
 
 
 
@@ -775,9 +803,9 @@ useEffect(() => {
           <div style={bottomSheetStyles.sheet} onClick={(e) => e.stopPropagation()}>
             <div style={bottomSheetStyles.dragHandle}></div>
 
-            <h2 style={{ color: "#FFD700",margin: 2 }}>प्रवेश</h2>
-             <p style={{ color: "#48ff00ff",margin: 2,fontWeight:'bold' }}>{entryPhase && `⏳ राय लगाना बंद होने में: ${secondsLeft()} बाकी`} {!entryPhase ?'समय समाप्त ':'' }</p> 
-            <h3 style={{ color: "white",margin: 4 }}>बैलगाडी चुनें:</h3>
+            <h2 style={{ color: "#FFD700", margin: 2 }}>प्रवेश</h2>
+            <p style={{ color: "#48ff00ff", margin: 2, fontWeight: 'bold' }}>{entryPhase && `⏳ राय लगाना बंद होने में: ${secondsLeft()} बाकी`} {!entryPhase ? 'समय समाप्त ' : ''}</p>
+            <h3 style={{ color: "white", margin: 4 }}>बैलगाडी चुनें:</h3>
 
             <div style={{ display: "flex", justifyContent: "center", gap: 10 }}>
               {tracks.map((track) => (
@@ -798,7 +826,7 @@ useEffect(() => {
               ))}
             </div>
 
-            <label style={{ color: "white" ,}}>राशि:</label>
+            <label style={{ color: "white", }}>राशि:</label>
             <input
               type="number"
               value={participationAmount}
@@ -832,6 +860,18 @@ useEffect(() => {
                     🏆 विजेता जोडी: {winnerTeamName}
                   </h3>
                 )}
+                {/* NEXT ROUND COUNTDOWN */}
+                {nextRoundSec !== null && (
+                  <p style={{
+                    marginTop: 12,
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: "#00e5ff"
+                  }}>
+                    ⏭ अगला राउंड {nextRoundSec} सेकंड में शुरू होगा
+                  </p>
+                )}
+
               </>
             ) : isWin ?
               (
@@ -839,12 +879,36 @@ useEffect(() => {
                   <div style={modalStyles.emoji}>🎉</div>
                   <h2 style={{ color: "#00ff99" }}>बधाई! आप जीते</h2>
                   <h1 style={{ color: "#FFD700" }}>₹{winAmount}</h1>
+                  {/* NEXT ROUND COUNTDOWN */}
+                  {nextRoundSec !== null && (
+                    <p style={{
+                      marginTop: 12,
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: "#00e5ff"
+                    }}>
+                      ⏭ अगला राउंड {nextRoundSec} सेकंड में शुरू होगा
+                    </p>
+                  )}
+
                 </>
               ) : (
                 <>
                   <div style={modalStyles.emoji}>😔</div>
                   <h2 style={{ color: "red" }}>आप हार गए</h2>
                   <h1 style={{ color: "orange" }}>₹{winAmount}</h1>
+                  {/* NEXT ROUND COUNTDOWN */}
+                  {nextRoundSec !== null && (
+                    <p style={{
+                      marginTop: 12,
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: "#00e5ff"
+                    }}>
+                      ⏭ अगला राउंड {nextRoundSec} सेकंड में शुरू होगा
+                    </p>
+                  )}
+
                 </>
               )}
           </div>
