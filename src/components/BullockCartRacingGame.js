@@ -45,6 +45,7 @@ const UserPanel = () => {
   const [myEntries, setMyEntries] = useState([]);
   const [entriesLoaded, setEntriesLoaded] = useState(false);
   const [nextRoundSec, setNextRoundSec] = useState(null);
+  const [soundOn, setSoundOn] = useState(true);
 
 
   // per-match generated stable values (do not change during race)
@@ -79,6 +80,19 @@ const UserPanel = () => {
     lossSound.current = new Audio("/sounds/loss.wav");
     runningSound.current.loop = true;
   }, []);
+
+  const applySoundSetting = (enabled) => {
+    [startSound, runningSound, winSound, lossSound].forEach(ref => {
+      if (ref.current) {
+        ref.current.muted = !enabled;
+      }
+    });
+  };
+
+  useEffect(() => {
+    applySoundSetting(soundOn);
+  }, [soundOn]);
+
 
   /* --------------------------------------------------
      चालू मैच सुनें (Realtime)
@@ -189,8 +203,10 @@ const UserPanel = () => {
       if (now >= startsAt && now <= endsAt) {
         const frac = clamp((now - startsAt) / Math.max(1, (endsAt - startsAt))); // 0..1
 
-        if (runningSound.current.paused)
+        if (soundOn && runningSound.current.paused) {
           runningSound.current.play().catch(() => { });
+        }
+
 
         const trackHeight = window.innerWidth < 450 ? 400 : 500;
 
@@ -723,6 +739,23 @@ const UserPanel = () => {
           <span style={styles.playStatus}>
             {entryPhase ? "खुला है" : racePhase ? "दौड़ जारी" : "परिणाम"}
           </span>
+          {/* SOUND TOGGLE */}
+          <button
+            onClick={() => setSoundOn(prev => !prev)}
+            style={{
+              background: "transparent",
+              border: "1px solid #444",
+              color: soundOn ? "#00ff95" : "#ff5252",
+              borderRadius: 10,
+              padding: "6px 10px",
+              fontSize: 10,
+              fontWeight: 800,
+              cursor: "pointer"
+            }}
+          >
+            {soundOn ? "🔊 Sound ON" : "🔇 Sound OFF"}
+          </button>
+
         </div>
 
         {/* Info Card */}
