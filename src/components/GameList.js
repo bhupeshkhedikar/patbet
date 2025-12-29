@@ -128,10 +128,11 @@ const GameList = () => {
   // ⭐ TAB DATA
   const tabData = [
   { label: "होम", icon: <HomeIcon />, color: "#FF9800" },
+  { label: "ऑनलाइन पट", icon: <SportsEsportsIcon />, color: "#9C27B0" },
   { label: "लॉट", icon: <ContentPasteIcon />, color: "#43A047" },
   { label: "कौन जीतेगा?", icon: <CampaignIcon />, color: "#E91E63" },
   { label: "पट वीडियो", icon: <VideoCameraFrontIcon />, color: "#2196F3" },
-  { label: "ऑनलाइन पट", icon: <SportsEsportsIcon />, color: "#9C27B0" },
+
 ];
 
   // ⭐ ICON TAB STYLE (Modern & Clean)
