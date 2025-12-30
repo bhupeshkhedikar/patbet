@@ -229,6 +229,7 @@ const GameList = () => {
             ) : (
                 <p style={{ textAlign:'center'}}>नये गेम्स जल्द हि शुरू होंगे! </p>
             )}
+              <BullockCartRacingGame />
             <AdBanner />
           </div>
         ) : activeTab === 1 ? (
