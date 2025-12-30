@@ -46,6 +46,8 @@ const UserPanel = () => {
   const [entriesLoaded, setEntriesLoaded] = useState(false);
   const [nextRoundSec, setNextRoundSec] = useState(null);
   const [soundOn, setSoundOn] = useState(true);
+  const [placingBet, setPlacingBet] = useState(false);
+
 
 
   // per-match generated stable values (do not change during race)
@@ -351,9 +353,9 @@ const UserPanel = () => {
      PARTICIPATE — राय लगाना (single bet per match, success msg)
   -------------------------------------------------- */
   const participate = async () => {
+    if (placingBet) return; // 🔒 duplicate click block
     if (!user) return alert("कृपया लॉगिन करें!");
 
-    // Prevent double bet
     if (myEntries.length > 0) {
       return alert("आप पहले ही इस दौड़ में राय लगा चुके हैं!");
     }
@@ -369,6 +371,8 @@ const UserPanel = () => {
     if (now >= startsAt) return alert("राय लगाने का समय समाप्त!");
 
     try {
+      setPlacingBet(true); // 🔄 LOADER ON
+
       await runTransaction(db, async (tx) => {
         const userRef = doc(db, "users", user.uid);
         const uSnap = await tx.get(userRef);
@@ -377,10 +381,10 @@ const UserPanel = () => {
         if (bal < Number(participationAmount))
           throw new Error("बटुए में पर्याप्त शेष राशि नहीं है");
 
-        // Deduct balance
-        tx.update(userRef, { walletBalance: bal - Number(participationAmount) });
+        tx.update(userRef, {
+          walletBalance: bal - Number(participationAmount),
+        });
 
-        // Add entry doc
         const entryRef = doc(collection(db, "game", "currentMatch", "bets"));
         tx.set(entryRef, {
           userId: user.uid,
@@ -392,7 +396,8 @@ const UserPanel = () => {
 
       startSound.current.play().catch(() => { });
 
-      const selectedTeamName = tracks.find((t) => t.id === selectedCart)?.cart?.name;
+      const selectedTeamName =
+        tracks.find((t) => t.id === selectedCart)?.cart?.name;
 
       alert(
         `✔ राय सफल!\nआपने "${selectedTeamName ?? "टीम"}" पर ₹${participationAmount} की राय लगाई है।`
@@ -404,8 +409,11 @@ const UserPanel = () => {
     } catch (e) {
       console.error(e);
       alert(e.message || "प्रविष्टि असफल रही");
+    } finally {
+      setPlacingBet(false); // 🔄 LOADER OFF
     }
   };
+
 
 
   /* --------------------------------------------------
@@ -867,9 +875,18 @@ const UserPanel = () => {
               style={styles.input}
             />
 
-            <button style={styles.sheetSubmitBtn} onClick={participate}>
-              राय लगाये
+            <button
+              style={{
+                ...styles.sheetSubmitBtn,
+                opacity: placingBet ? 0.6 : 1,
+                cursor: placingBet ? "not-allowed" : "pointer",
+              }}
+              disabled={placingBet}
+              onClick={participate}
+            >
+              {placingBet ? "⏳ प्रोसेस हो रहा है..." : "राय लगाये"}
             </button>
+
             <button style={styles.sheetCancelBtn} onClick={() => setShowEntryModal(false)}>
               रद्द करें
             </button>
