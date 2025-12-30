@@ -26,7 +26,7 @@ const Register = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-
+  const newUserWallet = referCode ? 100 : 50;
   // Auto-fill referral code from URL (?ref=XXXX)
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -83,7 +83,7 @@ const Register = () => {
         name,
         mobile,
         password,
-        walletBalance: 50,
+        walletBalance: newUserWallet,
         isAdmin: false,
         bets: [],
         referralCode: myReferralCode,
@@ -101,19 +101,20 @@ const Register = () => {
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
-          const refUser = querySnapshot.docs[0];
-          const refUserId = refUser.id;
-          const oldBalance = refUser.data().walletBalance || 0;
+          const refUserDoc = querySnapshot.docs[0];
+          const refUserId = refUserDoc.id;
+          const oldBalance = refUserDoc.data().walletBalance || 0;
 
           await updateDoc(doc(db, "users", refUserId), {
             walletBalance: oldBalance + 100,
           });
 
-          toast.success("Refer Successful! Refer करने वाले को ₹100 मिला!");
+          toast.success("🎉 Refer सफल! आपको ₹100 बोनस मिला");
         } else {
-          toast.error("गलत Refer Code!");
+          toast.error("❌ गलत Refer Code!");
         }
       }
+
 
       toast.success("रजिस्ट्रेशन सफल हुआ!");
 
@@ -127,8 +128,8 @@ const Register = () => {
   return (
     <>
       <div className="auth-container" style={{ display: "flex", flexDirection: "column" }}>
-        <ToastContainer /> <br/>
-{/* <div className="bonus-container">
+        <ToastContainer /> <br />
+        {/* <div className="bonus-container">
         <img
           src="/bonus.jpeg"
           className="bonus-image"
@@ -140,7 +141,7 @@ const Register = () => {
           {error && <p className="error">{error}</p>}
 
           <form onSubmit={handleRegister}>
-            
+
             <input
               type="text"
               placeholder="नाम दर्ज करें"
