@@ -140,7 +140,7 @@ const AdminPanel = () => {
     try {
       await updateDoc(doc(db, "game", "currentMatch"), { bettingOpen: false });
       alert("Betting Closed!");
-    } catch (e) {}
+    } catch (e) { }
   };
 
   /* --------------------------------------------------
@@ -218,6 +218,17 @@ const AdminPanel = () => {
         >
           Manual Mode
         </button>
+
+        <button
+          style={{
+            ...styles.modeBtn,
+            ...(m === "walletControl" ? styles.activeMode : {})
+          }}
+          onClick={() => updateMode("walletControl")}
+        >
+          Wallet Control Mode
+        </button>
+
       </div>
 
       {/* Bets */}

