@@ -24,6 +24,8 @@ const WithdrawalRequest = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [userId, setUserId] = useState("");
   const [walletBalance, setWalletBalance] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
 
   const user = auth.currentUser;
   const navigate = useNavigate();
@@ -45,81 +47,46 @@ const WithdrawalRequest = () => {
   }, [user]);
 
   const handleRequestWithdrawal = async () => {
+    if (isSubmitting) return; // 🚫 double click रोकने के लिए
+
+    setIsSubmitting(true);
+
     try {
       // Clear previous messages
       setErrorMessage("");
       setSuccessMessage("");
 
       if (!amount || amount <= 600) {
-        alert("सिक्के 600 रुपये से अधिक होनी चाहिए।");
-        setErrorMessage("सिक्के600 रुपये से अधिक होनी चाहिए।");
+        setErrorMessage("सिक्के 600 रुपये से अधिक होनी चाहिए।");
+        setIsSubmitting(false);
         return;
       }
 
       if (!paymentMethod) {
-        alert("कृपया भुगतान विधि चुनें।");
         setErrorMessage("कृपया भुगतान विधि चुनें।");
+        setIsSubmitting(false);
         return;
       }
 
       if (!name) {
-        alert("कृपया अपना नाम दर्ज करें।");
         setErrorMessage("कृपया अपना नाम दर्ज करें।");
+        setIsSubmitting(false);
         return;
-      }
-
-      if (paymentMethod === "UPI" && !upiId) {
-        alert("कृपया अपना UPI ID दर्ज करें।");
-        setErrorMessage("कृपया अपना UPI ID दर्ज करें।");
-        return;
-      }
-
-      if (paymentMethod === "Bank") {
-        if (!bankAccount) {
-          alert("कृपया अपना बैंक खाता नंबर दर्ज करें।");
-          setErrorMessage("कृपया अपना बैंक खाता नंबर दर्ज करें।");
-          return;
-        }
-
-        if (!confirmBankAccount) {
-          alert("कृपया खाता नंबर की पुष्टि करें।");
-          setErrorMessage("कृपया खाता नंबर की पुष्टि करें।");
-          return;
-        }
-
-        if (bankAccount !== confirmBankAccount) {
-          alert("दोनों खाता नंबर मैच नहीं हो रहे हैं।");
-          setErrorMessage("दोनों खाता नंबर मैच नहीं हो रहे हैं।");
-          return;
-        }
-
-        if (!ifscCode) {
-          alert("कृपया IFSC कोड दर्ज करें।");
-          setErrorMessage("कृपया IFSC कोड दर्ज करें।");
-          return;
-        }
-
-        if (ifscCode.length !== 11) {
-          alert("कृपया वैध 11 अंकों का IFSC कोड दर्ज करें।");
-          setErrorMessage("कृपया वैध 11 अंकों का IFSC कोड दर्ज करें।");
-          return;
-        }
       }
 
       const deduction = amount * 0.05;
       const finalAmount = amount - deduction;
 
-      const walletBalanceFloat = parseFloat(walletBalance);
-      if (walletBalanceFloat < finalAmount) {
-        alert("आपके वॉलेट में पर्याप्त बैलेंस नहीं है।");
+      if (walletBalance < finalAmount) {
         setErrorMessage("आपके वॉलेट में पर्याप्त बैलेंस नहीं है।");
+        setIsSubmitting(false);
         return;
       }
 
       const userRef = doc(db, "users", userId);
 
       await updateDoc(userRef, {
-        walletBalance: walletBalanceFloat - finalAmount,
+        walletBalance: walletBalance - finalAmount,
       });
 
       await addDoc(collection(db, "withdrawalRequests"), {
@@ -129,24 +96,23 @@ const WithdrawalRequest = () => {
         deduction: deduction.toFixed(2),
         name,
         paymentMethod,
-        upiId: paymentMethod === "UPI" ? upiId : null,
-        bankAccount: paymentMethod === "Bank" ? bankAccount : null,
-        ifscCode: paymentMethod === "Bank" ? ifscCode : null,
+        bankAccount,
+        ifscCode,
         status: "pending",
         requestDate: new Date(),
-        reason: null,
       });
 
-      alert("रिडीम अनुरोध सफलतापूर्वक सबमिट किया गया!");
       setSuccessMessage("रिडीम अनुरोध सफलतापूर्वक सबमिट किया गया!");
-
       navigate("/mywithdrawals");
+
     } catch (error) {
-      alert("रिडीम अनुरोध बनाते समय त्रुटि हुई।");
+      console.error(error);
       setErrorMessage("रिडीम अनुरोध बनाते समय त्रुटि हुई।");
-      console.error("Error:", error);
+    } finally {
+      setIsSubmitting(false); // ✅ हमेशा reset होगा
     }
   };
+
 
   const finalAmount = amount ? amount - amount * 0.05 : 0;
 
@@ -230,28 +196,31 @@ const WithdrawalRequest = () => {
 
           <button
             onClick={handleRequestWithdrawal}
+            disabled={isSubmitting}
             style={{
               width: "100%",
               padding: "14px",
-              backgroundColor: "#08e676",
+              backgroundColor: isSubmitting ? "#999" : "#08e676",
               color: "black",
               border: "none",
               borderRadius: "12px",
               fontSize: "18px",
               fontWeight: "700",
-              boxShadow: "0 0 12px #08e676",
+              boxShadow: isSubmitting ? "none" : "0 0 12px #08e676",
               marginTop: "20px",
-              cursor: "pointer",
+              cursor: isSubmitting ? "not-allowed" : "pointer",
+              opacity: isSubmitting ? 0.7 : 1,
             }}
           >
-            निकालें 💵{finalAmount.toFixed(2)}
+            {isSubmitting ? "प्रोसेस हो रहा है..." : `निकालें 💵${finalAmount.toFixed(2)}`}
           </button>
 
-<p style={{ fontSize: "10px", color: "grey", marginTop: "20px" }}>
-  रिडीम सिक्कों पर 5% शुल्क लागू होगा। <br />
-  न्यूनतम रिडीम कॉइन्स : 600 <br />
-  बोनस राशि निकाली नहीं जा सकती। <br />
-</p>
+
+          <p style={{ fontSize: "10px", color: "grey", marginTop: "20px" }}>
+            रिडीम सिक्कों पर 5% शुल्क लागू होगा। <br />
+            न्यूनतम रिडीम कॉइन्स : 600 <br />
+            बोनस राशि निकाली नहीं जा सकती। <br />
+          </p>
 
         </div>
       </div>

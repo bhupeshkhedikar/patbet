@@ -297,7 +297,7 @@ const Transactions = () => {
             <tr key={request.id}>
               <td>{request.name || "N/A"}</td>
               <td>{request.userId}</td>
-              <td>💵{request.amount}</td>
+              <td>{request.finalAmount} and 💵{request.amount}</td>
               <td>{request.paymentMethod || "N/A"}</td>
               <td>{request.upiId || "N/A"}</td>
               <td>{request.bankAccount || "N/A"}</td>
