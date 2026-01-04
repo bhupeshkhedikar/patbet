@@ -73,7 +73,7 @@ const BetStatusListener = () => {
         return {
           ribbon: "linear-gradient(90deg,#00b0ff,#69f0ff)",
           glow: "#40c4ff",
-          text: "🤝 टाई",
+          text: "🤝चान्स/टाई-कोईन्स वापसी",
         };
       default:
         return {};
