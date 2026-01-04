@@ -88,6 +88,10 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId, maxBetAmount }) =>
 
 
   const handleBet = async () => {
+      if (!user) {
+      navigate("/register"); // Redirect to register page if user is not logged in
+      return;
+    }
     if (!selectedTeam) {
       alert("कृपया दांव लगाने के लिए एक टीम चुनें!");
       return;

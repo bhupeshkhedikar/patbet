@@ -91,10 +91,6 @@ const GameCard = ({ game }) => {
   const isAfterEnd = betEndTime && currentTime > betEndTime;
 
   const handleBetNowClick = () => {
-    if (!user) {
-      navigate("/register"); // Redirect to register page if user is not logged in
-      return;
-    }
     setModalOpen(true);
   };
 
