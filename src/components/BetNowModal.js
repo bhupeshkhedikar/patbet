@@ -334,10 +334,10 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId, maxBetAmount }) =>
 
 
             <button className="bet-now-btn" onClick={handleBet}>
-              Play Now
+              Play Now (राय लगाये)
             </button>
             <button className="close-btn" onClick={onClose}>
-              Close
+              बंद करे 
             </button>
           </>
         )}
