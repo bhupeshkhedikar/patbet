@@ -26,7 +26,7 @@ const Register = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const newUserWallet = referCode ? 100 : 50;
+  const newUserWallet = referCode ? 100 : 60;
   // Auto-fill referral code from URL (?ref=XXXX)
   useEffect(() => {
     const params = new URLSearchParams(location.search);
