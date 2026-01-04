@@ -1,110 +1,164 @@
-import React, { useState, useEffect } from 'react';
-import { db } from '../../firebase';
-import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
-import { serverTimestamp } from "firebase/firestore";
+import React, { useState, useEffect } from "react";
+import { db } from "../../firebase";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+  serverTimestamp,
+  query,
+  where,
+} from "firebase/firestore";
 
 const AddGame = () => {
   const [games, setGames] = useState([]);
+  const [villages, setVillages] = useState([]);
+  const [newVillage, setNewVillage] = useState("");
+  const [selectedVillage, setSelectedVillage] = useState("");
+
   const [newGame, setNewGame] = useState({
-    srNo: "", // Sr. No field added
+    srNo: "",
     league: "दक्षिणदान <----> उत्तरदान",
-    team1: {
-      name: "",
-      logo: "bullcart.png",
-    },
-    team2: {
-      name: "",
-      logo: "bullcart.png",
-    },
+    team1: { name: "", logo: "bullcart.png" },
+    team2: { name: "", logo: "bullcart.png" },
     time: "",
     winner: "",
     isBetEnabled: false,
     maxBetAmount: 1000,
-    createdAt: serverTimestamp(),
   });
+
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Fetch all games from Firebase
   const maxBetOptions = [60, 100, 200, 300, 500, 1000, 2000, 3000];
+
+  /* ---------------- FETCH GAMES ---------------- */
   useEffect(() => {
     const fetchGames = async () => {
-      const gamesRef = collection(db, 'games');
-      const snapshot = await getDocs(gamesRef);
-      const gamesList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setGames(gamesList);
+      const snapshot = await getDocs(collection(db, "games"));
+      setGames(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
     };
-
     fetchGames();
   }, []);
 
+  /* ---------------- FETCH VILLAGES ---------------- */
+  useEffect(() => {
+    const fetchVillages = async () => {
+      const snapshot = await getDocs(collection(db, "villages"));
+      setVillages(
+        snapshot.docs
+          .map(d => ({ id: d.id, ...d.data() }))
+          .filter(v => v.active)
+      );
+    };
+    fetchVillages();
+  }, []);
+
+  /* ---------------- ADD VILLAGE ---------------- */
+  const handleAddVillage = async () => {
+    if (!newVillage.trim()) return;
+
+    await addDoc(collection(db, "villages"), {
+      name: newVillage.trim(),
+      active: true,
+      createdAt: serverTimestamp(),
+    });
+
+    setNewVillage("");
+    const snap = await getDocs(collection(db, "villages"));
+    setVillages(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+  };
+
+  /* ---------------- REMOVE VILLAGE ---------------- */
+  const handleRemoveVillage = async (village) => {
+    // check if any game exists for this village
+    const q = query(
+      collection(db, "games"),
+      where("villageName", "==", village.name)
+    );
+
+    const snap = await getDocs(q);
+
+    if (!snap.empty) {
+      alert("❌ Cannot delete village. Games already exist for this village.");
+      return;
+    }
+
+    await deleteDoc(doc(db, "villages", village.id));
+
+    setVillages(villages.filter(v => v.id !== village.id));
+
+    if (selectedVillage === village.id) {
+      setSelectedVillage("");
+    }
+
+    alert("✅ Village removed successfully");
+  };
+
+  /* ---------------- ADD GAME ---------------- */
   const handleAddGame = async () => {
     try {
-      if (!newGame.league || !newGame.team1.name || !newGame.team2.name) {
-        setErrorMessage("All fields are required!");
+      if (
+        !newGame.league ||
+        !newGame.team1.name ||
+        !newGame.team2.name ||
+        !selectedVillage
+      ) {
+        setErrorMessage("All fields including village are required!");
         return;
       }
 
-      const formattedLeague = newGame.srNo ? `${newGame.srNo}) ${newGame.league}` : newGame.league;
+      const villageObj = villages.find(v => v.id === selectedVillage);
+
+      const formattedLeague = newGame.srNo
+        ? `${newGame.srNo}) ${newGame.league}`
+        : newGame.league;
 
       const gameData = {
         ...newGame,
         league: formattedLeague,
+        villageName: villageObj.name,
+        createdAt: serverTimestamp(),
       };
 
-      const gamesRef = collection(db, "games");
-      const resultsRef = collection(db, "results");
+      const gameDoc = await addDoc(collection(db, "games"), gameData);
 
-      // Add game to the "games" collection
-      const gameDoc = await addDoc(gamesRef, gameData);
-
-      // Add game to the "results" collection separately
-      await addDoc(resultsRef, {
+      await addDoc(collection(db, "results"), {
         gameId: gameDoc.id,
         league: formattedLeague,
         team1: newGame.team1,
         team2: newGame.team2,
         time: newGame.time,
+        villageName: villageObj.name,
         winner: "",
         isBetEnabled: newGame.isBetEnabled,
-        maxBetAmount: 1000, // Default max bet amount
+        maxBetAmount: newGame.maxBetAmount,
         createdAt: serverTimestamp(),
       });
 
-      setGames([...games, { id: gameDoc.id, ...gameData }]);
-      alert("Game added successfully!");
+      alert("✅ Game added successfully!");
 
-      // Reset the form
       setNewGame({
         srNo: "",
         league: "दक्षिणदान <----> उत्तरदान",
-        team1: {
-          name: "",
-          logo: "https://i.ibb.co/gM8dM9Nt/Screenshot-2025-01-29-215509-removebg-preview.png",
-        },
-        team2: {
-          name: "",
-          logo: "https://i.ibb.co/gM8dM9Nt/Screenshot-2025-01-29-215509-removebg-preview.png",
-        },
+        team1: { name: "", logo: "bullcart.png" },
+        team2: { name: "", logo: "bullcart.png" },
         time: "",
         winner: "",
-        maxBetAmount: 1000, // Default max bet amount
         isBetEnabled: false,
+        maxBetAmount: 1000,
       });
+
+      setSelectedVillage("");
     } catch (error) {
-      setErrorMessage("Error adding game: " + error.message);
+      setErrorMessage(error.message);
     }
   };
 
-  const handleDeleteGame = async (gameId) => {
-    try {
-      const gameDoc = doc(db, "games", gameId);
-      await deleteDoc(gameDoc);
-      setGames(games.filter((game) => game.id !== gameId));
-      alert("Game deleted successfully!");
-      window.location.reload();
-    } catch (error) {
-      setErrorMessage("Error deleting game: " + error.message);
-    }
+  /* ---------------- DELETE GAME ---------------- */
+  const handleDeleteGame = async (id) => {
+    await deleteDoc(doc(db, "games", id));
+    setGames(games.filter(g => g.id !== id));
   };
 
   return (
@@ -112,102 +166,105 @@ const AddGame = () => {
       <h2>Add New Game</h2>
       {errorMessage && <p className="error-message">{errorMessage}</p>}
 
+      {/* -------- ADD VILLAGE -------- */}
+      <h3>Add Village</h3>
+      <input
+        placeholder="Village name"
+        value={newVillage}
+        onChange={e => setNewVillage(e.target.value)}
+      />
+      <button onClick={handleAddVillage}>Add Village</button>
+
+      {/* -------- VILLAGE LIST WITH REMOVE -------- */}
+      <ul style={{ marginTop: 10 }}>
+        {villages.map(v => (
+          <li key={v.id}>
+            {v.name}
+            <button
+              style={{ marginLeft: 10, color: "red" }}
+              onClick={() => handleRemoveVillage(v)}
+            >
+              Remove
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      <hr />
+
+      {/* -------- SELECT VILLAGE -------- */}
       <select
-        style={{ marginBottom: "10px" }}
-        value={newGame.srNo}
-        onChange={e => setNewGame({ ...newGame, srNo: e.target.value || "" })}
+        value={selectedVillage}
+        onChange={e => setSelectedVillage(e.target.value)}
       >
-        <option value="">Select Sr. No (Optional)</option>
-        {[...Array(20)].map((_, i) => (
-          <option key={i + 1} value={i + 1}>
-            {i + 1}
+        <option value="">Select Village</option>
+        {villages.map(v => (
+          <option key={v.id} value={v.id}>
+            {v.name}
           </option>
         ))}
       </select>
 
+      {/* -------- SR NO -------- */}
+      <select
+        value={newGame.srNo}
+        onChange={e => setNewGame({ ...newGame, srNo: e.target.value })}
+      >
+        <option value="">Select Sr No</option>
+        {[...Array(20)].map((_, i) => (
+          <option key={i + 1} value={i + 1}>{i + 1}</option>
+        ))}
+      </select>
+
       <input
-        type="text"
         placeholder="League Name"
         value={newGame.league}
         onChange={e => setNewGame({ ...newGame, league: e.target.value })}
       />
 
       <input
-        type="text"
         placeholder="Team 1 Name"
         value={newGame.team1.name}
         onChange={e =>
-          setNewGame({
-            ...newGame,
-            team1: { ...newGame.team1, name: e.target.value },
-          })
+          setNewGame({ ...newGame, team1: { ...newGame.team1, name: e.target.value } })
         }
       />
 
       <input
-        type="text"
         placeholder="Team 2 Name"
         value={newGame.team2.name}
         onChange={e =>
-          setNewGame({
-            ...newGame,
-            team2: { ...newGame.team2, name: e.target.value },
-          })
+          setNewGame({ ...newGame, team2: { ...newGame.team2, name: e.target.value } })
         }
       />
-        {/* Max Bet Amount Selection */}
-        <select
-        style={{ marginBottom: "20px" }}
+
+      <select
         value={newGame.maxBetAmount}
-        onChange={e =>
-          setNewGame({ ...newGame, maxBetAmount: Number(e.target.value) })
-        }
+        onChange={e => setNewGame({ ...newGame, maxBetAmount: Number(e.target.value) })}
       >
-        <option value="">Select Max Opinion Coins</option>
-        {maxBetOptions.map(amount => (
-          <option key={amount} value={amount}>
-            💵{amount}
-          </option>
+        {maxBetOptions.map(a => (
+          <option key={a} value={a}>💵 {a}</option>
         ))}
       </select>
 
       <select
-        style={{ marginBottom: "20px" }}
         value={newGame.isBetEnabled}
-        onChange={e =>
-          setNewGame({ ...newGame, isBetEnabled: e.target.value === "true" })
-        }
+        onChange={e => setNewGame({ ...newGame, isBetEnabled: e.target.value === "true" })}
       >
         <option value="false">Disable Betting</option>
         <option value="true">Enable Betting</option>
       </select>
 
-      <button className="add-game-btn" onClick={handleAddGame}>
-        Add Game
-      </button>
+      <button onClick={handleAddGame}>Add Game</button>
 
-      <br />
-      <br />
-      <br />
       <h2>Game List</h2>
-      <ul className="game-list">
-        {games.length === 0 ? (
-          <p>No games available.</p>
-        ) : (
-          games.map((game, index) => (
-            <li key={game.id}>
-              <p>
-                {game.league} — {game.team1.name} vs {game.team2.name}
-              </p>
-              <button
-                className="delete-game-btn"
-                onClick={() => handleDeleteGame(game.id)}
-              >
-                Delete Game
-              </button>
-            </li>
-          ))
-        )}
+      <ul>
+        {games.map(g => (
+          <li key={g.id}>
+            {g.league} -— {g.team1.name} vs {g.team2.name} ({g.villageName})
+            <button className="delete-game-btn" onClick={() => handleDeleteGame(g.id)} >  Delete Game</button>
+          </li>
+        ))}
       </ul>
     </div>
   );

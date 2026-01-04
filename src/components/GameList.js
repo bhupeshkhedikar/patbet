@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Tabs, Tab, Box, useMediaQuery, useTheme } from "@mui/material";
 import { db } from "../firebase";
-import { collection, onSnapshot, doc, getDoc } from "firebase/firestore";
+import { collection, onSnapshot, doc, getDoc,getDocs } from "firebase/firestore";
 
 import GameCard from "./GameCard";
 import AutoSlider from "./AutoSlider";
@@ -26,6 +26,8 @@ const GameList = () => {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [activeTab, setActiveTab] = useState(0);
+  const [selectedVillage, setSelectedVillage] = useState("मोखे/किन्ही");
+  const [villages, setVillages] = useState([]);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -50,6 +52,20 @@ const GameList = () => {
   }, []);
 
   useEffect(() => {
+  const fetchVillages = async () => {
+    const snap = await getDocs(collection(db, "villages"));
+    const list = snap.docs
+      .map(d => d.data().name)
+      .filter(Boolean);
+
+    setVillages(list);
+  };
+
+  fetchVillages();
+}, []);
+
+
+  useEffect(() => {
     const fetchAnnouncement = async () => {
       const announcementDocRef = doc(db, "announcements", "mainAnnouncement");
       const docSnap = await getDoc(announcementDocRef);
@@ -60,56 +76,62 @@ const GameList = () => {
     fetchAnnouncement();
   }, []);
 
+  const filteredGames =
+    selectedVillage === "ALL"
+      ? games
+      : games.filter(g => g.villageName === selectedVillage);
+
+
   if (loading)
     return (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+          background: "#0e0e0e",
+        }}
+      >
+        {/* Logo */}
+        <img
+          src="/logonew.png"   // keep logo in public folder
+          alt="Loading Logo"
+          style={{
+            width: 80,
+            marginBottom: 16,
+            animation: "pulse 1.5s ease-in-out infinite",
+          }}
+        />
+
+        {/* Loader */}
         <div
-  style={{
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    height: "100vh",
-    background: "#0e0e0e",
-  }}
->
-  {/* Logo */}
-  <img
-    src="/logonew.png"   // keep logo in public folder
-    alt="Loading Logo"
-    style={{
-      width: 80,
-      marginBottom: 16,
-      animation: "pulse 1.5s ease-in-out infinite",
-    }}
-  />
+          style={{
+            width: 40,
+            height: 40,
+            border: "4px solid rgba(255,255,255,0.2)",
+            borderTop: "4px solid #ff9800",
+            borderRadius: "50%",
+            animation: "spin 1s linear infinite",
+          }}
+        />
 
-  {/* Loader */}
-  <div
-    style={{
-      width: 40,
-      height: 40,
-      border: "4px solid rgba(255,255,255,0.2)",
-      borderTop: "4px solid #ff9800",
-      borderRadius: "50%",
-      animation: "spin 1s linear infinite",
-    }}
-  />
+        {/* Text */}
+        <p
+          style={{
+            marginTop: 14,
+            fontSize: 14,
+            color: "#ccc",
+            letterSpacing: 1,
+          }}
+        >
+          Loading Games...
+        </p>
 
-  {/* Text */}
-  <p
-    style={{
-      marginTop: 14,
-      fontSize: 14,
-      color: "#ccc",
-      letterSpacing: 1,
-    }}
-  >
-    Loading Games...
-  </p>
-
-  {/* Inline Animations */}
-  <style>
-    {`
+        {/* Inline Animations */}
+        <style>
+          {`
       @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
@@ -121,19 +143,19 @@ const GameList = () => {
         100% { transform: scale(1); opacity: 0.6; }
       }
     `}
-  </style>
-</div>
+        </style>
+      </div>
     );
 
   // ⭐ TAB DATA
   const tabData = [
-  { label: "होम", icon: <HomeIcon />, color: "#FF9800" },
-  { label: "ऑनलाइन पट", icon: <SportsEsportsIcon />, color: "#9C27B0" },
-  { label: "लॉट", icon: <ContentPasteIcon />, color: "#43A047" },
-  { label: "कौन जीतेगा?", icon: <CampaignIcon />, color: "#E91E63" },
-  { label: "पट वीडियो", icon: <VideoCameraFrontIcon />, color: "#2196F3" },
+    { label: "होम", icon: <HomeIcon />, color: "#FF9800" },
+    { label: "ऑनलाइन पट", icon: <SportsEsportsIcon />, color: "#9C27B0" },
+    { label: "लॉट", icon: <ContentPasteIcon />, color: "#43A047" },
+    { label: "कौन जीतेगा?", icon: <CampaignIcon />, color: "#E91E63" },
+    { label: "पट वीडियो", icon: <VideoCameraFrontIcon />, color: "#2196F3" },
 
-];
+  ];
 
   // ⭐ ICON TAB STYLE (Modern & Clean)
   const tabStyle = {
@@ -204,45 +226,97 @@ const GameList = () => {
             <AdBanner />
             <AutoSlider />
 
-           {message ? (
-  <p
-    className="blink-color"
-    style={{
-      textAlign: "center",
-      margin: "10px",
-      fontSize: "14px",
-      fontWeight: "bold",
-    }}
-  >
-    {message}
-  </p>
-) : (
-  <p className="text-center text-white mt-4">
-    No announcement available
-  </p>
-)}
+            {message ? (
+              <p
+                className="blink-color"
+                style={{
+                  textAlign: "center",
+                  margin: "10px",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                }}
+              >
+                {message}
+              </p>
+            ) : (
+              <p className="text-center text-white mt-4">
+                No announcement available
+              </p>
+            )}
 
 
             <h2 className="section-title">Upcoming Games</h2>
-            {games.length > 0 ? (
-              games.map((game) => <GameCard key={game.id} game={game} />)
-            ) : (
-                <p style={{ textAlign:'center'}}>नये गेम्स जल्द हि शुरू होंगे! </p>
+                        {/* ⭐ VILLAGE CHIPS */}
+            {villages.length > 0 && (
+              <div
+                style={{
+                  display: "flex",
+                  gap: 8,
+                  overflowX: "auto",
+                  padding: "6px 4px",
+                  marginBottom: 10,
+                }}
+              >
+                {/* <button
+                  onClick={() => setSelectedVillage("ALL")}
+                  style={{
+                    padding: "6px 14px",
+                    borderRadius: 20,
+                    border: "none",
+                    background: selectedVillage === "ALL" ? "#ff9800" : "#2a2a2a",
+                    color: "white",
+                    fontSize: 12,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  All
+                </button> */}
+
+                {villages.map(village => (
+                  <button
+                    key={village}
+                    onClick={() => setSelectedVillage(village)}
+                    style={{
+                      padding: "6px 14px",
+                      borderRadius: 20,
+                      border: "none",
+                      background:
+                        selectedVillage === village ? "#ff9800" : "#2a2a2a",
+                      color: "white",
+                      fontSize: 12,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {village}
+                  </button>
+                ))}
+              </div>
             )}
-              <BullockCartRacingGame />
+
+            {filteredGames.length > 0 ? (
+              filteredGames.map(game => (
+                <GameCard key={game.id} game={game} />
+              ))
+            ) : (
+              <p style={{ textAlign: "center", marginTop: 20 }}>
+                🚧 नये गेम्स जल्द हि शुरू होंगे!
+              </p>
+            )}
+
+            {/* <BullockCartRacingGame /> */}
             <AdBanner />
           </div>
         ) : activeTab === 1 ? (
-              <BullockCartRacingGame />
-        
+          <BullockCartRacingGame />
+
         ) : activeTab === 2 ? (
-            <Lots />
-      
+          <Lots />
+
         ) : activeTab === 3 ? (
-              <Result />
+          <Result />
 
         ) : (
-                <VideoFeed />
+          <VideoFeed />
         )}
       </Box>
     </Box>
