@@ -260,7 +260,7 @@ https://www.patwin.online/
             height={28}
             alt="wa"
           />
-          WhatsApp पर शेयर करें और 3 कोईन्स जीतें
+          WhatsApp पर शेयर करें और 9 कोईन्स जीतें
         </button>
       )}
 
