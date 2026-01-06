@@ -1,72 +1,132 @@
 import React, { useState, useEffect } from "react";
-import { db } from "../../firebase";
-import { collection, addDoc, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { db, storage } from "../../firebase";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+  serverTimestamp,
+  query,
+  orderBy,
+} from "firebase/firestore";
+import {
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 
 const AdminImageUpload = () => {
-  const [imageUrl, setImageUrl] = useState("");
   const [title, setTitle] = useState("");
-  const [feed, setFeed] = useState([]); // State to store the list of images
-  const [loading, setLoading] = useState(true); // Loading state
+  const [imageFiles, setImageFiles] = useState([]);
+  const [previews, setPreviews] = useState([]);
+  const [progress, setProgress] = useState({});
+  const [feed, setFeed] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
 
-  // Fetch the list of images from Firestore
+  /* --------------------------------------------------
+     FETCH LOTS (ORDERED)
+  -------------------------------------------------- */
+  const fetchFeed = async () => {
+    const q = query(collection(db, "lots"), orderBy("createdAt", "asc"));
+    const snapshot = await getDocs(q);
+    setFeed(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+    setLoading(false);
+  };
+
   useEffect(() => {
-    const fetchFeed = async () => {
-      const feedCollection = collection(db, "lots");
-      const feedSnapshot = await getDocs(feedCollection);
-      const feedData = feedSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setFeed(feedData);
-      setLoading(false);
-    };
-
     fetchFeed();
   }, []);
 
-  // Handle form submission for uploading image URL
+  /* --------------------------------------------------
+     FILE SELECT + PREVIEW
+  -------------------------------------------------- */
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setImageFiles(files);
+    setPreviews(files.map(file => URL.createObjectURL(file)));
+    setProgress({});
+  };
+
+  /* --------------------------------------------------
+     MULTIPLE IMAGE UPLOAD WITH PROGRESS
+  -------------------------------------------------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (imageUrl && title) {
-      try {
-        // Save the image URL and title to Firestore
-        await addDoc(collection(db, "lots"), {
-          title: title,
-          imageUrl: imageUrl,
-          likes: 0,
-          dislikes: 0,
-        });
-        alert("Image URL uploaded successfully!");
-        setImageUrl(""); // Reset the input fields
-        setTitle("");
 
-        // Refresh the feed after uploading
-        const feedCollection = collection(db, "lots");
-        const feedSnapshot = await getDocs(feedCollection);
-        const feedData = feedSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        setFeed(feedData);
-      } catch (error) {
-        console.error("Error uploading image URL:", error);
-        alert("Failed to upload image URL.");
+    if (!title || imageFiles.length === 0) {
+      alert("Title आणि Images दोन्ही आवश्यक आहेत");
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      for (const file of imageFiles) {
+        const storageRef = ref(storage, `lots/${Date.now()}_${file.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+
+        await new Promise((resolve, reject) => {
+          uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+              const percent = Math.round(
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+              );
+              setProgress(prev => ({
+                ...prev,
+                [file.name]: percent,
+              }));
+            },
+            reject,
+            async () => {
+              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+
+              await addDoc(collection(db, "lots"), {
+                title,
+                imageUrl: downloadURL,
+                storagePath: storageRef.fullPath,
+                likes: 0,
+                dislikes: 0,
+                createdAt: serverTimestamp(),
+              });
+
+              resolve();
+            }
+          );
+        });
       }
-    } else {
-      alert("Please provide both title and image URL.");
+
+      alert("All images uploaded successfully");
+      setTitle("");
+      setImageFiles([]);
+      setPreviews([]);
+      setProgress({});
+      fetchFeed();
+    } catch (err) {
+      console.error(err);
+      alert("Upload failed");
+    } finally {
+      setUploading(false);
     }
   };
 
-  // Handle deleting an image
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this image?")) {
-      try {
-        await deleteDoc(doc(db, "lots", id)); // Delete the document from Firestore
-        alert("Image deleted successfully!");
+  /* --------------------------------------------------
+     DELETE IMAGE
+  -------------------------------------------------- */
+  const handleDelete = async (item) => {
+    if (!window.confirm("Delete this image?")) return;
 
-        // Refresh the feed after deletion
-        const feedCollection = collection(db, "lots");
-        const feedSnapshot = await getDocs(feedCollection);
-        const feedData = feedSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        setFeed(feedData);
-      } catch (error) {
-        console.error("Error deleting image:", error);
-        alert("Failed to delete image.");
+    try {
+      if (item.storagePath) {
+        await deleteObject(ref(storage, item.storagePath));
       }
+      await deleteDoc(doc(db, "lots", item.id));
+      fetchFeed();
+    } catch (err) {
+      alert("Delete failed");
     }
   };
 
@@ -79,104 +139,136 @@ const AdminImageUpload = () => {
     );
 
   return (
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "auto" }}>
-      <h2>Admin Image Upload</h2>
+    <div style={{ padding: "16px", maxWidth: "800px", margin: "auto" }}>
+      <h2>Admin Image Upload (Lots)</h2>
+
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "20px" }}>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="पटाचे नाव व ठिकाण"
-            style={{
-              padding: "10px",
-              width: "100%",
-              fontSize: "16px",
-              marginBottom: "10px",
-              borderRadius: "8px",
-              border: "1px solid #ccc",
-            }}
-          />
+        <input
+          type="text"
+          placeholder="पटाचे नाव व ठिकाण"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "10px",
+            marginBottom: "10px",
+            borderRadius: "8px",
+          }}
+        />
+
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={handleFileChange}
+          style={{ marginBottom: "10px" }}
+        />
+
+        {/* IMAGE PREVIEWS */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+          {previews.map((src, i) => (
+            <div key={i} style={{ width: "110px" }}>
+              <img
+                src={src}
+                alt="preview"
+                style={{
+                  width: "100%",
+                  height: "100px",
+                  objectFit: "cover",
+                  borderRadius: "8px",
+                }}
+              />
+
+              {progress[imageFiles[i]?.name] !== undefined && (
+                <div style={{ marginTop: "4px" }}>
+                  <div
+                    style={{
+                      height: "6px",
+                      width: "100%",
+                      background: "#ddd",
+                      borderRadius: "5px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        height: "100%",
+                        width: `${progress[imageFiles[i].name]}%`,
+                        background: "#4caf50",
+                        borderRadius: "5px",
+                      }}
+                    />
+                  </div>
+                  <small>{progress[imageFiles[i].name]}%</small>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
-        <div style={{ marginBottom: "20px" }}>
-          <input
-            type="text"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            placeholder="Image URL"
-            style={{
-              padding: "10px",
-              width: "100%",
-              fontSize: "16px",
-              marginBottom: "10px",
-              borderRadius: "8px",
-              border: "1px solid #ccc",
-            }}
-          />
-        </div>
+
         <button
           type="submit"
+          disabled={uploading}
           style={{
+            marginTop: "12px",
             padding: "10px 20px",
-            fontSize: "16px",
-            fontWeight: "bold",
+            background: uploading ? "#999" : "#E91E63",
+            color: "#fff",
             border: "none",
             borderRadius: "10px",
-            cursor: "pointer",
-            backgroundColor: "#E91E63",
-            color: "#fff",
+            fontWeight: "bold",
+            cursor: uploading ? "not-allowed" : "pointer",
           }}
         >
-          Upload Image URL
+          {uploading ? "Uploading..." : "Upload Images"}
         </button>
       </form>
 
-      {/* Display the list of images with delete buttons */}
+      {/* LIST */}
       <div style={{ marginTop: "40px" }}>
-        <h3>Uploaded Images</h3>
-        {feed.length > 0 ? (
-          feed.map((item) => (
-            <div
-              key={item.id}
+        <h3>Uploaded Lots</h3>
+
+        {feed.map((item, index) => (
+          <div
+            key={item.id}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              border: "1px solid #ccc",
+              borderRadius: "8px",
+              padding: "10px",
+              marginBottom: "10px",
+            }}
+          >
+            <div style={{ display: "flex", gap: "10px" }}>
+              <img
+                src={item.imageUrl}
+                alt="lot"
+                style={{
+                  width: "100px",
+                  height: "100px",
+                  objectFit: "cover",
+                  borderRadius: "8px",
+                }}
+              />
+              <h4>#{index + 1} {item.title}</h4>
+            </div>
+
+            <button
+              onClick={() => handleDelete(item)}
               style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: "20px",
-                padding: "10px",
-                border: "1px solid #ccc",
-                borderRadius: "8px",
+                background: "#f44336",
+                color: "#fff",
+                border: "none",
+                padding: "6px 12px",
+                borderRadius: "6px",
+                cursor: "pointer",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <img
-                  src={item.imageUrl}
-                  alt="Uploaded"
-                  style={{ width: "100px", height: "100px", borderRadius: "8px", objectFit: "cover" }}
-                />
-                <div>
-                  <h4>{item.title}</h4>
-                  <p style={{ margin: 0 }}>{item.imageUrl}</p>
-                </div>
-              </div>
-              <button
-                onClick={() => handleDelete(item.id)}
-                style={{
-                  padding: "5px 10px",
-                  backgroundColor: "#f44336",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
-              >
-                Delete
-              </button>
-            </div>
-          ))
-        ) : (
-          <p>No images uploaded yet.</p>
-        )}
+              Delete
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );
