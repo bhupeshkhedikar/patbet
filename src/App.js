@@ -53,6 +53,7 @@ import AdminPanell from "./components/Admin/gameadmin/AdminPanell";
 import Footer from "./components/Footer";
 import ReferralDashboard from "./components/ReferralDashboard";
 import ReferralAdmin from "./components/ReferralAdmin";
+import AdminWhatsAppRewardPanel from "./components/Admin/AdminWhatsAppRewardPanel";
 
 function App() {
   const [value, setValue] = useState(0);
@@ -244,6 +245,7 @@ const navItem = {
           <Route path="/termsandconditions" element={<ProtectedRoute user={user}><TermsAndConditions /></ProtectedRoute>} />
              <Route path="/radmin" element={<ProtectedRoute user={user}><AdminPanell /></ProtectedRoute>} />
           <Route path="/referral-admin" element={<ReferralAdmin />} />
+             <Route path="/reward" element={<AdminWhatsAppRewardPanel />} />
         </Routes>
       </main>
      <Footer />

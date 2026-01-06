@@ -55,6 +55,7 @@ const AdminNavbar = () => {
           <li className={activeTab === "/delete-video" ? "active" : ""} onClick={() => handleNavigation("/delete-video")}>Delete Video</li>
           <li className={activeTab === "/referral-admin" ? "active" : ""} onClick={() => handleNavigation("/referral-admin")}>referral-admin</li>
           <li className={activeTab === "/radmin" ? "active" : ""} onClick={() => handleNavigation("/radmin")}>game admin</li>
+          <li className={activeTab === "/reward" ? "active" : ""} onClick={() => handleNavigation("/reward")}>whatsapp admin</li>
         </ul>
       </nav>
 
@@ -75,6 +76,8 @@ const AdminNavbar = () => {
           <li className={activeTab === "/delete-video" ? "active" : ""} onClick={() => handleNavigation("/delete-video")}>Delete Video</li>
           <li className={activeTab === "/referral-admin" ? "active" : ""} onClick={() => handleNavigation("/referral-admin")}>referral-admin</li>
           <li className={activeTab === "/radmin" ? "active" : ""} onClick={() => handleNavigation("/radmin")}>game admin</li>
+<li className={activeTab === "/reward" ? "active" : ""} onClick={() => handleNavigation("/reward")}>whatsapp admin</li>
+            
         </ul>
       </div>
     </>

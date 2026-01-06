@@ -2,7 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BetNowModal from "./BetNowModal";
 import { db } from "../firebase";
-import { collection, onSnapshot, doc, getDoc } from "firebase/firestore";
+import {
+  runTransaction,
+  increment,
+  serverTimestamp,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
+import { toast } from "react-toastify";
+import { onSnapshot, doc, getDoc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const GameCard = ({ game, selectedVillage }) => {
@@ -17,6 +27,21 @@ const GameCard = ({ game, selectedVillage }) => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const auth = getAuth();
+
+  const getDeviceId = () => {
+    let id = localStorage.getItem("deviceId");
+    if (!id) {
+      id = "dev_" + Math.random().toString(36).substring(2, 15);
+      localStorage.setItem("deviceId", id);
+    }
+    return id;
+  };
+
+  const deviceId = getDeviceId();
+
+  const getRandomDelay = () =>
+    Math.floor(Math.random() * (10000 - 5000 + 1)) + 5000;
+
 
   const whatsappMessage = `
 🐂 शंकरपट ${selectedVillage} के टॉप 10 जोडीयो के लिये PatWin पर लाईव्ह गेम्स शुरू हो चुके हैं! 🐂
@@ -51,6 +76,58 @@ https://www.patwin.online/
 
     fetchReferral();
   }, [user]);
+
+  const handleWhatsappShare = async () => {
+    if (!user) return;
+
+    const today = new Date().toISOString().slice(0, 10);
+    const userRef = doc(db, "users", user.uid);
+
+    // 🔒 Daily limit (₹15 = 5 shares)
+    const q = query(
+      collection(db, "whatsappRewardLogs"),
+      where("userId", "==", user.uid),
+      where("date", "==", today)
+    );
+
+    const snap = await getDocs(q);
+    if (snap.size >= 3) {
+      alert("❌ आज की ₹9 लिमिट पूरी हो चुकी है");
+      return;
+    }
+
+    // 👉 WhatsApp OPEN IMMEDIATELY
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(whatsappMessage)}`,
+      "_blank"
+    );
+
+    const delay = getRandomDelay(); // 5–10 sec
+
+    setTimeout(async () => {
+      try {
+        await runTransaction(db, async (tx) => {
+          tx.update(userRef, { walletBalance: increment(3) });
+
+          tx.set(doc(collection(db, "whatsappRewardLogs")), {
+            userId: user.uid,
+            gameId: game.id,
+            amount: 3,
+            date: today,
+            deviceId,
+            createdAt: serverTimestamp(),
+            delayMs: delay,
+          });
+        });
+
+        alert("✅ ₹3 आपके वॉलेट में जुड़ गए");
+      } catch (e) {
+        console.error("Reward credit failed", e);
+      }
+    }, delay);
+  };
+
+
 
 
   useEffect(() => {
@@ -158,8 +235,9 @@ https://www.patwin.online/
       >
         {isBeforeStart ? "Prediction Not Started" : isAfterEnd || !betEnabled ? "Prediction Over" : "Play Now (राय लगाये)"}
       </button>
-      {betEnabled && (
+      {betEnabled && !isAfterEnd && (
         <button
+          onClick={handleWhatsappShare}
           style={{
             marginTop: 10,
             width: "100%",
@@ -168,24 +246,24 @@ https://www.patwin.online/
             border: "none",
             padding: "12px",
             borderRadius: 12,
+            fontSize: 12,
             fontWeight: "bold",
-            fontSize: 14,
-            cursor: "pointer",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             gap: 8,
           }}
-          onClick={() =>
-            window.open(
-              `https://wa.me/?text=${encodeURIComponent(whatsappMessage)}`,
-              "_blank"
-            )
-          }
         >
-         <img src="https://media1.giphy.com/media/v1.Y2lkPTZjMDliOTUycm53Njl6bmllaTFsZnQ2dGs5a2NrMmQ4Z2lhb3hhZHN4OXBrbzNncyZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/OrNkIcgmjBQeFM1vEs/giphy.gif" height={30} width={30}/> WhatsApp पर शेयर करें और जिते
+          <img
+            src="https://media.giphy.com/media/OrNkIcgmjBQeFM1vEs/giphy.gif"
+            width={28}
+            height={28}
+            alt="wa"
+          />
+          WhatsApp पर शेयर करें और 3 कोईन्स जीतें
         </button>
       )}
+
 
 
 
