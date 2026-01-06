@@ -295,7 +295,7 @@ const GameList = () => {
 
             {filteredGames.length > 0 ? (
               filteredGames.map(game => (
-                <GameCard key={game.id} game={game} />
+                <GameCard key={game.id} game={game} selectedVillage={selectedVillage} />
               ))
             ) : (
               <p style={{ textAlign: "center", marginTop: 20 }}>
