@@ -4,6 +4,8 @@ import { auth } from "../firebase";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { sendPasswordResetEmail } from "firebase/auth";
+
 
 import { getDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
@@ -14,6 +16,8 @@ const Login = () => {
   const [showPass, setShowPass] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [showForgotPopup, setShowForgotPopup] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -51,6 +55,25 @@ const Login = () => {
     }
   };
 
+
+  const handleResetPassword = async () => {
+    if (!resetEmail) {
+      toast.warn("कृपया ईमेल दर्ज करें");
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, resetEmail);
+      toast.success("रीसेट लिंक आपके ईमेल पर भेज दिया गया है");
+      setShowForgotPopup(false);
+      setResetEmail("");
+    } catch (error) {
+      toast.error("ईमेल नहीं मिला या कुछ गलत हुआ");
+    }
+  };
+
+
+
   return (
     <div className="auth-container" style={{ display: "flex", flexDirection: "column" }}>
       <ToastContainer />
@@ -78,23 +101,36 @@ const Login = () => {
           />
 
           {/* PASSWORD FIELD WITH SHOW/HIDE */}
-        <div style={{ position: "relative", width: "100%" }}>
-  <input
-    type={showPass ? "text" : "password"}
-    placeholder="पासवर्ड दर्ज करें"
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
-    required
-    className="password-input"
-  />
+          <div style={{ position: "relative", width: "100%" }}>
+            <input
+              type={showPass ? "text" : "password"}
+              placeholder="पासवर्ड दर्ज करें"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="password-input"
+            />
 
-  <span
-    onClick={() => setShowPass(!showPass)}
-    className="show-hide-btn"
-  >
-    {showPass ? "Hide" : "Show"}
-  </span>
-</div>
+            <span
+              onClick={() => setShowPass(!showPass)}
+              className="show-hide-btn"
+            >
+              {showPass ? "Hide" : "Show"}
+            </span>
+          </div>
+          <p
+            onClick={() => setShowForgotPopup(true)}
+            style={{
+              color: "#00e5ff",
+              cursor: "pointer",
+              fontSize: "13px",
+              textAlign: "right",
+              marginTop: "6px"
+            }}
+          >
+            पासवर्ड भूल गए?
+          </p>
+
 
 
           <button type="submit">लॉगिन</button>
@@ -107,7 +143,86 @@ const Login = () => {
           </Link>
         </p>
       </div>
+      {showForgotPopup && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "rgba(0,0,0,0.6)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              background: "#111",
+              padding: "20px",
+              borderRadius: "12px",
+              width: "90%",
+              maxWidth: "350px",
+              boxShadow: "0 0 20px rgba(0,255,255,0.3)",
+            }}
+          >
+            <h3 style={{ color: "#fff", marginBottom: "10px" }}>
+              पासवर्ड रीसेट करें
+            </h3>
+
+            <input
+              type="email"
+              placeholder="ईमेल दर्ज करें"
+              value={resetEmail}
+              onChange={(e) => setResetEmail(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                borderRadius: "8px",
+                border: "none",
+                marginBottom: "12px",
+              }}
+            />
+
+            <button
+              onClick={handleResetPassword}
+              style={{
+                width: "100%",
+                padding: "10px",
+                borderRadius: "8px",
+                background: "linear-gradient(90deg,#00e5ff,#00bcd4)",
+                border: "none",
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
+            >
+              रीसेट लिंक भेजें
+            </button>
+
+            <button
+              onClick={() => setShowForgotPopup(false)}
+              style={{
+                width: "100%",
+                padding: "8px",
+                marginTop: "8px",
+                borderRadius: "8px",
+                background: "transparent",
+                border: "1px solid #555",
+                color: "#ccc",
+                cursor: "pointer",
+              }}
+            >
+              रद्द करें
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
+
+
   );
 };
 
