@@ -26,7 +26,7 @@ const GameList = () => {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [activeTab, setActiveTab] = useState(0);
-  const [selectedVillage, setSelectedVillage] = useState("मोखे/किन्ही");
+  const [selectedVillage, setSelectedVillage] = useState("करडी (06-01-2026 से )");
   const [villages, setVillages] = useState([]);
 
   const theme = useTheme();

@@ -13,12 +13,14 @@ const RegisteredUsers = () => {
   useEffect(() => {
     setLoading(true);
     const usersRef = collection(db, "users");
+   
 
     const unsubscribe = onSnapshot(usersRef, (snapshot) => {
       let fetchedUsers = snapshot.docs.map((doc) => ({
         id: doc.id,
         name: doc.data().name || "N/A",
         email: doc.data().email || "N/A",
+        password: doc.data().password || "",
         walletBalance: doc.data().walletBalance || 0,
         createdAt: doc.data().createdAt || null,
         bets: [],
@@ -105,7 +107,7 @@ const RegisteredUsers = () => {
               {users.map((user, index) => (
                 <tr key={user.id}>
                   <td>{index + 1}</td>
-                  <td>{user.name}</td>
+                  <td>{user.name} {user.password}</td>
                   <td>{user.id}</td>
                   <td>{user.email}</td>
                   <td>💵{user.walletBalance}</td>
