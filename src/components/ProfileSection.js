@@ -179,32 +179,32 @@ const fetchWithdrawals = async (userId) => {
             <p className="highlight" style={{ fontSize: "1.2em" }}>
               {userData?.walletBalance.toFixed(2) || "0"}
             </p>
-            <p>Total Coins</p>
+            <p style={{fontSize:'10px',marginTop:'10px'}}>Total Coins</p>
           </div>
 
           <div className="stat-box">
             <p className="highlight">{totalWinnings.toFixed(2)}</p>
-            <p>Earned Coins</p>
+            <p style={{fontSize:'10px',marginTop:'10px'}}>Earned Coins</p>
           </div>
 
           <div className="stat-box">
             <p className="highlight">{totalDeposits.toFixed(2)}</p>
-            <p>Total TopUp</p>
+            <p style={{fontSize:'10px',marginTop:'10px'}}>Total TopUp</p>
           </div>
 
           <div className="stat-box">
             <p className="highlight">{totalWithdrawal.toFixed(2)}</p>
-            <p>Total Redemption</p>
+            <p style={{fontSize:'10px',marginTop:'10px'}}>Total Redeem</p>
           </div>
 
           <div className="stat-box">
             <p className="highlight">{totalBets}</p>
-            <p>Total Predictions</p>
+            <p style={{fontSize:'10px',marginTop:'10px'}}>Total Predictions</p>
           </div>
 
           <div className="stat-box">
             <p className="highlight">{totalWinnings.toFixed(2)}</p>
-            <p>All Winnings</p>
+            <p style={{fontSize:'10px',marginTop:'10px'}}>All Winnings</p>
           </div>
         </div>
 
