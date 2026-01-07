@@ -122,6 +122,7 @@ const BetStatusListener = () => {
                 style={{
                   position: "relative",
                   borderRadius: 22,
+                  marginBottom: 10,
                   overflow: "hidden",
                   background:
                     "linear-gradient(145deg,rgba(255,255,255,0.18),rgba(255,255,255,0.05))",
