@@ -164,7 +164,7 @@ const fetchWithdrawals = async (userId) => {
           <div className="user-info">
             <h2>{userData?.name || "Guest User"}</h2>
             <p>Email: {userData?.email || "No email available"}</p>
-          </div>
+          </div> <br/>
 
           {isLoggedIn && (
             <button className="action-btn" onClick={handleLogout}>
