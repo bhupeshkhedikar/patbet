@@ -49,29 +49,38 @@ const ProfileSection = () => {
       }
     };
 
-    const fetchWithdrawals = async (userId) => {
-      try {
-        const withdrawalsRef = collection(db, "withdrawalRequests");
-        const q = query(withdrawalsRef, where("userId", "==", userId));
-        const querySnapshot = await getDocs(q);
+const fetchWithdrawals = async (userId) => {
+  try {
+    const withdrawalsRef = collection(db, "withdrawalRequests");
 
-        const withdrawalData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+    // ✅ ONLY APPROVED WITHDRAWALS
+    const q = query(
+      withdrawalsRef,
+      where("userId", "==", userId),
+      where("status", "==", "approved")
+    );
 
-        setWithdrawals(withdrawalData);
+    const querySnapshot = await getDocs(q);
 
-        const totalWithdrawn = withdrawalData.reduce(
-          (total, w) => total + Number(w.amount || 0),
-          0
-        );
+    const withdrawalData = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
 
-        setTotalWithdrawal(totalWithdrawn);
-      } catch (error) {
-        console.error("Error fetching withdrawals:", error);
-      }
-    };
+    setWithdrawals(withdrawalData);
+
+    // ✅ SUM ONLY APPROVED AMOUNT
+    const totalWithdrawn = withdrawalData.reduce(
+      (total, w) => total + Number(w.amount || 0),
+      0
+    );
+
+    setTotalWithdrawal(totalWithdrawn);
+  } catch (error) {
+    console.error("Error fetching withdrawals:", error);
+  }
+};
+
 
     fetchUserData();
   }, []);
@@ -168,23 +177,23 @@ const ProfileSection = () => {
         <div className="stats-container">
           <div className="stat-box">
             <p className="highlight" style={{ fontSize: "1.2em" }}>
-              💵{userData?.walletBalance.toFixed(2) || "0"}
+              {userData?.walletBalance.toFixed(2) || "0"}
             </p>
             <p>Total Coins</p>
           </div>
 
           <div className="stat-box">
-            <p className="highlight">💵{totalWinnings.toFixed(2)}</p>
+            <p className="highlight">{totalWinnings.toFixed(2)}</p>
             <p>Earned Coins</p>
           </div>
 
           <div className="stat-box">
-            <p className="highlight">💵{totalDeposits.toFixed(2)}</p>
+            <p className="highlight">{totalDeposits.toFixed(2)}</p>
             <p>Total TopUp</p>
           </div>
 
           <div className="stat-box">
-            <p className="highlight">💵{totalWithdrawal.toFixed(2)}</p>
+            <p className="highlight">{totalWithdrawal.toFixed(2)}</p>
             <p>Total Redemption</p>
           </div>
 
@@ -194,7 +203,7 @@ const ProfileSection = () => {
           </div>
 
           <div className="stat-box">
-            <p className="highlight">💵{totalWinnings.toFixed(2)}</p>
+            <p className="highlight">{totalWinnings.toFixed(2)}</p>
             <p>All Winnings</p>
           </div>
         </div>
