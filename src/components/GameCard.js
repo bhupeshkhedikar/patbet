@@ -196,7 +196,7 @@ https://www.patwin.online/
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
       setTimeDifference(`⏱️ ${hours}h ${minutes}m ${seconds}s`);
     } else {
-      setTimeDifference(`Betting Closed`);
+      setTimeDifference(`Prediction Closed`);
     }
   };
 

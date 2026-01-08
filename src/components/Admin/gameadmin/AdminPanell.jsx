@@ -139,7 +139,7 @@ const AdminPanel = () => {
   const closeBetting = async () => {
     try {
       await updateDoc(doc(db, "game", "currentMatch"), { bettingOpen: false });
-      alert("Betting Closed!");
+      alert("Prediction Closed!");
     } catch (e) { }
   };
 

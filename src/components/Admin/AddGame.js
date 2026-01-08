@@ -10,6 +10,7 @@ import {
   query,
   where,
 } from "firebase/firestore";
+import AdminVillages from "./AdminVillages";
 
 const AddGame = () => {
   const [games, setGames] = useState([]);
@@ -162,7 +163,7 @@ const AddGame = () => {
   };
 
   return (
-    <div className="add-game">
+    <><div className="add-game">
       <h2>Add New Game</h2>
       {errorMessage && <p className="error-message">{errorMessage}</p>}
 
@@ -171,8 +172,7 @@ const AddGame = () => {
       <input
         placeholder="Village name"
         value={newVillage}
-        onChange={e => setNewVillage(e.target.value)}
-      />
+        onChange={e => setNewVillage(e.target.value)} />
       <button onClick={handleAddVillage}>Add Village</button>
 
       {/* -------- VILLAGE LIST WITH REMOVE -------- */}
@@ -219,24 +219,17 @@ const AddGame = () => {
       <input
         placeholder="League Name"
         value={newGame.league}
-        onChange={e => setNewGame({ ...newGame, league: e.target.value })}
-      />
+        onChange={e => setNewGame({ ...newGame, league: e.target.value })} />
 
       <input
         placeholder="Team 1 Name"
         value={newGame.team1.name}
-        onChange={e =>
-          setNewGame({ ...newGame, team1: { ...newGame.team1, name: e.target.value } })
-        }
-      />
+        onChange={e => setNewGame({ ...newGame, team1: { ...newGame.team1, name: e.target.value } })} />
 
       <input
         placeholder="Team 2 Name"
         value={newGame.team2.name}
-        onChange={e =>
-          setNewGame({ ...newGame, team2: { ...newGame.team2, name: e.target.value } })
-        }
-      />
+        onChange={e => setNewGame({ ...newGame, team2: { ...newGame.team2, name: e.target.value } })} />
 
       <select
         value={newGame.maxBetAmount}
@@ -262,11 +255,11 @@ const AddGame = () => {
         {games.map(g => (
           <li key={g.id}>
             {g.league} -— {g.team1.name} vs {g.team2.name} ({g.villageName})
-            <button className="delete-game-btn" onClick={() => handleDeleteGame(g.id)} >  Delete Game</button>
+            <button className="delete-game-btn" onClick={() => handleDeleteGame(g.id)}>  Delete Game</button>
           </li>
         ))}
       </ul>
-    </div>
+    </div><AdminVillages /></>
   );
 };
 

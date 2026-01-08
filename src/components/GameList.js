@@ -26,7 +26,7 @@ const GameList = () => {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [activeTab, setActiveTab] = useState(0);
-  const [selectedVillage, setSelectedVillage] = useState("करडी (06-01-2026 से )");
+  const [selectedVillage, setSelectedVillage] = useState();
   const [villages, setVillages] = useState([]);
 
   const theme = useTheme();
@@ -50,6 +50,17 @@ const GameList = () => {
 
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+  const unsub = onSnapshot(doc(db, "settings", "currentVillage"), (snap) => {
+    if (snap.exists()) {
+      setSelectedVillage(snap.data().selectedVillage);
+    }
+  });
+
+  return () => unsub();
+}, []);
+
 
   useEffect(() => {
   const fetchVillages = async () => {
