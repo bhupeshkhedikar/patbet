@@ -15,52 +15,52 @@ const ReferralAdmin = () => {
     fetchReferralData();
   }, []);
 
-  const fetchReferralData = async () => {
-    try {
-      // Fetch all users
-      const usersSnapshot = await getDocs(collection(db, "users"));
-      const allUsers = usersSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+const fetchReferralData = async () => {
+  try {
+    // ✅ SINGLE QUERY
+    const usersSnapshot = await getDocs(collection(db, "users"));
 
-      setUsers(allUsers);
+    const allUsers = usersSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
 
-      // Prepare referral reporting
-      let adminList = [];
-
-      for (let user of allUsers) {
-        if (!user.referralCode) continue;
-
-        // Find which users used this user's referral code
-        const q = query(
-          collection(db, "users"),
-          where("referredBy", "==", user.referralCode)
-        );
-
-        const referredSnapshot = await getDocs(q);
-        const referredUsers = referredSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        adminList.push({
+    // 🔹 Map referralCode → referrer user
+    const referralMap = {};
+    allUsers.forEach(user => {
+      if (user.referralCode) {
+        referralMap[user.referralCode] = {
           userId: user.id,
           name: user.name,
           email: user.email,
+          mobile: user.mobile,
           walletBalance: user.walletBalance || 0,
           referralCode: user.referralCode,
-          referredCount: referredUsers.length,
-          earningFromReferrals: referredUsers.length * 100,
-          referredUsersList: referredUsers,
-        });
+          referredUsersList: [],
+        };
       }
+    });
 
-      setReferralData(adminList);
-    } catch (error) {
-      console.error("Error loading referral data:", error);
-    }
-  };
+    // 🔹 Attach referred users
+    allUsers.forEach(user => {
+      if (user.referredBy && referralMap[user.referredBy]) {
+        referralMap[user.referredBy].referredUsersList.push(user);
+      }
+    });
+
+    // 🔹 Final admin list
+    const adminList = Object.values(referralMap).map(u => ({
+      ...u,
+      referredCount: u.referredUsersList.length,
+      earningFromReferrals: u.referredUsersList.length * 100,
+    }));
+
+    setReferralData(adminList);
+  } catch (error) {
+    console.error("Error loading referral data:", error);
+  }
+};
+
 
   return (
     <div
@@ -124,7 +124,7 @@ const ReferralAdmin = () => {
                             borderRadius: 6,
                           }}
                         >
-                          <b>{rUser.name}</b> – {rUser.email}
+                          <b>{rUser.name}</b> – {rUser.email}- {rUser.mobile}
                           <br />
                           <small>
                             Joined:{" "}
