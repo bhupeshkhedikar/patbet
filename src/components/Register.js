@@ -21,25 +21,35 @@ const Register = () => {
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
   const [referCode, setReferCode] = useState("");
-
   const [error, setError] = useState("");
+  const [isRegistering, setIsRegistering] = useState(false); // 🔥 loader state
 
   const navigate = useNavigate();
   const location = useLocation();
+
   const newUserWallet = referCode ? 100 : 60;
-  // Auto-fill referral code from URL (?ref=XXXX)
+
+  /* ---------------------------------------------
+     🔗 AUTO-FILL REFER CODE FROM URL
+  --------------------------------------------- */
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const code = params.get("ref");
     if (code) setReferCode(code);
   }, [location]);
 
+  /* ---------------------------------------------
+     🔥 REGISTER HANDLER (WITH LOADER)
+  --------------------------------------------- */
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    if (isRegistering) return; // 🛑 prevent double click
+    setIsRegistering(true);
     setError("");
 
     try {
-      // ⭐ Step 1: Check UNIQUE EMAIL
+      /* -------- UNIQUE EMAIL CHECK -------- */
       const emailQuery = query(
         collection(db, "users"),
         where("email", "==", email)
@@ -48,10 +58,11 @@ const Register = () => {
 
       if (!emailSnap.empty) {
         toast.error("यह Email पहले से मौजूद है!");
+        setIsRegistering(false);
         return;
       }
 
-      // ⭐ Step 2: Check UNIQUE MOBILE NUMBER
+      /* -------- UNIQUE MOBILE CHECK -------- */
       const mobileQuery = query(
         collection(db, "users"),
         where("mobile", "==", mobile)
@@ -60,10 +71,11 @@ const Register = () => {
 
       if (!mobileSnap.empty) {
         toast.error("यह मोबाइल नंबर पहले से रजिस्टर है!");
+        setIsRegistering(false);
         return;
       }
 
-      // ⭐ Firebase Auth Create User
+      /* -------- FIREBASE AUTH -------- */
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -71,13 +83,12 @@ const Register = () => {
       );
 
       const userId = userCredential.user.uid;
-
       localStorage.setItem("userUID", userId);
 
-      // ⭐ Unique Referral Code for User
+      /* -------- GENERATE REFERRAL CODE -------- */
       const myReferralCode = userId.slice(0, 6).toUpperCase();
 
-      // ⭐ Save User in Firestore
+      /* -------- SAVE USER -------- */
       await setDoc(doc(db, "users", userId), {
         email,
         name,
@@ -91,7 +102,7 @@ const Register = () => {
         createdAt: serverTimestamp(),
       });
 
-      // ⭐ Referral Bonus System
+      /* -------- REFERRAL BONUS -------- */
       if (referCode) {
         const q = query(
           collection(db, "users"),
@@ -109,45 +120,45 @@ const Register = () => {
             walletBalance: oldBalance + 100,
           });
 
-          toast.success("🎉 Refer सफल! आपको ₹100 बोनस मिला");
+          toast.success("🎉 Refer सफल! ₹100 बोनस जोड़ा गया");
         } else {
           toast.error("❌ गलत Refer Code!");
         }
       }
 
-
-      toast.success("रजिस्ट्रेशन सफल हुआ!");
+      toast.success("✅ रजिस्ट्रेशन सफल हुआ!");
 
       setTimeout(() => navigate("/"), 1500);
     } catch (err) {
+      console.error(err);
       setError(err.message);
       toast.error("रजिस्ट्रेशन असफल: " + err.message);
+    } finally {
+      setIsRegistering(false);
     }
   };
 
   return (
     <>
-      <div className="auth-container" style={{ display: "flex", flexDirection: "column" }}>
-        <ToastContainer /> <br />
-        {/* <div className="bonus-container">
-        <img
-          src="/bonus.jpeg"
-          className="bonus-image"
-        />
-      </div> */}
+      <div
+        className="auth-container"
+        style={{ display: "flex", flexDirection: "column" }}
+      >
+        <ToastContainer />
+
         <div className="auth-box">
           <h2>पंजीकरण करें</h2>
 
           {error && <p className="error">{error}</p>}
 
           <form onSubmit={handleRegister}>
-
             <input
               type="text"
               placeholder="नाम दर्ज करें"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              disabled={isRegistering}
             />
 
             <input
@@ -156,6 +167,7 @@ const Register = () => {
               value={mobile}
               onChange={(e) => setMobile(e.target.value)}
               required
+              disabled={isRegistering}
             />
 
             <input
@@ -164,6 +176,7 @@ const Register = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={isRegistering}
             />
 
             <input
@@ -172,6 +185,7 @@ const Register = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={isRegistering}
             />
 
             <input
@@ -179,15 +193,25 @@ const Register = () => {
               placeholder="Refer Code (यदि हो तो)"
               value={referCode}
               onChange={(e) => setReferCode(e.target.value)}
+              disabled={isRegistering}
             />
 
-            <button type="submit">रजिस्टर करें</button>
+            <button
+              type="submit"
+              disabled={isRegistering}
+              style={{
+                opacity: isRegistering ? 0.7 : 1,
+                cursor: isRegistering ? "not-allowed" : "pointer",
+              }}
+            >
+              {isRegistering ? "रजिस्टर हो रहा है..." : "रजिस्टर करें"}
+            </button>
           </form>
 
           <p style={{ marginTop: "10px" }}>
             पहले से अकाउंट है?{" "}
             <Link to="/login">
-              <p style={{ color: "yellow" }}>लॉगिन करें</p>
+              <span style={{ color: "yellow" }}>लॉगिन करें</span>
             </Link>
           </p>
         </div>
