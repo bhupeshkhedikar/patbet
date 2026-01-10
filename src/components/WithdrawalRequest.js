@@ -12,6 +12,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import AdBanner from "./AdBanner";
 
+const REQUIRED_WINNING = 300;
+
 const WithdrawalRequest = () => {
   const [amount, setAmount] = useState();
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -26,6 +28,10 @@ const WithdrawalRequest = () => {
   const [walletBalance, setWalletBalance] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // 🔥 NEW
+  const [actualWinning, setActualWinning] = useState(0);
+  const [loadingWinning, setLoadingWinning] = useState(true);
+
   const user = auth.currentUser;
   const navigate = useNavigate();
 
@@ -33,49 +39,57 @@ const WithdrawalRequest = () => {
      🔥 LIVE WALLET LISTENER
   -------------------------------------------------- */
   useEffect(() => {
-    if (user) {
-      setUserId(user.uid);
+    if (!user) return;
 
-      const userRef = doc(db, "users", user.uid);
-      const unsubscribe = onSnapshot(userRef, snap => {
-        if (snap.exists()) {
-          setWalletBalance(snap.data().walletBalance || 0);
-        }
-      });
+    setUserId(user.uid);
 
-      return () => unsubscribe();
-    }
+    const userRef = doc(db, "users", user.uid);
+    const unsubscribe = onSnapshot(userRef, snap => {
+      if (snap.exists()) {
+        setWalletBalance(snap.data().walletBalance || 0);
+      }
+    });
+
+    return () => unsubscribe();
   }, [user]);
 
   /* --------------------------------------------------
-     🔥 ACTUAL WINNING CALCULATION (IMPORTANT)
-     Example:
-     Bet = 300, Winnings = 600
-     Actual Profit = 600 - 300 = 300
+     🔥 ACTUAL WINNING CALCULATION
   -------------------------------------------------- */
   const getActualWinning = async uid => {
     const betsRef = collection(db, "users", uid, "bets");
     const snapshot = await getDocs(betsRef);
 
-    let actualWinning = 0;
+    let total = 0;
 
     snapshot.forEach(docSnap => {
       const bet = docSnap.data();
-
       if (bet.status === "won") {
         const betAmount = Number(bet.betAmount || 0);
         const winnings = Number(bet.winnings || 0);
-
         const profit = winnings - betAmount;
-
-        if (profit > 0) {
-          actualWinning += profit;
-        }
+        if (profit > 0) total += profit;
       }
     });
 
-    return actualWinning;
+    return total;
   };
+
+  /* --------------------------------------------------
+     🔥 LOAD WINNING FOR PROGRESS
+  -------------------------------------------------- */
+  useEffect(() => {
+    if (!userId) return;
+
+    const loadWinning = async () => {
+      setLoadingWinning(true);
+      const win = await getActualWinning(userId);
+      setActualWinning(win);
+      setLoadingWinning(false);
+    };
+
+    loadWinning();
+  }, [userId]);
 
   /* --------------------------------------------------
      🔥 WITHDRAW REQUEST HANDLER
@@ -88,17 +102,12 @@ const WithdrawalRequest = () => {
       setErrorMessage("");
       setSuccessMessage("");
 
-      /* ---------------- ALERT ---------------- */
       alert(
         "⚠️ Withdrawal नियम:\n\n" +
-          "Withdrawal तभी संभव है जब आपने Live Games / My Predictions में\n" +
-          "कम से कम ₹300 की जीत हासिल की हो।\n\n" 
+        "Live Games / My Predictions में\n" +
+        "कम से कम ₹300 की ACTUAL जीत अनिवार्य है।"
       );
-// "❌ 2x दिखाई गई जीत actual नहीं मानी जाती।\n" +
-//           "उदाहरण:\n" +
-//           "₹300 Bet → ₹600 दिखे\n" +
-//           "Actual जीत = ₹300\n"
-      /* ---------------- BASIC VALIDATION ---------------- */
+
       if (!amount || amount < 600) {
         setErrorMessage("न्यूनतम रिडीम राशि ₹600 है।");
         setIsSubmitting(false);
@@ -123,14 +132,11 @@ const WithdrawalRequest = () => {
         return;
       }
 
-      /* ---------------- ACTUAL WINNING CHECK ---------------- */
-      const actualWinning = await getActualWinning(userId);
-
-      if (actualWinning < 300) {
+      if (actualWinning < REQUIRED_WINNING) {
         setErrorMessage(
-          `Withdrawal अस्वीकृत ❌\n\n` +
-            `आपकी ACTUAL जीत: ₹${actualWinning}\n` +
-            `न्यूनतम आवश्यक जीत: ₹300`
+          `Withdrawal संभव नहीं ❌\n` +
+          `आपने ₹${actualWinning} जीते हैं\n` +
+          `₹${REQUIRED_WINNING - actualWinning} और जीतना बाकी है`
         );
         setIsSubmitting(false);
         return;
@@ -144,18 +150,13 @@ const WithdrawalRequest = () => {
         return;
       }
 
-      /* ---------------- DEDUCTION ---------------- */
       const deduction = amount * 0.05;
       const finalAmount = amount - deduction;
 
-      /* ---------------- WALLET UPDATE ---------------- */
-      const userRef = doc(db, "users", userId);
-
-      await updateDoc(userRef, {
+      await updateDoc(doc(db, "users", userId), {
         walletBalance: walletBalance - Number(amount),
       });
 
-      /* ---------------- WITHDRAW REQUEST STORE ---------------- */
       await addDoc(collection(db, "withdrawalRequests"), {
         userId,
         requestedAmount: amount,
@@ -182,6 +183,10 @@ const WithdrawalRequest = () => {
   };
 
   const finalAmount = amount ? amount - amount * 0.05 : 0;
+  const progressPercent = Math.min(
+    (actualWinning / REQUIRED_WINNING) * 100,
+    100
+  );
 
   return (
     <>
@@ -192,10 +197,52 @@ const WithdrawalRequest = () => {
           <p style={{ fontSize: "13px", color: "yellow" }}>
             24–48 घंटे में रिडीम प्रोसेस किया जाएगा
           </p>
+          {/* 🔥 ELIGIBILITY PROGRESS */}
+          {!loadingWinning && (
+            <div style={{ marginTop: 14 }}>
+              <p style={{ fontSize: 10, marginBottom: '5px' }}>
+                ⏳ रिडीम अनुरोध के लिए अभी {Math.max(0, REQUIRED_WINNING - actualWinning)} और जीतना बाकी है
+              </p>
+              <div
+                style={{
+                  height: 8,
+                  width: "100%",
+                  background: "#333",
+                  borderRadius: 10,
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    height: "100%",
+                    width: `${progressPercent}%`,
+                    background:
+                      progressPercent >= 100
+                        ? "#00e676"
+                        : "#ff9800",
+                    transition: "0.4s",
+                  }}
+                />
+              </div>
 
+              <p style={{ fontSize: 12, marginTop: 6, fontWeight: 600 }}>
+                💰 जीती हुई कोईन्स: ₹{actualWinning} / ₹{REQUIRED_WINNING}
+
+                {actualWinning >= REQUIRED_WINNING && (
+                  <span style={{ color: "#00e676", marginLeft: 6 }}>
+                    ✅ Eligible
+                  </span>
+
+                )}
+
+              </p>
+
+            </div>
+          )}
           <p className="wallet-text" style={{ marginTop: "10px" }}>
             वॉलेट बैलेंस: 💵{walletBalance.toFixed(2)}
           </p>
+
 
           {errorMessage && <p className="error">{errorMessage}</p>}
           {successMessage && <p className="success">{successMessage}</p>}
@@ -226,23 +273,18 @@ const WithdrawalRequest = () => {
           {paymentMethod === "Bank" && (
             <>
               <input
-                type="text"
                 value={bankAccount}
                 onChange={e => setBankAccount(e.target.value)}
                 placeholder="बैंक खाता संख्या"
               />
-
               <input
-                type="text"
                 value={confirmBankAccount}
                 onChange={e =>
                   setConfirmBankAccount(e.target.value)
                 }
                 placeholder="खाता संख्या की पुष्टि करें"
               />
-
               <input
-                type="text"
                 value={ifscCode}
                 onChange={e => setIfscCode(e.target.value)}
                 placeholder="IFSC कोड"
@@ -252,7 +294,7 @@ const WithdrawalRequest = () => {
 
           {amount > 0 && (
             <p style={{ color: "lightgreen", marginTop: 10 }}>
-              अंतिम रिडीम राशि (5% शुल्क के बाद):{" "}
+              अंतिम रिडीम राशि:{" "}
               <b>💵{finalAmount.toFixed(2)}</b>
             </p>
           )}
@@ -262,7 +304,7 @@ const WithdrawalRequest = () => {
             disabled={isSubmitting}
             style={{
               width: "100%",
-              padding: "14px",
+              padding: 14,
               background: isSubmitting ? "#999" : "#08e676",
               borderRadius: 12,
               fontWeight: 700,
@@ -278,7 +320,7 @@ const WithdrawalRequest = () => {
 
           <p style={{ fontSize: 10, color: "grey", marginTop: 20 }}>
             • 5% रिडीम शुल्क लागू होगा <br />
-            • लाइव गेम्स मे न्यूनतम जीत ₹300 अनिवार्य <br />
+            • लाइव गेम्स में न्यूनतम जीत ₹300 अनिवार्य <br />
             • बोनस राशि निकाली नहीं जा सकती
           </p>
         </div>
