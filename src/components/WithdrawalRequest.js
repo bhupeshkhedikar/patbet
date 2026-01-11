@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import AdBanner from "./AdBanner";
 
 const REQUIRED_WINNING = 300;
+const DAILY_WITHDRAW_LIMIT = 600; // 🔥 DAILY LIMIT
 
 const WithdrawalRequest = () => {
   const [amount, setAmount] = useState();
@@ -28,7 +29,6 @@ const WithdrawalRequest = () => {
   const [walletBalance, setWalletBalance] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 🔥 NEW
   const [actualWinning, setActualWinning] = useState(0);
   const [loadingWinning, setLoadingWinning] = useState(true);
 
@@ -43,12 +43,14 @@ const WithdrawalRequest = () => {
 
     setUserId(user.uid);
 
-    const userRef = doc(db, "users", user.uid);
-    const unsubscribe = onSnapshot(userRef, snap => {
-      if (snap.exists()) {
-        setWalletBalance(snap.data().walletBalance || 0);
+    const unsubscribe = onSnapshot(
+      doc(db, "users", user.uid),
+      snap => {
+        if (snap.exists()) {
+          setWalletBalance(snap.data().walletBalance || 0);
+        }
       }
-    });
+    );
 
     return () => unsubscribe();
   }, [user]);
@@ -76,7 +78,7 @@ const WithdrawalRequest = () => {
   };
 
   /* --------------------------------------------------
-     🔥 LOAD WINNING FOR PROGRESS
+     🔥 LOAD WINNING
   -------------------------------------------------- */
   useEffect(() => {
     if (!userId) return;
@@ -90,6 +92,31 @@ const WithdrawalRequest = () => {
 
     loadWinning();
   }, [userId]);
+
+  /* --------------------------------------------------
+     🔥 TODAY TOTAL WITHDRAW
+  -------------------------------------------------- */
+  const getTodayWithdrawTotal = async uid => {
+    const snap = await getDocs(collection(db, "withdrawalRequests"));
+    let total = 0;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    snap.forEach(docSnap => {
+      const data = docSnap.data();
+      if (data.userId === uid && data.requestDate?.toDate) {
+        const reqDate = data.requestDate.toDate();
+        reqDate.setHours(0, 0, 0, 0);
+
+        if (reqDate.getTime() === today.getTime()) {
+          total += Number(data.requestedAmount || 0);
+        }
+      }
+    });
+
+    return total;
+  };
 
   /* --------------------------------------------------
      🔥 WITHDRAW REQUEST HANDLER
@@ -110,6 +137,25 @@ const WithdrawalRequest = () => {
 
       if (!amount || amount < 600) {
         setErrorMessage("न्यूनतम रिडीम राशि ₹600 है।");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // 🔥 DAILY LIMIT CHECK
+      const todayWithdrawn = await getTodayWithdrawTotal(userId);
+
+      if (todayWithdrawn >= DAILY_WITHDRAW_LIMIT) {
+        setErrorMessage(
+          "❌ आज का रिडीम लिमिट पूरा हो चुका है।\nआप एक दिन में केवल ₹600 ही निकाल सकते हैं।"
+        );
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (todayWithdrawn + amount > DAILY_WITHDRAW_LIMIT) {
+        setErrorMessage(
+          `❌ दैनिक रिडीम सीमा ₹600 है।\nआज आपने ₹${todayWithdrawn} पहले ही निकाल लिए हैं।`
+        );
         setIsSubmitting(false);
         return;
       }
@@ -239,10 +285,10 @@ const WithdrawalRequest = () => {
 
             </div>
           )}
-          <p className="wallet-text" style={{ marginTop: "10px" }}>
+<br/>
+          <p className="wallet-text">
             वॉलेट बैलेंस: 💵{walletBalance.toFixed(2)}
           </p>
-
 
           {errorMessage && <p className="error">{errorMessage}</p>}
           {successMessage && <p className="success">{successMessage}</p>}
@@ -256,7 +302,6 @@ const WithdrawalRequest = () => {
           />
 
           <input
-            type="text"
             value={name}
             onChange={e => setName(e.target.value)}
             placeholder="अपना नाम दर्ज करें"
@@ -270,35 +315,6 @@ const WithdrawalRequest = () => {
             <option value="Bank">बैंक ट्रांसफर</option>
           </select>
 
-          {paymentMethod === "Bank" && (
-            <>
-              <input
-                value={bankAccount}
-                onChange={e => setBankAccount(e.target.value)}
-                placeholder="बैंक खाता संख्या"
-              />
-              <input
-                value={confirmBankAccount}
-                onChange={e =>
-                  setConfirmBankAccount(e.target.value)
-                }
-                placeholder="खाता संख्या की पुष्टि करें"
-              />
-              <input
-                value={ifscCode}
-                onChange={e => setIfscCode(e.target.value)}
-                placeholder="IFSC कोड"
-              />
-            </>
-          )}
-
-          {amount > 0 && (
-            <p style={{ color: "lightgreen", marginTop: 10 }}>
-              अंतिम रिडीम राशि:{" "}
-              <b>💵{finalAmount.toFixed(2)}</b>
-            </p>
-          )}
-
           <button
             onClick={handleRequestWithdrawal}
             disabled={isSubmitting}
@@ -310,7 +326,6 @@ const WithdrawalRequest = () => {
               fontWeight: 700,
               fontSize: 18,
               marginTop: 20,
-              cursor: isSubmitting ? "not-allowed" : "pointer",
             }}
           >
             {isSubmitting
@@ -321,6 +336,7 @@ const WithdrawalRequest = () => {
           <p style={{ fontSize: 10, color: "grey", marginTop: 20 }}>
             • 5% रिडीम शुल्क लागू होगा <br />
             • लाइव गेम्स में न्यूनतम जीत ₹300 अनिवार्य <br />
+            {/* • एक दिन में अधिकतम ₹600 ही निकाला जा सकता है <br /> */}
             • बोनस राशि निकाली नहीं जा सकती
           </p>
         </div>
