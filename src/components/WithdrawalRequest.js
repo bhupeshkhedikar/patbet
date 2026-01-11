@@ -285,7 +285,7 @@ const WithdrawalRequest = () => {
 
             </div>
           )}
-<br/>
+          <br />
           <p className="wallet-text">
             वॉलेट बैलेंस: 💵{walletBalance.toFixed(2)}
           </p>
@@ -314,7 +314,7 @@ const WithdrawalRequest = () => {
             <option value="">भुगतान विधि चुनें</option>
             <option value="Bank">बैंक ट्रांसफर</option>
           </select>
-
+          {paymentMethod === "Bank" && (<> <input value={bankAccount} onChange={e => setBankAccount(e.target.value)} placeholder="बैंक खाता संख्या" /> <input value={confirmBankAccount} onChange={e => setConfirmBankAccount(e.target.value)} placeholder="खाता संख्या की पुष्टि करें" /> <input value={ifscCode} onChange={e => setIfscCode(e.target.value)} placeholder="IFSC कोड" /> </>)}
           <button
             onClick={handleRequestWithdrawal}
             disabled={isSubmitting}
