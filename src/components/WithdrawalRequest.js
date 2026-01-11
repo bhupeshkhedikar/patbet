@@ -136,7 +136,7 @@ const WithdrawalRequest = () => {
         setErrorMessage(
           `Withdrawal संभव नहीं ❌\n` +
           `आपने ₹${actualWinning} जीते हैं\n` +
-          `₹${REQUIRED_WINNING - actualWinning} और जीतना बाकी है`
+          `₹${REQUIRED_WINNING - actualWinning.toFixed(2)} और जीतना बाकी है`
         );
         setIsSubmitting(false);
         return;
