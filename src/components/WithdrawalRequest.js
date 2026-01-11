@@ -201,7 +201,7 @@ const WithdrawalRequest = () => {
           {!loadingWinning && (
             <div style={{ marginTop: 14 }}>
               <p style={{ fontSize: 10, marginBottom: '5px' }}>
-                ⏳ रिडीम अनुरोध के लिए अभी {Math.max(0, REQUIRED_WINNING - actualWinning)} और जीतना बाकी है
+                ⏳ रिडीम अनुरोध के लिए अभी {Math.max(0, REQUIRED_WINNING - actualWinning).toFixed(2)} और जीतना बाकी है
               </p>
               <div
                 style={{
