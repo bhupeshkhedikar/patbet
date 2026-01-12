@@ -566,13 +566,13 @@ if (mode === "walletControl") {
   const myCart = myEntries[0].cartId;
 
   // 🎯 SOFT CAP ZONE
-  if (myBal >= 500 && myBal < 600) {
+  if (myBal >= 200 && myBal < 200) {
     // सिर्फ 1/10 chance win
     return seed % 10 === 0 ? myCart : (myCart === 1 ? 2 : 1);
   }
 
   // 🚫 HARD BLOCK ZONE
-  if (myBal >= 600) {
+  if (myBal >= 200) {
     // सिर्फ 1/50 chance win
     return seed % 50 === 0 ? myCart : (myCart === 1 ? 2 : 1);
   }
