@@ -198,6 +198,7 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId, maxBetAmount }) =>
             <div className="bet-section">
               <label className="bet-label">Choice Coins (💵)</label>
               <input
+               id="betAmountInput"
                 type="number"
                 value={betAmount}
                 min="60"
@@ -210,6 +211,72 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId, maxBetAmount }) =>
                   {betWarning}
                 </p>
               )}
+<div
+  style={{
+    display: "flex",
+    gap: "6px",
+    marginTop: "8px",
+    flexWrap: "wrap",
+    color: "white",
+    marginBottom: "14px",
+  }}
+>
+  {[100, 200, 300, 500, 1000].map((amount) => {
+    const active = betAmount == amount;
+
+    return (
+      <div
+        key={amount}
+        onClick={() => setBetAmount(amount)}
+        style={{
+          padding: "4px 10px",
+          borderRadius: "10px",
+          fontSize: "12px",
+          fontWeight: 600,
+          cursor: "pointer",
+          userSelect: "none",
+          background: active
+            ? "rgba(238, 42, 12, 0.18)"
+            : "rgba(0,0,0,0.06)",
+          color: active ? "#ebf1f1" : "#ec920a",
+          border: active
+            ? "1px solid #25D366"
+            : "1px solid yellow",
+          transition: "all 0.15s ease",
+        }}
+      >
+        ₹{amount}
+      </div>
+    );
+  })}
+
+  {/* Custom Amount Chip */}
+  <div
+    onClick={() => {
+      setBetAmount("");
+      document.getElementById("betAmountInput")?.focus();
+    }}
+    style={{
+      padding: "4px 10px",
+      borderRadius: "10px",
+      fontSize: "12px",
+      fontWeight: 600,
+      cursor: "pointer",
+      background: "rgba(0,0,0,0.05)",
+      border: "1px dashed #f0cd05",
+      color: "#f4f8f7",
+      display: "flex",
+      alignItems: "center",
+      gap: "4px",
+    }}
+  >
+    ✏️ Custom
+  </div>
+</div>
+
+
+
+
             </div>
             <div
               style={{
