@@ -31,6 +31,8 @@ const WithdrawalRequest = () => {
 
   const [actualWinning, setActualWinning] = useState(0);
   const [loadingWinning, setLoadingWinning] = useState(true);
+  const [limitWarning, setLimitWarning] = useState("");
+
 
   const user = auth.currentUser;
   const navigate = useNavigate();
@@ -297,9 +299,24 @@ const WithdrawalRequest = () => {
             type="number"
             min="600"
             value={amount}
-            onChange={e => setAmount(Number(e.target.value))}
+            onChange={e => {
+              const val = Number(e.target.value);
+              setAmount(val);
+
+              if (val > DAILY_WITHDRAW_LIMIT) {
+                setLimitWarning("⚠️ Daily withdrawal limit केवल 600 कॉइन्स है। आप इससे ज्यादा नहीं निकाल सकते।");
+              } else {
+                setLimitWarning("");
+              }
+            }}
             placeholder="न्यूनतम रिडीम कॉइन्स 600"
           />
+          {limitWarning && (
+            <p style={{ color: "orange", fontSize: 12, marginTop: 5 }}>
+              {limitWarning}
+            </p>
+          )}
+
 
           <input
             value={name}
