@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { db, auth } from "../firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
-import '../../src/AddMoney.css';
+import "./MoneyRequestsList.css";
+
 const MoneyRequestsList = () => {
   const [moneyRequests, setMoneyRequests] = useState([]);
+  const [activeTab, setActiveTab] = useState("pending");
 
   useEffect(() => {
     const user = auth.currentUser;
@@ -17,8 +19,8 @@ const MoneyRequestsList = () => {
           id: doc.id,
           ...doc.data(),
         }));
-        
-        // 🔹 सबसे नया request ऊपर दिखाने के लिए sort करें
+
+        // newest first
         requests.sort((a, b) => b.createdAt?.seconds - a.createdAt?.seconds);
 
         setMoneyRequests(requests);
@@ -28,30 +30,65 @@ const MoneyRequestsList = () => {
     }
   }, []);
 
+  const filteredRequests = moneyRequests.filter(
+    (item) => item.status === activeTab
+  );
+
   return (
-    <div  className="withdrawals-section">
-      <h3 style={{textAlign:'cente'}}>Top-up History</h3>
-      {moneyRequests.length === 0 ? (
-        <p>No requests found.</p>
+    <div className="money-section">
+      <h2 className="title">💰 Top-up History</h2>
+
+      {/* TABS */}
+      <div className="tabs">
+        <button
+          className={activeTab === "pending" ? "active" : ""}
+          onClick={() => setActiveTab("pending")}
+        >
+          ⏳ Pending
+        </button>
+        <button
+          className={activeTab === "approved" ? "active" : ""}
+          onClick={() => setActiveTab("approved")}
+        >
+          ✅ Approved
+        </button>
+        <button
+          className={activeTab === "rejected" ? "active" : ""}
+          onClick={() => setActiveTab("rejected")}
+        >
+          ❌ Rejected
+        </button>
+      </div>
+
+      {/* LIST */}
+      {filteredRequests.length === 0 ? (
+        <p className="empty-text">No {activeTab} top-up found.</p>
       ) : (
-        <table className="requests-table">
-          <thead>
-            <tr>
-              <th>Amount</th>
-              <th>Status</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {moneyRequests.map((request) => (
-              <tr key={request.id}>
-                <td>💵{request.amount}</td>
-                <td className={request.status.toLowerCase()}>{request.status}</td>
-                <td>{new Date(request.createdAt?.toDate()).toLocaleString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        filteredRequests.map((request) => (
+          <div key={request.id} className={`money-card ${request.status}`}>
+            <div className="card-top">
+              <span className="amount">💵 {request.amount}</span>
+              <span className={`badge ${request.status}`}>
+                {request.status.toUpperCase()}
+              </span>
+            </div>
+
+            <div className="card-body">
+              <p>
+                Date:{" "}
+                {request.createdAt
+                  ? new Date(request.createdAt.seconds * 1000).toLocaleString()
+                  : "N/A"}
+              </p>
+
+              {request.status === "rejected" && (
+                <p className="reason">
+                  Reason: {request.reason || "No reason provided"}
+                </p>
+              )}
+            </div>
+          </div>
+        ))
       )}
     </div>
   );

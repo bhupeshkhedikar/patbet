@@ -1,0 +1,109 @@
+.money-section {
+  padding: 20px;
+  color: #fff;
+  max-width: 500px;
+  margin: auto;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.tabs {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  background: #111;
+  border-radius: 12px;
+  padding: 6px;
+}
+
+.tabs button {
+  flex: 1;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  color: #aaa;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+.tabs button.active {
+  background: linear-gradient(135deg, #00e676, #00c853);
+  color: #000;
+  box-shadow: 0 0 10px #00e676;
+}
+
+.empty-text {
+  text-align: center;
+  color: #777;
+  margin-top: 30px;
+}
+
+.money-card {
+  background: linear-gradient(135deg, #1c1c1c, #111);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+  border: 1px solid #222;
+  transition: 0.3s;
+}
+
+.money-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 20px rgba(0, 230, 118, 0.3);
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.amount {
+  font-size: 20px;
+  font-weight: 700;
+  color: #00e676;
+}
+
+.badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badge.pending {
+  background: #ff9800;
+  color: #000;
+}
+
+.badge.approved {
+  background: #00e676;
+  color: #000;
+}
+
+.badge.rejected {
+  background: #f44336;
+  color: #fff;
+}
+
+.card-body p {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.reason {
+  color: #f44336;
+  font-size: 13px;
+  margin-top: 8px;
+}
