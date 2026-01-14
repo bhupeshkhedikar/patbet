@@ -34,6 +34,16 @@ const BetStatusListener = () => {
     return () => unsubscribe();
   }, []);
 
+  const getWinningAmount = bet => {
+    if (bet.status === "tie") return bet.betAmount;
+    if (bet.status !== "won") return 0;
+
+    const profit = bet.betAmount * (bet.odds - 1); // profit only
+    const commission = profit * 0.1; // 10% commission
+    return Math.floor(profit - commission);
+  };
+
+
   /* ---------------- DATE FORMAT ---------------- */
   const formatDate = ts => {
     if (!ts?.seconds) return "N/A";
@@ -204,15 +214,16 @@ const BetStatusListener = () => {
                         bet.status === "tie"
                           ? "रिफंड कॉइन्स"
                           : "जीती हुई राशि",
-                        `💵${bet.winnings || 0}`,
+                        `💵${getWinningAmount(bet)}`,
                         bet.status === "lost"
                           ? "#ff5252"
                           : bet.status === "pending"
-                          ? "#ffb300"
-                          : bet.status === "tie"
-                          ? "#40c4ff"
-                          : "#69f0ae",
+                            ? "#ffb300"
+                            : bet.status === "tie"
+                              ? "#40c4ff"
+                              : "#69f0ae",
                       ],
+
                       [
                         "राय तिथि",
                         formatDate(bet.createdAt),
