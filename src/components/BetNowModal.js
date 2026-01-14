@@ -245,7 +245,7 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId, maxBetAmount }) =>
           transition: "all 0.15s ease",
         }}
       >
-        ₹{amount}
+        {amount}
       </div>
     );
   })}

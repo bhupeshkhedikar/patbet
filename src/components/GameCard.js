@@ -83,7 +83,7 @@ https://www.patwin.online/
     const today = new Date().toISOString().slice(0, 10);
     const userRef = doc(db, "users", user.uid);
 
-    // 🔒 Daily limit (₹15 = 5 shares)
+    // 🔒 Daily limit (15 = 5 shares)
     const q = query(
       collection(db, "whatsappRewardLogs"),
       where("userId", "==", user.uid),
@@ -92,7 +92,7 @@ https://www.patwin.online/
 
     const snap = await getDocs(q);
     if (snap.size >= 3) {
-      alert("❌ आज की ₹9 लिमिट पूरी हो चुकी है");
+      alert("❌ आज की 9 लिमिट पूरी हो चुकी है");
       return;
     }
 
@@ -120,7 +120,7 @@ https://www.patwin.online/
           });
         });
 
-        alert("✅ ₹3 आपके वॉलेट में जुड़ गए");
+        alert("✅ 3 आपके वॉलेट में जुड़ गए");
       } catch (e) {
         console.error("Reward credit failed", e);
       }

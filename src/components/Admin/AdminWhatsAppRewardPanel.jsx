@@ -124,12 +124,12 @@ const AdminWhatsAppRewardPanel = () => {
       >
         <div style={summaryCardStyle}>
           <p>Total Reward Given</p>
-          <h3>₹{totalReward}</h3>
+          <h3>{totalReward}</h3>
         </div>
 
         <div style={summaryCardStyle}>
           <p>Today’s Reward</p>
-          <h3>₹{todayReward}</h3>
+          <h3>{todayReward}</h3>
         </div>
 
         <div style={summaryCardStyle}>
@@ -176,7 +176,7 @@ const AdminWhatsAppRewardPanel = () => {
                 <tr key={l.id}>
                   <td style={td}>{l.userId}</td>
                   <td style={td}>{l.gameId}</td>
-                  <td style={td}>₹{l.amount}</td>
+                  <td style={td}>{l.amount}</td>
                   <td style={td}>{l.date}</td>
                   <td style={td}>{l.deviceId}</td>
                   <td style={td}>

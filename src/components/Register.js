@@ -120,7 +120,7 @@ const Register = () => {
             walletBalance: oldBalance + 100,
           });
 
-          toast.success("🎉 Refer सफल! ₹100 बोनस जोड़ा गया");
+          toast.success("🎉 Refer सफल! 100 बोनस जोड़ा गया");
         } else {
           toast.error("❌ गलत Refer Code!");
         }

@@ -235,12 +235,12 @@ const AdminPanel = () => {
       <div style={styles.betsContainer}>
         <div style={styles.teamBox}>
           <h3 style={{ color: "gold" }}>Team 1</h3>
-          <h2>Total ₹{team1Total}</h2>
+          <h2>Total {team1Total}</h2>
         </div>
 
         <div style={styles.teamBox}>
           <h3 style={{ color: "cyan" }}>Team 2</h3>
-          <h2>Total ₹{team2Total}</h2>
+          <h2>Total {team2Total}</h2>
         </div>
       </div>
 

@@ -100,10 +100,10 @@ const fetchReferralData = async () => {
             <tr key={index} style={{ borderBottom: "1px solid #ddd" }}>
               <td style={tdStyle}>{u.name}</td>
               <td style={tdStyle}>{u.email}</td>
-              <td style={tdStyle}>₹{u.walletBalance}</td>
+              <td style={tdStyle}>{u.walletBalance}</td>
               <td style={tdStyle}>{u.referralCode}</td>
               <td style={tdStyle}>{u.referredCount}</td>
-              <td style={tdStyle}>₹{u.earningFromReferrals}</td>
+              <td style={tdStyle}>{u.earningFromReferrals}</td>
               <td style={tdStyle}>
                 {u.referredUsersList.length === 0 ? (
                   <span style={{ color: "gray" }}>No Users</span>

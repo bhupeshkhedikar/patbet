@@ -362,9 +362,9 @@ const UserPanel = () => {
 
     if (!selectedCart) return alert("कृपया किसी गाड़ी का चयन करें!");
     if (!participationAmount || Number(participationAmount) <= 0)
-      return alert("कृपया वैध राशि दर्ज करें!");
+      return alert("कृपया वैध कॉइन्स दर्ज करें!");
     if (Number(participationAmount) > walletBalance)
-      return alert("आपके पास पर्याप्त शेष राशि नहीं है!");
+      return alert("आपके पास पर्याप्त शेष कॉइन्स नहीं है!");
 
     const now = Date.now();
     const startsAt = toEpochMs(currentMatch.startsAt);
@@ -379,7 +379,7 @@ const UserPanel = () => {
         const bal = (uSnap.exists() && uSnap.data().walletBalance) || 0;
 
         if (bal < Number(participationAmount))
-          throw new Error("बटुए में पर्याप्त शेष राशि नहीं है");
+          throw new Error("बटुए में पर्याप्त शेष कॉइन्स नहीं है");
 
         tx.update(userRef, {
           walletBalance: bal - Number(participationAmount),
@@ -400,7 +400,7 @@ const UserPanel = () => {
         tracks.find((t) => t.id === selectedCart)?.cart?.name;
 
       alert(
-        `✔ राय सफल!\nआपने "${selectedTeamName ?? "टीम"}" पर ₹${participationAmount} की राय लगाई है।`
+        `✔ राय सफल!\nआपने "${selectedTeamName ?? "टीम"}" पर ${participationAmount} की राय लगाई है।`
       );
 
       setSelectedCart(null);
@@ -550,7 +550,7 @@ const UserPanel = () => {
 
     /* ----------------------------
     0️⃣ WALLET CONTROL MODE
-    → Soft cap near ₹600
+    → Soft cap near 600
 ---------------------------- */
 if (mode === "walletControl") {
   const myBal = walletBalance; // realtime state
@@ -910,7 +910,7 @@ if (mode === "walletControl") {
               ))}
             </div>
 
-            <label style={{ color: "white", }}>राशि:</label>
+            <label style={{ color: "white", }}>कॉइन्स:</label>
             <input
               type="number"
               value={participationAmount}
@@ -971,7 +971,7 @@ if (mode === "walletControl") {
                 <>
                   <div style={modalStyles.emoji}>🎉</div>
                   <h2 style={{ color: "#00ff99" }}>बधाई! आप जीते</h2>
-                  <h1 style={{ color: "#FFD700" }}>₹{winAmount}</h1>
+                  <h1 style={{ color: "#FFD700" }}>{winAmount}</h1>
                   {/* NEXT ROUND COUNTDOWN */}
                   {nextRoundSec !== null && (
                     <p style={{
@@ -989,7 +989,7 @@ if (mode === "walletControl") {
                 <>
                   <div style={modalStyles.emoji}>😔</div>
                   <h2 style={{ color: "red" }}>आप हार गए</h2>
-                  <h1 style={{ color: "orange" }}>₹{winAmount}</h1>
+                  <h1 style={{ color: "orange" }}>{winAmount}</h1>
                   {/* NEXT ROUND COUNTDOWN */}
                   {nextRoundSec !== null && (
                     <p style={{
