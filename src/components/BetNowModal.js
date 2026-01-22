@@ -221,7 +221,7 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId, maxBetAmount }) =>
     marginBottom: "14px",
   }}
 >
-  {[100, 200, 300, 500, 1000].map((amount) => {
+  {[30,60,100, 200, 300, 500, 1000].map((amount) => {
     const active = betAmount == amount;
 
     return (
