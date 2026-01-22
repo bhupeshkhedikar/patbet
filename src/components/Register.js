@@ -117,10 +117,10 @@ const Register = () => {
           const oldBalance = refUserDoc.data().walletBalance || 0;
 
           await updateDoc(doc(db, "users", refUserId), {
-            walletBalance: oldBalance + 100,
+            walletBalance: oldBalance + 30,
           });
 
-          toast.success("🎉 Refer सफल! 100 बोनस जोड़ा गया");
+          toast.success("🎉 Refer सफल! 30 बोनस जोड़ा गया");
         } else {
           toast.error("❌ गलत Refer Code!");
         }

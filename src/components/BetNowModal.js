@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { increment } from "firebase/firestore";
 
 const BetNowModal = ({ isOpen, onClose, team1, team2, gameId, maxBetAmount }) => {
-  const [betAmount, setBetAmount] = useState(60);
+  const [betAmount, setBetAmount] = useState(20);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [walletBalance, setWalletBalance] = useState(0);
   const [selectedMultiplier, setSelectedMultiplier] = useState(2);
@@ -97,8 +97,8 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId, maxBetAmount }) =>
       return;
     }
 
-    if (betAmount < 60) {
-      alert("न्यूनतम रायसिक्के💵60 है!");
+    if (betAmount < 20) {
+      alert("न्यूनतम रायसिक्के💵20 है!");
       return;
     }
 
@@ -164,8 +164,8 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId, maxBetAmount }) =>
 
   const handleBetAmountChange = e => {
     const value = Number(e.target.value);
-    if (value < 60) {
-      setBetWarning("न्यूनतम रायसिक्के💵60 है!");
+    if (value <20) {
+      setBetWarning("न्यूनतम रायसिक्के💵20 है!");
     }
 
     else if (value > maxBetAmount) {
@@ -201,7 +201,7 @@ const BetNowModal = ({ isOpen, onClose, team1, team2, gameId, maxBetAmount }) =>
                id="betAmountInput"
                 type="number"
                 value={betAmount}
-                min="60"
+                min="20"
                 onChange={handleBetAmountChange}
                 max={maxBetAmount}
                 className="bet-input"
