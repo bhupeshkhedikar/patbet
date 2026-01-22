@@ -50,14 +50,15 @@ const ProfileSection = () => {
     };
 
 const fetchWithdrawals = async (userId) => {
+  if (!userId) return;
+
   try {
     const withdrawalsRef = collection(db, "withdrawalRequests");
 
-    // ✅ ONLY APPROVED WITHDRAWALS
     const q = query(
       withdrawalsRef,
       where("userId", "==", userId),
-      where("status", "==", "approved")
+      where("status", "==", "approved") // ✅ only approved
     );
 
     const querySnapshot = await getDocs(q);
@@ -69,9 +70,9 @@ const fetchWithdrawals = async (userId) => {
 
     setWithdrawals(withdrawalData);
 
-    // ✅ SUM ONLY APPROVED AMOUNT
+    // ✅ calculate total approved withdrawal amount
     const totalWithdrawn = withdrawalData.reduce(
-      (total, w) => total + Number(w.amount || 0),
+      (sum, item) => sum + Number(item.amount || 0),
       0
     );
 
@@ -82,8 +83,9 @@ const fetchWithdrawals = async (userId) => {
 };
 
 
+
     fetchUserData();
-  }, []);
+  }, [auth.currentUser]);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
